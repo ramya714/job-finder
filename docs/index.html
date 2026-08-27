@@ -3236,6 +3236,8 @@ function render() {
       else if (hours < 48) freshBadge = `<span class="fresh-badge warm">⚡ ${Math.round(hours)}h ago</span>`;
       else if (hours < 96) freshBadge = `<span class="fresh-badge mild">📅 ${Math.round(hours/24)}d ago</span>`;
     }
+    const cbChip = typeof job.callbackScore === 'number'
+      ? `<span class="cb-score">callback: ${job.callbackScore.toFixed(0)}/100</span>` : '';
     const hasEssays = hasApplicationEssayBoxes(job);
     let qaHtml = '';
     if (hasEssays) {
