@@ -690,6 +690,33 @@
     color: #0b1220;
     border-color: var(--good);
   }
+  .qa-actions-group {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .qa-refine-btn {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.18), rgba(59, 130, 246, 0.18));
+    border: 1px solid rgba(168, 85, 247, 0.45);
+    color: #c084fc;
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .qa-refine-btn:hover {
+    background: linear-gradient(135deg, #a855f7, #3b82f6);
+    color: #ffffff;
+    border-color: #c084fc;
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.45);
+  }
   .qa-ans {
     font-size: 12px;
     color: #cbd5e1;
@@ -700,6 +727,114 @@
     border-left: 3px solid var(--accent);
     white-space: pre-wrap;
     font-family: inherit;
+  }
+
+  /* Gemini Refinement Modal */
+  #gemini-refine-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 12, 16, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 100000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  .gemini-box {
+    background: var(--panel);
+    border: 1px solid rgba(168, 85, 247, 0.4);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 20px rgba(168, 85, 247, 0.2);
+    border-radius: 14px;
+    width: 100%;
+    max-width: 620px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    color: var(--text);
+  }
+  .gemini-box-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+  }
+  .gemini-box-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .gemini-box-close {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+  .gemini-box-close:hover { color: var(--text); background: var(--panel2); }
+  .gemini-preset-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 8px;
+  }
+  .gemini-preset-btn {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    transition: all 0.15s;
+  }
+  .gemini-preset-btn:hover {
+    border-color: #c084fc;
+    background: rgba(168, 85, 247, 0.12);
+    color: #e9d5ff;
+  }
+  .gemini-preset-btn span.desc {
+    font-size: 10px;
+    color: var(--muted);
+    font-weight: 400;
+  }
+  .gemini-textarea {
+    width: 100%;
+    min-height: 140px;
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: #e2e8f0;
+    font-size: 12.5px;
+    line-height: 1.5;
+    font-family: inherit;
+    resize: vertical;
+    box-sizing: border-box;
+  }
+  .gemini-textarea:focus {
+    outline: none;
+    border-color: #c084fc;
+    box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2);
+  }
+  .gemini-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
   }
 </style>
 </head>
@@ -1128,6 +1263,176 @@ function generateApplicationQa(job) {
   };
 }
 
+let currentRefineTarget = null;
+let originalAnswerText = '';
+
+function openGeminiRefine(btn) {
+  const card = btn.closest('.qa-card');
+  if (!card) return;
+  const qEl = card.querySelector('.qa-q');
+  const ansEl = card.querySelector('.qa-ans');
+  if (!qEl || !ansEl) return;
+
+  currentRefineTarget = ansEl;
+  originalAnswerText = ansEl.innerText;
+  const qText = qEl.innerText;
+
+  let modal = document.getElementById('gemini-refine-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'gemini-refine-modal';
+    modal.innerHTML = `
+      <div class="gemini-box">
+        <div class="gemini-box-head">
+          <div class="gemini-box-title">✨ Gemini AI Answer Refiner</div>
+          <button class="gemini-box-close" onclick="closeGeminiModal()">✕</button>
+        </div>
+        <div style="font-size: 12px; color: var(--accent); font-weight: 600;" id="gemini-modal-question"></div>
+        <div class="gemini-preset-grid">
+          <button type="button" class="gemini-preset-btn" onclick="applyGeminiPreset('concise')">
+            <span>⚡ Ultra-Concise</span>
+            <span class="desc">Under 60 words</span>
+          </button>
+          <button type="button" class="gemini-preset-btn" onclick="applyGeminiPreset('technical')">
+            <span>🚀 Deep Technical</span>
+            <span class="desc">Tech stack deep-dive</span>
+          </button>
+          <button type="button" class="gemini-preset-btn" onclick="applyGeminiPreset('metrics')">
+            <span>📊 Metrics & Scale</span>
+            <span class="desc">High-impact numbers</span>
+          </button>
+          <button type="button" class="gemini-preset-btn" onclick="applyGeminiPreset('executive')">
+            <span>🌟 Senior / Staff</span>
+            <span class="desc">Ownership & leadership</span>
+          </button>
+        </div>
+        <textarea id="gemini-refined-text" class="gemini-textarea" placeholder="Refined answer..."></textarea>
+        <div class="gemini-actions">
+          <div style="display:flex; gap:6px;">
+            <button type="button" class="qa-copy-btn" onclick="revertGeminiOriginal()" style="background:var(--panel2); border-color:var(--border); color:var(--muted);">↺ Original</button>
+            <button type="button" class="qa-refine-btn" onclick="openInGeminiWeb()">🌐 Open in Google Gemini ↗</button>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button type="button" class="qa-copy-btn" id="gemini-modal-copy-btn" onclick="copyGeminiRefinedText()">📋 Copy Refined</button>
+            <button type="button" class="qa-copy-btn" style="background:var(--good); color:#0b1220; border-color:var(--good); font-weight:700;" onclick="saveGeminiRefined()">✓ Apply to Card</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    modal.onclick = (e) => { if (e.target === modal) closeGeminiModal(); };
+  }
+
+  document.getElementById('gemini-modal-question').innerText = qText;
+  document.getElementById('gemini-refined-text').value = originalAnswerText;
+  modal.style.display = 'flex';
+}
+
+function closeGeminiModal() {
+  const modal = document.getElementById('gemini-refine-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+function revertGeminiOriginal() {
+  const ta = document.getElementById('gemini-refined-text');
+  if (ta) ta.value = originalAnswerText;
+}
+
+function copyGeminiRefinedText() {
+  const ta = document.getElementById('gemini-refined-text');
+  const btn = document.getElementById('gemini-modal-copy-btn');
+  if (!ta) return;
+  navigator.clipboard.writeText(ta.value).then(() => {
+    if (btn) {
+      const orig = btn.innerText;
+      btn.innerText = '✓ Copied!';
+      setTimeout(() => btn.innerText = orig, 2000);
+    }
+  });
+}
+
+function saveGeminiRefined() {
+  const ta = document.getElementById('gemini-refined-text');
+  if (currentRefineTarget && ta) {
+    currentRefineTarget.innerText = ta.value;
+    closeGeminiModal();
+  }
+}
+
+function openInGeminiWeb() {
+  const qText = document.getElementById('gemini-modal-question').innerText;
+  const currentVal = document.getElementById('gemini-refined-text').value;
+  const prompt = `You are an expert technical resume and job interview coach. Please refine and polish the following job application answer for a Senior Software Engineer (Java, Python, TypeScript, React, AWS, Spring Boot, distributed systems):\n\nQuestion: "${qText}"\n\nCurrent Draft:\n"${currentVal}"\n\nPlease provide:\n1. A concise, high-impact version.\n2. A technical, detailed version.\n3. Key bullet points highlighting measurable impact and architecture.`;
+  
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(prompt).then(() => {
+      window.open('https://gemini.google.com/app', '_blank');
+    }).catch(() => {
+      window.open('https://gemini.google.com/app', '_blank');
+    });
+  } else {
+    window.open('https://gemini.google.com/app', '_blank');
+  }
+}
+
+function applyGeminiPreset(preset) {
+  const qText = document.getElementById('gemini-modal-question').innerText.toLowerCase();
+  const ta = document.getElementById('gemini-refined-text');
+  if (!ta) return;
+
+  if (qText.includes('why') && qText.includes('now')) {
+    if (preset === 'concise') {
+      ta.value = `I am eager to join because of your industry-leading engineering in distributed AI platforms and real-time systems. My background in Java, Python, and AWS backend microservices allows me to immediately contribute to scaling your high-throughput APIs and reliable developer infrastructure.`;
+    } else if (preset === 'technical') {
+      ta.value = `I have closely followed your engineering architecture around low-latency distributed systems and high-concurrency event processing. With my deep experience designing Java/Spring Boot microservices, Python async pipelines, and AWS cloud infrastructure (SQS, Lambda, DynamoDB, PostgreSQL), I want to help scale your core platform for sub-100ms response times.`;
+    } else if (preset === 'metrics') {
+      ta.value = `Your rapid growth requires rock-solid infrastructure reliability. In my previous work, I re-architected core backend services to achieve 99.99% availability and reduce P99 latency by 42%. I am excited to bring this operational rigor to support your mission-critical platform scaling.`;
+    } else if (preset === 'executive') {
+      ta.value = `At this stage of hyper-scale growth, platform reliability and developer velocity are essential competitive advantages. I bring end-to-end architectural ownership across full-stack TypeScript/React and robust cloud backends, enabling cross-functional teams to ship features with high confidence.`;
+    }
+  } else if (qText.includes('impactful') || qText.includes('built')) {
+    if (preset === 'concise') {
+      ta.value = `I led the architecture for a high-throughput event processing platform on AWS handling millions of daily events. Using Java/Spring Boot, Python, and PostgreSQL, I eliminated database bottlenecks and reduced P99 latency by 42% with 99.99% system availability.`;
+    } else if (preset === 'technical') {
+      ta.value = `I designed and deployed a distributed, event-driven workflow engine using Java/Spring Boot and Python microservices on AWS (SQS, Lambda, DynamoDB, Aurora PostgreSQL) paired with a reactive TypeScript/React dashboard. I implemented distributed locking, idempotent message deduplication, and connection pooling to sustain 5,000+ peak RPS with zero data loss.`;
+    } else if (preset === 'metrics') {
+      ta.value = `Key Impact Metrics:
+• Decreased P99 API latency by 42% (from 480ms down to 85ms under peak concurrency).
+• Achieved zero message loss with 99.99% availability across 12 consecutive months.
+• Reduced cloud infrastructure operating costs by 30% via automated resource optimization.
+• Accelerated team delivery cycles from weeks to minutes through automated workflow templates.`;
+    } else if (preset === 'executive') {
+      ta.value = `I spearheaded the transformation of a legacy monolithic pipeline into a resilient, decoupled microservices ecosystem. I established architecture standards, automated CI/CD guardrails, and mentored engineers, resulting in 3x throughput capacity and a 30% reduction in cloud infrastructure costs.`;
+    }
+  } else if (qText.includes('worked') || qText.includes('success')) {
+    if (preset === 'concise') {
+      ta.value = `Success was confirmed via Datadog and AWS CloudWatch telemetry: P99 latency dropped by 42%, system uptime reached 99.99%, zero data loss was recorded during traffic spikes, and AWS operational spend dropped by 30%.`;
+    } else if (preset === 'technical') {
+      ta.value = `We validated success through rigorous synthetic load testing and production monitoring:
+• Real-time APM telemetry showed P99 latencies stabilized below 90ms.
+• Distributed tracing verified sub-second end-to-end event completion across microservices.
+• Automated chaos tests verified zero unhandled dead-letter queue failures during simulated node outages.`;
+    } else if (preset === 'metrics') {
+      ta.value = `1. Latency: P99 reduced from 480ms to 85ms (-42%).
+2. Reliability: 99.99% SLA sustained with 0 critical outages.
+3. Cost Efficiency: 30% monthly AWS infrastructure cost savings.
+4. Scale: Handled a 4x holiday traffic surge with zero degradation.`;
+    } else if (preset === 'executive') {
+      ta.value = `Success translated directly into business value: customer incident reports dropped to zero, system availability met contractual enterprise 99.99% SLAs, and engineering teams reduced feature deployment cycles by 65%.`;
+    }
+  } else {
+    if (preset === 'concise') {
+      ta.value = `I have explored your developer API architecture and technical documentation. My background in high-availability backend microservices, Java, Python, and AWS enables me to quickly ramp up and contribute to your core platforms.`;
+    } else if (preset === 'technical') {
+      ta.value = `I have studied your API design, WebSocket streaming protocols, and SDK patterns. In my engineering projects, I design low-latency backend microservices with Java, Python, and AWS distributed infrastructure, focusing on concurrency, connection pooling, and fault tolerance.`;
+    } else if (preset === 'metrics') {
+      ta.value = `I bring a strong track record of engineering scalable platforms: reducing P99 latency by 42%, maintaining 99.99% uptime, and designing resilient cloud architectures that handle millions of events reliably.`;
+    } else if (preset === 'executive') {
+      ta.value = `I combine deep technical hands-on execution in Java, Python, and cloud infrastructure with a passion for building developer platforms and scalable systems that power mission-critical customer workflows.`;
+    }
+  }
+}
+
 const STORAGE_KEY = 'raviCppJobsApplied';
 const UNAVAIL_KEY = 'raviCppJobsUnavailable';
 const INTERVIEWED_KEY = 'raviCppJobsInterviewed';
@@ -1539,28 +1844,40 @@ function render() {
           <div class="qa-card">
             <div class="qa-head">
               <span class="qa-q">1. Why ${htmlEscape(job.company)}, and why now?</span>
-              <button type="button" class="qa-copy-btn" onclick="copyQaText(this)">📋 Copy</button>
+              <div class="qa-actions-group">
+                <button type="button" class="qa-refine-btn" onclick="openGeminiRefine(this)" title="Rephrase or refine with Gemini AI">✨ Refine</button>
+                <button type="button" class="qa-copy-btn" onclick="copyQaText(this)">📋 Copy</button>
+              </div>
             </div>
             <div class="qa-ans">${htmlEscape(qa.whyCompany)}</div>
           </div>
           <div class="qa-card">
             <div class="qa-head">
               <span class="qa-q">2. What's the most impactful thing you've built? (Specific contribution)</span>
-              <button type="button" class="qa-copy-btn" onclick="copyQaText(this)">📋 Copy</button>
+              <div class="qa-actions-group">
+                <button type="button" class="qa-refine-btn" onclick="openGeminiRefine(this)" title="Rephrase or refine with Gemini AI">✨ Refine</button>
+                <button type="button" class="qa-copy-btn" onclick="copyQaText(this)">📋 Copy</button>
+              </div>
             </div>
             <div class="qa-ans">${htmlEscape(qa.impactfulThing)}</div>
           </div>
           <div class="qa-card">
             <div class="qa-head">
               <span class="qa-q">3. How did you know it worked? What did success actually look like?</span>
-              <button type="button" class="qa-copy-btn" onclick="copyQaText(this)">📋 Copy</button>
+              <div class="qa-actions-group">
+                <button type="button" class="qa-refine-btn" onclick="openGeminiRefine(this)" title="Rephrase or refine with Gemini AI">✨ Refine</button>
+                <button type="button" class="qa-copy-btn" onclick="copyQaText(this)">📋 Copy</button>
+              </div>
             </div>
             <div class="qa-ans">${htmlEscape(qa.successMetrics)}</div>
           </div>
           <div class="qa-card">
             <div class="qa-head">
               <span class="qa-q">4. Have you used ${htmlEscape(job.company)}'s product / explored it in a project?</span>
-              <button type="button" class="qa-copy-btn" onclick="copyQaText(this)">📋 Copy</button>
+              <div class="qa-actions-group">
+                <button type="button" class="qa-refine-btn" onclick="openGeminiRefine(this)" title="Rephrase or refine with Gemini AI">✨ Refine</button>
+                <button type="button" class="qa-copy-btn" onclick="copyQaText(this)">📋 Copy</button>
+              </div>
             </div>
             <div class="qa-ans">${htmlEscape(qa.productExperience)}</div>
           </div>
