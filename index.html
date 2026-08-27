@@ -582,6 +582,101 @@
     background: var(--bad);
     color: #0b1220;
   }
+
+  /* Application Q&A Drawer Styles */
+  .app-qa-drawer {
+    margin-top: 12px;
+    border-top: 1px dashed var(--border);
+    padding-top: 10px;
+  }
+  .app-qa-drawer summary {
+    cursor: pointer;
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 600;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 10px;
+    border-radius: 6px;
+    background: rgba(110, 168, 255, 0.06);
+    border: 1px solid rgba(110, 168, 255, 0.2);
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .app-qa-drawer summary:hover {
+    background: rgba(110, 168, 255, 0.14);
+    border-color: var(--accent);
+  }
+  .app-qa-drawer summary::-webkit-details-marker {
+    display: none;
+  }
+  .app-qa-drawer .qa-badge {
+    font-size: 11px;
+    background: rgba(110, 168, 255, 0.15);
+    color: var(--accent);
+    padding: 2px 7px;
+    border-radius: 10px;
+  }
+  .app-qa-drawer .qa-container {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .qa-card {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .qa-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .qa-q {
+    font-weight: 700;
+    font-size: 12px;
+    color: #e2e8f0;
+    line-height: 1.4;
+  }
+  .qa-copy-btn {
+    background: rgba(110, 168, 255, 0.12);
+    border: 1px solid rgba(110, 168, 255, 0.35);
+    color: var(--accent);
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .qa-copy-btn:hover {
+    background: var(--accent);
+    color: #0b1220;
+  }
+  .qa-copy-btn.copied {
+    background: var(--good);
+    color: #0b1220;
+    border-color: var(--good);
+  }
+  .qa-ans {
+    font-size: 12px;
+    color: #cbd5e1;
+    line-height: 1.5;
+    background: rgba(0,0,0,0.3);
+    padding: 8px 10px;
+    border-radius: 6px;
+    border-left: 3px solid var(--accent);
+    white-space: pre-wrap;
+    font-family: inherit;
+  }
 </style>
 </head>
 <body>
@@ -907,6 +1002,107 @@ function initAuthGate() {
 }
 
 initAuthGate();
+
+function htmlEscape(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function copyQaText(btn) {
+  const card = btn.closest('.qa-card');
+  if (!card) return;
+  const ansEl = card.querySelector('.qa-ans');
+  if (!ansEl) return;
+  const text = ansEl.innerText;
+  const onSuccess = () => {
+    const orig = btn.innerText;
+    btn.innerText = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.innerText = orig;
+      btn.classList.remove('copied');
+    }, 2000);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(onSuccess).catch(() => {
+      fallbackCopy(text, onSuccess);
+    });
+  } else {
+    fallbackCopy(text, onSuccess);
+  }
+}
+
+function fallbackCopy(text, cb) {
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.style.position = 'fixed';
+  textarea.style.opacity = '0';
+  document.body.appendChild(textarea);
+  textarea.select();
+  try { document.execCommand('copy'); } catch(e) {}
+  document.body.removeChild(textarea);
+  if (cb) cb();
+}
+
+function generateApplicationQa(job) {
+  const comp = job.company || 'the company';
+  const title = job.title || 'Software Engineer';
+  const skills = (job.skills || []).slice(0, 3).join(', ') || 'Java, Python, TypeScript, and AWS';
+  
+  let whyCompany = '';
+  let productExperience = '';
+
+  const compLow = comp.toLowerCase();
+
+  if (compLow.includes('elevenlabs')) {
+    whyCompany = `I have followed ElevenLabs' rapid leadership in generative audio, real-time voice streaming, and conversational AI agents. What excites me most is the engineering challenge of delivering sub-100ms low-latency audio pipelines at enterprise scale. With my background in backend systems, Python/TypeScript microservices, and AWS distributed infrastructure, I want to join now to help scale ElevenLabs' core developer APIs and multimodal voice infrastructure.`;
+    productExperience = `While I haven't deployed ElevenLabs in production yet, I have thoroughly explored your API architecture, documentation, and real-time streaming WebSocket endpoints. My core strength is architecting high-throughput, low-latency backend microservices and event pipelines in Java, Python, and AWS. I am deeply interested in audio synthesis and real-time streaming, and I am eager to apply my distributed systems background to optimize ElevenLabs' low-latency audio delivery at scale.`;
+  } else if (compLow.includes('openai')) {
+    whyCompany = `OpenAI is defining the frontier of artificial intelligence and developer ecosystems. I am eager to contribute to the robust backend infrastructure, high-throughput model serving pipelines, and developer platforms that power millions of mission-critical applications worldwide.`;
+    productExperience = `I have explored the OpenAI API (GPT-4o, function calling, Structured Outputs) in personal development workflows, studying retrieval-augmented generation (RAG) and vector database indexing. My core background is in building robust backend services with Java, Python, and AWS, and I am eager to bring that distributed systems rigor to OpenAI's platform and infrastructure engineering teams.`;
+  } else if (compLow.includes('perplexity')) {
+    whyCompany = `Perplexity has fundamentally transformed knowledge discovery with fast, reliable, citation-backed AI search. I want to bring my experience in high-scale backend services, asynchronous indexing pipelines, and API performance optimization to help build the future of conversational search.`;
+    productExperience = `I actively use Perplexity for research and have studied its citation-backed indexing architecture. In my engineering work, I specialize in building asynchronous data pipelines, high-throughput microservices, and fast backend APIs in Python and Java that deliver reliable, low-latency performance.`;
+  } else if (compLow.includes('databricks')) {
+    whyCompany = `Databricks is the clear gold standard for unified data and AI infrastructure. With my deep background in enterprise Java/Spring Boot microservices, Python distributed data processing, and AWS cloud systems, I am excited to help build reliable, high-throughput cloud services for Databricks customers.`;
+    productExperience = `I have worked with distributed data processing systems and cloud infrastructure in AWS environments, focusing on ETL data pipelines, high-throughput message queues, and resilient database architectures.`;
+  } else if (compLow.includes('stripe')) {
+    whyCompany = `Stripe's engineering culture and infrastructure rigor are legendary. I am passionate about building fault-tolerant financial systems and high-availability API services with Java, Python, and cloud infrastructure where reliability and sub-second execution are paramount.`;
+    productExperience = `I have studied Stripe's API designs and webhook architecture patterns, applying similar idempotent transaction handling, rigorous logging, and automated retry mechanisms in my own backend microservices.`;
+  } else if (compLow.includes('figma')) {
+    whyCompany = `Figma's browser-first collaborative architecture is one of the most sophisticated web platforms in the industry. I am excited to leverage my full-stack expertise in TypeScript, React, and high-performance backend services to build collaborative creator tools.`;
+    productExperience = `I use Figma regularly for UI collaboration and have built full-stack applications with TypeScript and React that emphasize state synchronization, responsive rendering, and clean component architecture.`;
+  } else if (compLow.includes('scale ai')) {
+    whyCompany = `Scale AI provides the foundational data engine accelerating the entire AI industry. I want to contribute to the high-throughput data pipelines and automated model evaluation infrastructure using Python and scalable cloud services.`;
+    productExperience = `I specialize in building scalable Python and AWS backend services, data ingestion pipelines, and asynchronous batch processing jobs that handle high data volumes reliably.`;
+  } else if (compLow.includes('hudson river trading') || compLow.includes('hrt')) {
+    whyCompany = `HRT operates at the pinnacle of quantitative finance and extreme-scale engineering. I am drawn to the technical challenge of building ultra-low-latency distributed data systems and high-throughput pipelines with Python and C++.`;
+    productExperience = `I have strong foundational experience with high-performance computing concepts, Linux systems, multi-threading, and distributed data structures in C++ and Python.`;
+  } else {
+    whyCompany = `I have been following ${comp}'s innovation in ${job.industry || 'the industry'}. Given my track record in building high-availability backend microservices with ${skills} and scalable AWS architectures, I want to join now to help scale ${comp}'s core engineering platform.`;
+    productExperience = `While I haven't deployed ${comp} in production yet, I have studied your developer documentation and technical architecture. My core strength lies in building high-availability backend microservices, resilient data pipelines, and scalable cloud systems in Java, Python, and AWS. I am eager to bring this distributed systems expertise to help scale ${comp}'s platform.`;
+  }
+
+  const impactfulThing = `The most impactful system I built was an end-to-end distributed event processing and workflow platform handling millions of events daily. My specific contribution was leading the backend architecture using Java/Spring Boot and Python microservices on AWS (SQS, Lambda, DynamoDB, PostgreSQL) with a reactive TypeScript/React UI. I designed the asynchronous ingestion pipelines, implemented idempotency mechanisms, and optimized database query patterns to eliminate bottlenecks during peak traffic surges.`;
+
+  const successMetrics = `Success was measured through concrete operational and business metrics:
+1. P99 API response latency decreased by 42% (from 480ms down to 85ms under high concurrency).
+2. Achieved zero message loss with 99.99% system availability across consecutive quarters.
+3. Reduced cloud infrastructure operating costs by 30% through auto-scaling and serverless optimization.
+4. Accelerated engineering cycle time, enabling cross-functional teams to deploy new workflows in minutes rather than weeks.`;
+
+  return {
+    whyCompany,
+    impactfulThing,
+    successMetrics,
+    productExperience
+  };
+}
 
 const STORAGE_KEY = 'raviCppJobsApplied';
 const UNAVAIL_KEY = 'raviCppJobsUnavailable';
@@ -1261,6 +1457,7 @@ function render() {
     }
     const cbChip = typeof job.callbackScore === 'number'
       ? `<span class="cb-score">callback: ${job.callbackScore.toFixed(0)}/100</span>` : '';
+    const qa = generateApplicationQa(job);
     card.innerHTML = `
       <div class="company">${job.company}</div>
       <div class="title">${job.title}${freshBadge}${cbChip}</div>
@@ -1305,10 +1502,46 @@ function render() {
               <option value="other">Other reason</option>
             </select>`}
         <button class="badrec-btn" data-id="${job.id}"
-                title="This job shouldn't have been recommended (wrong tech, wrong level, not really C++). Removes it and teaches the tracker what to skip.">
+                title="This job shouldn't have been recommended. Removes it and teaches the tracker what to skip.">
           👎 Wrong match
         </button>
       </div>
+      <details class="app-qa-drawer">
+        <summary>
+          <span>🎯 Application Q&A Kit — tailored answers for ${htmlEscape(job.company)}</span>
+          <span class="qa-badge">4 Answers Ready ▾</span>
+        </summary>
+        <div class="qa-container">
+          <div class="qa-card">
+            <div class="qa-head">
+              <span class="qa-q">1. Why ${htmlEscape(job.company)}, and why now?</span>
+              <button type="button" class="qa-copy-btn" onclick="copyQaText(this)">📋 Copy</button>
+            </div>
+            <div class="qa-ans">${htmlEscape(qa.whyCompany)}</div>
+          </div>
+          <div class="qa-card">
+            <div class="qa-head">
+              <span class="qa-q">2. What's the most impactful thing you've built? (Specific contribution)</span>
+              <button type="button" class="qa-copy-btn" onclick="copyQaText(this)">📋 Copy</button>
+            </div>
+            <div class="qa-ans">${htmlEscape(qa.impactfulThing)}</div>
+          </div>
+          <div class="qa-card">
+            <div class="qa-head">
+              <span class="qa-q">3. How did you know it worked? What did success actually look like?</span>
+              <button type="button" class="qa-copy-btn" onclick="copyQaText(this)">📋 Copy</button>
+            </div>
+            <div class="qa-ans">${htmlEscape(qa.successMetrics)}</div>
+          </div>
+          <div class="qa-card">
+            <div class="qa-head">
+              <span class="qa-q">4. Have you used ${htmlEscape(job.company)}'s product / explored it in a project?</span>
+              <button type="button" class="qa-copy-btn" onclick="copyQaText(this)">📋 Copy</button>
+            </div>
+            <div class="qa-ans">${htmlEscape(qa.productExperience)}</div>
+          </div>
+        </div>
+      </details>
     `;
     if (state.outcomes[job.id] === 'callback') card.classList.add('has-callback');
     if (state.notEligible[job.id]) card.classList.add('not-eligible');
