@@ -1527,6 +1527,14 @@ function applyGeminiPreset(preset) {
   }
 }
 
+function hasApplicationEssayBoxes(job) {
+  if (!job) return false;
+  if (job.hasEssayQuestions === true || (Array.isArray(job.customQuestions) && job.customQuestions.length > 0)) return true;
+  const comp = (job.company || '').toLowerCase();
+  // Companies that have custom essay / text box questions in their application portals
+  return comp.includes('elevenlabs') || comp.includes('openai') || comp.includes('perplexity') || comp.includes('anthropic');
+}
+
 const STORAGE_KEY = 'raviCppJobsApplied';
 const UNAVAIL_KEY = 'raviCppJobsUnavailable';
 const INTERVIEWED_KEY = 'raviCppJobsInterviewed';
@@ -1878,9 +1886,61 @@ function render() {
       else if (hours < 48) freshBadge = `<span class="fresh-badge warm">⚡ ${Math.round(hours)}h ago</span>`;
       else if (hours < 96) freshBadge = `<span class="fresh-badge mild">📅 ${Math.round(hours/24)}d ago</span>`;
     }
-    const cbChip = typeof job.callbackScore === 'number'
-      ? `<span class="cb-score">callback: ${job.callbackScore.toFixed(0)}/100</span>` : '';
-    const qa = generateApplicationQa(job);
+    const hasEssays = hasApplicationEssayBoxes(job);
+    let qaHtml = '';
+    if (hasEssays) {
+      const qa = generateApplicationQa(job);
+      qaHtml = `
+      <details class="app-qa-drawer">
+        <summary>
+          <span>🎯 Application Q&A Kit — tailored answers for ${htmlEscape(job.company)}</span>
+          <span class="qa-badge">Essay Boxes ▾</span>
+        </summary>
+        <div class="qa-container">
+          <div class="qa-card" data-jobid="${job.id}" data-qtype="q1" data-mode="orig">
+            <div class="qa-head">
+              <span class="qa-q">1. Why ${htmlEscape(job.company)}, and why now?</span>
+              <div class="qa-actions-group">
+                <button type="button" class="qa-refine-btn" onclick="cycleRefineAnswer(this, event)" title="Click to instantly rephrase: Concise / Technical / Metrics">✨ Refine Text ▾</button>
+                <button type="button" class="qa-copy-btn" onclick="copyQaText(this)">📋 Copy</button>
+              </div>
+            </div>
+            <div class="qa-ans">${htmlEscape(qa.q1.orig)}</div>
+          </div>
+          <div class="qa-card" data-jobid="${job.id}" data-qtype="q2" data-mode="orig">
+            <div class="qa-head">
+              <span class="qa-q">2. What's the most impactful thing you've built? (Specific contribution)</span>
+              <div class="qa-actions-group">
+                <button type="button" class="qa-refine-btn" onclick="cycleRefineAnswer(this, event)" title="Click to instantly rephrase: Concise / Technical / Metrics">✨ Refine Text ▾</button>
+                <button type="button" class="qa-copy-btn" onclick="copyQaText(this)">📋 Copy</button>
+              </div>
+            </div>
+            <div class="qa-ans">${htmlEscape(qa.q2.orig)}</div>
+          </div>
+          <div class="qa-card" data-jobid="${job.id}" data-qtype="q3" data-mode="orig">
+            <div class="qa-head">
+              <span class="qa-q">3. How did you know it worked? What did success actually look like?</span>
+              <div class="qa-actions-group">
+                <button type="button" class="qa-refine-btn" onclick="cycleRefineAnswer(this, event)" title="Click to instantly rephrase: Concise / Technical / Metrics">✨ Refine Text ▾</button>
+                <button type="button" class="qa-copy-btn" onclick="copyQaText(this)">📋 Copy</button>
+              </div>
+            </div>
+            <div class="qa-ans">${htmlEscape(qa.q3.orig)}</div>
+          </div>
+          <div class="qa-card" data-jobid="${job.id}" data-qtype="q4" data-mode="orig">
+            <div class="qa-head">
+              <span class="qa-q">4. Have you used ${htmlEscape(job.company)}'s product / explored it in a project?</span>
+              <div class="qa-actions-group">
+                <button type="button" class="qa-refine-btn" onclick="cycleRefineAnswer(this, event)" title="Click to instantly rephrase: Concise / Technical / Metrics">✨ Refine Text ▾</button>
+                <button type="button" class="qa-copy-btn" onclick="copyQaText(this)">📋 Copy</button>
+              </div>
+            </div>
+            <div class="qa-ans">${htmlEscape(qa.q4.orig)}</div>
+          </div>
+        </div>
+      </details>
+      `;
+    }
     card.innerHTML = `
       <div class="company">${job.company}</div>
       <div class="title">${job.title}${freshBadge}${cbChip}</div>
@@ -1929,54 +1989,7 @@ function render() {
           👎 Wrong match
         </button>
       </div>
-      <details class="app-qa-drawer">
-        <summary>
-          <span>🎯 Application Q&A Kit — tailored answers for ${htmlEscape(job.company)}</span>
-          <span class="qa-badge">4 Answers Ready ▾</span>
-        </summary>
-        <div class="qa-container">
-          <div class="qa-card" data-jobid="${job.id}" data-qtype="q1" data-mode="orig">
-            <div class="qa-head">
-              <span class="qa-q">1. Why ${htmlEscape(job.company)}, and why now?</span>
-              <div class="qa-actions-group">
-                <button type="button" class="qa-refine-btn" onclick="cycleRefineAnswer(this, event)" title="Click to instantly rephrase: Concise / Technical / Metrics">✨ Refine Text ▾</button>
-                <button type="button" class="qa-copy-btn" onclick="copyQaText(this)">📋 Copy</button>
-              </div>
-            </div>
-            <div class="qa-ans">${htmlEscape(qa.q1.orig)}</div>
-          </div>
-          <div class="qa-card" data-jobid="${job.id}" data-qtype="q2" data-mode="orig">
-            <div class="qa-head">
-              <span class="qa-q">2. What's the most impactful thing you've built? (Specific contribution)</span>
-              <div class="qa-actions-group">
-                <button type="button" class="qa-refine-btn" onclick="cycleRefineAnswer(this, event)" title="Click to instantly rephrase: Concise / Technical / Metrics">✨ Refine Text ▾</button>
-                <button type="button" class="qa-copy-btn" onclick="copyQaText(this)">📋 Copy</button>
-              </div>
-            </div>
-            <div class="qa-ans">${htmlEscape(qa.q2.orig)}</div>
-          </div>
-          <div class="qa-card" data-jobid="${job.id}" data-qtype="q3" data-mode="orig">
-            <div class="qa-head">
-              <span class="qa-q">3. How did you know it worked? What did success actually look like?</span>
-              <div class="qa-actions-group">
-                <button type="button" class="qa-refine-btn" onclick="cycleRefineAnswer(this, event)" title="Click to instantly rephrase: Concise / Technical / Metrics">✨ Refine Text ▾</button>
-                <button type="button" class="qa-copy-btn" onclick="copyQaText(this)">📋 Copy</button>
-              </div>
-            </div>
-            <div class="qa-ans">${htmlEscape(qa.q3.orig)}</div>
-          </div>
-          <div class="qa-card" data-jobid="${job.id}" data-qtype="q4" data-mode="orig">
-            <div class="qa-head">
-              <span class="qa-q">4. Have you used ${htmlEscape(job.company)}'s product / explored it in a project?</span>
-              <div class="qa-actions-group">
-                <button type="button" class="qa-refine-btn" onclick="cycleRefineAnswer(this, event)" title="Click to instantly rephrase: Concise / Technical / Metrics">✨ Refine Text ▾</button>
-                <button type="button" class="qa-copy-btn" onclick="copyQaText(this)">📋 Copy</button>
-              </div>
-            </div>
-            <div class="qa-ans">${htmlEscape(qa.q4.orig)}</div>
-          </div>
-        </div>
-      </details>
+      ${qaHtml}
     `;
     if (state.outcomes[job.id] === 'callback') card.classList.add('has-callback');
     if (state.notEligible[job.id]) card.classList.add('not-eligible');
