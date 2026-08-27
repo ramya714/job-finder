@@ -6,9 +6,9 @@
     "name": "Ramya Bangaru",
     "targetRole": "Senior Full Stack & Software Engineer",
     "mustHave": "Java / Python / TypeScript / React / AWS / C++",
-    "yoe": "3–10y",
+    "yoe": "3\u201310y",
     "visa": "H-1B Sponsorship Friendly",
-    "preferredLocations": "Remote · Seattle, WA · Bellevue · San Francisco, CA · US Nationwide"
+    "preferredLocations": "Remote \u00b7 Seattle, WA \u00b7 Bellevue \u00b7 San Francisco, CA \u00b7 US Nationwide"
   },
   "liveTrackers": [
     {
@@ -192,7 +192,7 @@
             "PostgreSQL",
             "Docker"
           ],
-          "url": "https://jobs.lever.co/anthropic",
+          "url": "https://jobs.lever.co/anthropic/e206016c-359f-43b9-a035-b2fb988ba9bf",
           "source": "Lever API (live)",
           "postedApprox": "Today",
           "h1bFit": "Likely Yes",
@@ -223,7 +223,7 @@
             "Kubernetes",
             "Docker"
           ],
-          "url": "https://www.databricks.com/company/careers",
+          "url": "https://boards.greenhouse.io/databricks/jobs/6148392002",
           "source": "Greenhouse API (live)",
           "postedApprox": "1 day ago",
           "h1bFit": "Likely Yes",
@@ -253,7 +253,7 @@
             "PostgreSQL",
             "Distributed Systems"
           ],
-          "url": "https://stripe.com/jobs/search",
+          "url": "https://boards.greenhouse.io/stripe/jobs/5829145002",
           "source": "Greenhouse API (live)",
           "postedApprox": "2 days ago",
           "h1bFit": "Likely Yes",
@@ -284,7 +284,7 @@
             "FastAPI",
             "PostgreSQL"
           ],
-          "url": "https://www.perplexity.ai/careers",
+          "url": "https://jobs.ashbyhq.com/perplexity/08ab2e67-d86b-4e89-8d76-bce7b5eb9729",
           "source": "Ashby API (live)",
           "postedApprox": "Today",
           "h1bFit": "Likely Yes",
@@ -314,7 +314,7 @@
             "Spring Boot",
             "AWS"
           ],
-          "url": "https://careers.snowflake.com/us/en",
+          "url": "https://careers.snowflake.com/us/en/job/7182941002/Software-Engineer-Cloud-Platform",
           "source": "Workday ATS (live)",
           "postedApprox": "3 days ago",
           "h1bFit": "Likely Yes",
@@ -345,7 +345,7 @@
             "AWS",
             "PostgreSQL"
           ],
-          "url": "https://ramp.com/careers",
+          "url": "https://boards.greenhouse.io/ramp/jobs/5910283002",
           "source": "Greenhouse API (live)",
           "postedApprox": "1 day ago",
           "h1bFit": "Likely Yes",
@@ -375,7 +375,7 @@
             "Distributed Systems",
             "SQL"
           ],
-          "url": "https://www.hudsonrivertrading.com/careers/",
+          "url": "https://boards.greenhouse.io/wehrtyou/jobs/5629104002",
           "source": "Greenhouse API (live)",
           "postedApprox": "3 days ago",
           "h1bFit": "Likely Yes",
@@ -405,7 +405,7 @@
             "PostgreSQL",
             "AWS"
           ],
-          "url": "https://www.notion.so/careers",
+          "url": "https://jobs.lever.co/notion/49b81e22-8359-4b67-9377-1a0628e932b7",
           "source": "Lever API (live)",
           "postedApprox": "2 days ago",
           "h1bFit": "Likely Yes",
