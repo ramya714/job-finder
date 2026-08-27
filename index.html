@@ -717,6 +717,39 @@
     border-color: #c084fc;
     box-shadow: 0 0 10px rgba(168, 85, 247, 0.45);
   }
+  .qa-mode-tag {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: rgba(192, 132, 252, 0.18);
+    color: #d8b4fe;
+    border: 1px solid rgba(192, 132, 252, 0.35);
+    margin-left: 6px;
+    vertical-align: middle;
+    display: inline-block;
+  }
+  .qa-refine-select {
+    background: var(--panel2);
+    border: 1px solid rgba(168, 85, 247, 0.4);
+    color: #c084fc;
+    border-radius: 5px;
+    padding: 2px 6px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .qa-refine-select:focus {
+    outline: none;
+    border-color: #c084fc;
+  }
+  @keyframes refineGlow {
+    0% { background: rgba(192, 132, 252, 0.3); }
+    100% { background: rgba(0,0,0,0.3); }
+  }
+  .qa-ans.flash-refine {
+    animation: refineGlow 0.8s ease-out;
+  }
   .qa-ans {
     font-size: 12px;
     color: #cbd5e1;
@@ -727,6 +760,7 @@
     border-left: 3px solid var(--accent);
     white-space: pre-wrap;
     font-family: inherit;
+    transition: all 0.2s;
   }
 
   /* Gemini Refinement Modal */
@@ -1212,55 +1246,115 @@ function generateApplicationQa(job) {
   const comp = job.company || 'the company';
   const title = job.title || 'Software Engineer';
   const skills = (job.skills || []).slice(0, 3).join(', ') || 'Java, Python, TypeScript, and AWS';
-  
-  let whyCompany = '';
-  let productExperience = '';
-
   const compLow = comp.toLowerCase();
 
+  // Q1: Why Company
+  let q1_orig = '', q1_concise = '', q1_technical = '', q1_metrics = '';
   if (compLow.includes('elevenlabs')) {
-    whyCompany = `I have followed ElevenLabs' rapid leadership in generative audio, real-time voice streaming, and conversational AI agents. What excites me most is the engineering challenge of delivering sub-100ms low-latency audio pipelines at enterprise scale. With my background in backend systems, Python/TypeScript microservices, and AWS distributed infrastructure, I want to join now to help scale ElevenLabs' core developer APIs and multimodal voice infrastructure.`;
-    productExperience = `While I haven't deployed ElevenLabs in production yet, I have thoroughly explored your API architecture, documentation, and real-time streaming WebSocket endpoints. My core strength is architecting high-throughput, low-latency backend microservices and event pipelines in Java, Python, and AWS. I am deeply interested in audio synthesis and real-time streaming, and I am eager to apply my distributed systems background to optimize ElevenLabs' low-latency audio delivery at scale.`;
+    q1_orig = `I have followed ElevenLabs' rapid leadership in generative audio, real-time voice streaming, and conversational AI agents. What excites me most is the engineering challenge of delivering sub-100ms low-latency audio pipelines at enterprise scale. With my background in backend systems, Python/TypeScript microservices, and AWS distributed infrastructure, I want to join now to help scale ElevenLabs' core developer APIs and multimodal voice infrastructure.`;
+    q1_concise = `I am eager to join ElevenLabs to solve the engineering challenge of scaling sub-100ms real-time audio streaming. My background in high-throughput Python/TypeScript microservices and AWS distributed systems enables me to immediately help scale your core developer APIs.`;
+    q1_technical = `I have closely studied ElevenLabs' real-time WebSocket streaming protocols and voice synthesis models. With extensive experience architecting async Python pipelines, Java/Spring Boot microservices, and event-driven AWS cloud architectures (SQS, Lambda, DynamoDB, PostgreSQL), I am eager to optimize your low-latency streaming infrastructure and API availability.`;
+    q1_metrics = `ElevenLabs' explosive enterprise adoption requires world-class platform reliability. In my previous backend roles, I scaled microservices to handle millions of daily requests while reducing P99 latency by 42% and sustaining 99.99% uptime. I want to bring this operational scale to ElevenLabs.`;
   } else if (compLow.includes('openai')) {
-    whyCompany = `OpenAI is defining the frontier of artificial intelligence and developer ecosystems. I am eager to contribute to the robust backend infrastructure, high-throughput model serving pipelines, and developer platforms that power millions of mission-critical applications worldwide.`;
-    productExperience = `I have explored the OpenAI API (GPT-4o, function calling, Structured Outputs) in personal development workflows, studying retrieval-augmented generation (RAG) and vector database indexing. My core background is in building robust backend services with Java, Python, and AWS, and I am eager to bring that distributed systems rigor to OpenAI's platform and infrastructure engineering teams.`;
+    q1_orig = `OpenAI is defining the frontier of artificial intelligence and developer ecosystems. I am eager to contribute to the robust backend infrastructure, high-throughput model serving pipelines, and developer platforms that power millions of mission-critical applications worldwide.`;
+    q1_concise = `I want to join OpenAI to build the reliable, high-throughput backend infrastructure and developer platform services that empower millions of developers to build on frontier models.`;
+    q1_technical = `I am drawn to OpenAI's distributed infrastructure challenges across high-concurrency model inference and API platforms. Bringing deep experience with Java, Python, and scalable AWS services, I want to contribute to robust API gateways, rate limiting, and fault-tolerant distributed backends.`;
+    q1_metrics = `Scaling developer infrastructure to support massive global demand requires proven backend resilience. Having designed event-driven cloud platforms sustaining 99.99% uptime and handling millions of daily events, I am excited to support OpenAI's platform growth.`;
   } else if (compLow.includes('perplexity')) {
-    whyCompany = `Perplexity has fundamentally transformed knowledge discovery with fast, reliable, citation-backed AI search. I want to bring my experience in high-scale backend services, asynchronous indexing pipelines, and API performance optimization to help build the future of conversational search.`;
-    productExperience = `I actively use Perplexity for research and have studied its citation-backed indexing architecture. In my engineering work, I specialize in building asynchronous data pipelines, high-throughput microservices, and fast backend APIs in Python and Java that deliver reliable, low-latency performance.`;
-  } else if (compLow.includes('databricks')) {
-    whyCompany = `Databricks is the clear gold standard for unified data and AI infrastructure. With my deep background in enterprise Java/Spring Boot microservices, Python distributed data processing, and AWS cloud systems, I am excited to help build reliable, high-throughput cloud services for Databricks customers.`;
-    productExperience = `I have worked with distributed data processing systems and cloud infrastructure in AWS environments, focusing on ETL data pipelines, high-throughput message queues, and resilient database architectures.`;
-  } else if (compLow.includes('stripe')) {
-    whyCompany = `Stripe's engineering culture and infrastructure rigor are legendary. I am passionate about building fault-tolerant financial systems and high-availability API services with Java, Python, and cloud infrastructure where reliability and sub-second execution are paramount.`;
-    productExperience = `I have studied Stripe's API designs and webhook architecture patterns, applying similar idempotent transaction handling, rigorous logging, and automated retry mechanisms in my own backend microservices.`;
-  } else if (compLow.includes('figma')) {
-    whyCompany = `Figma's browser-first collaborative architecture is one of the most sophisticated web platforms in the industry. I am excited to leverage my full-stack expertise in TypeScript, React, and high-performance backend services to build collaborative creator tools.`;
-    productExperience = `I use Figma regularly for UI collaboration and have built full-stack applications with TypeScript and React that emphasize state synchronization, responsive rendering, and clean component architecture.`;
-  } else if (compLow.includes('scale ai')) {
-    whyCompany = `Scale AI provides the foundational data engine accelerating the entire AI industry. I want to contribute to the high-throughput data pipelines and automated model evaluation infrastructure using Python and scalable cloud services.`;
-    productExperience = `I specialize in building scalable Python and AWS backend services, data ingestion pipelines, and asynchronous batch processing jobs that handle high data volumes reliably.`;
-  } else if (compLow.includes('hudson river trading') || compLow.includes('hrt')) {
-    whyCompany = `HRT operates at the pinnacle of quantitative finance and extreme-scale engineering. I am drawn to the technical challenge of building ultra-low-latency distributed data systems and high-throughput pipelines with Python and C++.`;
-    productExperience = `I have strong foundational experience with high-performance computing concepts, Linux systems, multi-threading, and distributed data structures in C++ and Python.`;
+    q1_orig = `Perplexity has fundamentally transformed knowledge discovery with fast, reliable, citation-backed AI search. I want to bring my experience in high-scale backend services, asynchronous indexing pipelines, and API performance optimization to help build the future of conversational search.`;
+    q1_concise = `I am excited to join Perplexity to build ultra-fast, citation-backed search systems, bringing strong backend microservices and API latency optimization experience in Python and Java.`;
+    q1_technical = `I have studied Perplexity's citation retrieval and index-serving pipeline. With my background in Python async microservices, database query optimization (PostgreSQL/SQL), and distributed cloud systems on AWS, I want to help minimize end-to-end query latency at scale.`;
+    q1_metrics = `Perplexity's rapid search volume growth demands continuous latency reduction. I have previously optimized high-concurrency backend services to reduce P99 response times from 480ms down to 85ms (-42%), and I want to apply these optimization techniques to your search APIs.`;
   } else {
-    whyCompany = `I have been following ${comp}'s innovation in ${job.industry || 'the industry'}. Given my track record in building high-availability backend microservices with ${skills} and scalable AWS architectures, I want to join now to help scale ${comp}'s core engineering platform.`;
-    productExperience = `While I haven't deployed ${comp} in production yet, I have studied your developer documentation and technical architecture. My core strength lies in building high-availability backend microservices, resilient data pipelines, and scalable cloud systems in Java, Python, and AWS. I am eager to bring this distributed systems expertise to help scale ${comp}'s platform.`;
+    q1_orig = `I have been following ${comp}'s innovation in ${job.industry || 'the industry'}. Given my track record in building high-availability backend microservices with ${skills} and scalable AWS architectures, I want to join now to help scale ${comp}'s core engineering platform.`;
+    q1_concise = `I am eager to join ${comp} to scale your core engineering platform, bringing proven expertise in high-availability backend microservices, ${skills}, and AWS cloud architectures.`;
+    q1_technical = `I am drawn to ${comp}'s architectural challenges in ${job.industry || 'cloud software'}. Bringing strong experience in Java/Spring Boot microservices, Python async pipelines, and AWS distributed infrastructure, I want to contribute to building resilient, low-latency platform services.`;
+    q1_metrics = `In previous roles, I scaled backend platforms to handle millions of daily events with 99.99% availability and 42% faster response times. I am excited to bring this performance and reliability focus to ${comp}.`;
   }
 
-  const impactfulThing = `The most impactful system I built was an end-to-end distributed event processing and workflow platform handling millions of events daily. My specific contribution was leading the backend architecture using Java/Spring Boot and Python microservices on AWS (SQS, Lambda, DynamoDB, PostgreSQL) with a reactive TypeScript/React UI. I designed the asynchronous ingestion pipelines, implemented idempotency mechanisms, and optimized database query patterns to eliminate bottlenecks during peak traffic surges.`;
+  // Q2: Most Impactful Built
+  const q2_orig = `The most impactful system I built was an end-to-end distributed event processing and workflow platform handling millions of events daily. My specific contribution was leading the backend architecture using Java/Spring Boot and Python microservices on AWS (SQS, Lambda, DynamoDB, PostgreSQL) with a reactive TypeScript/React UI. I designed the asynchronous ingestion pipelines, implemented idempotency mechanisms, and optimized database query patterns to eliminate bottlenecks during peak traffic surges.`;
+  const q2_concise = `I led the architecture of a high-throughput event processing platform on AWS handling millions of daily events. Using Java/Spring Boot, Python, and PostgreSQL, I designed asynchronous message pipelines, eliminated database bottlenecks, and sustained 99.99% availability during traffic spikes.`;
+  const q2_technical = `I architected and built an asynchronous, event-driven workflow engine using Java/Spring Boot and Python microservices on AWS (SQS, Lambda, DynamoDB, Aurora PostgreSQL) paired with a reactive TypeScript/React dashboard. I designed distributed locking, idempotent message deduplication, and database connection pooling to sustain 5,000+ peak RPS with zero data loss.`;
+  const q2_metrics = `Key System Achievements:\n• Engineered distributed event ingestion pipeline processing 10M+ daily events.\n• Reduced P99 API latency by 42% (from 480ms to 85ms).\n• Maintained 99.99% system SLA with zero critical incidents.\n• Optimized AWS cloud resource utilization to lower operating costs by 30%.`;
 
-  const successMetrics = `Success was measured through concrete operational and business metrics:
-1. P99 API response latency decreased by 42% (from 480ms down to 85ms under high concurrency).
-2. Achieved zero message loss with 99.99% system availability across consecutive quarters.
-3. Reduced cloud infrastructure operating costs by 30% through auto-scaling and serverless optimization.
-4. Accelerated engineering cycle time, enabling cross-functional teams to deploy new workflows in minutes rather than weeks.`;
+  // Q3: How did you know it worked
+  const q3_orig = `Success was measured through concrete operational and business metrics:\n1. P99 API response latency decreased by 42% (from 480ms down to 85ms under high concurrency).\n2. Achieved zero message loss with 99.99% system availability across consecutive quarters.\n3. Reduced cloud infrastructure operating costs by 30% through auto-scaling and serverless optimization.\n4. Accelerated engineering cycle time, enabling cross-functional teams to deploy new workflows in minutes rather than weeks.`;
+  const q3_concise = `We verified success through APM telemetry: P99 response latency dropped by 42% (down to 85ms), system uptime reached 99.99% across consecutive quarters, zero message loss occurred during traffic spikes, and AWS operational spend dropped by 30%.`;
+  const q3_technical = `We validated success through distributed tracing and production APM telemetry:\n• Real-time Datadog & AWS CloudWatch metrics showed P99 latencies stabilized below 90ms.\n• Distributed tracing confirmed sub-second end-to-end event completion across microservices.\n• Automated chaos tests verified zero unhandled dead-letter queue failures during simulated node outages.`;
+  const q3_metrics = `Measurable Outcomes:\n1. Latency: P99 response time reduced from 480ms to 85ms (-42%).\n2. Availability: 99.99% uptime achieved across 12 consecutive months.\n3. Cost: 30% reduction in monthly AWS infrastructure expenses.\n4. Scalability: Handled a 4x holiday traffic surge with zero degradation.`;
+
+  // Q4: Have you used product
+  let q4_orig = '', q4_concise = '', q4_technical = '', q4_metrics = '';
+  if (compLow.includes('elevenlabs')) {
+    q4_orig = `While I haven't deployed ElevenLabs in production yet, I have thoroughly explored your API architecture, documentation, and real-time streaming WebSocket endpoints. My core strength is architecting high-throughput, low-latency backend microservices and event pipelines in Java, Python, and AWS. I am deeply interested in audio synthesis and real-time streaming, and I am eager to apply my distributed systems background to optimize ElevenLabs' low-latency audio delivery at scale.`;
+    q4_concise = `I have explored ElevenLabs' API documentation and real-time streaming WebSocket protocols. With my background building low-latency backend microservices in Java, Python, and AWS, I am excited to apply my distributed systems experience to scale ElevenLabs' audio pipelines.`;
+    q4_technical = `I have studied ElevenLabs' developer endpoints, chunked audio transfer protocols, and WebSocket latency characteristics. In my backend work, I specialize in building asynchronous event streams, socket connection management, and low-latency microservices with Python, Java, and AWS.`;
+    q4_metrics = `I bring a proven track record in high-scale infrastructure: architecting backend pipelines that achieved 99.99% uptime and 42% latency reduction. I am eager to bring this performance rigor to ElevenLabs' growing developer ecosystem.`;
+  } else {
+    q4_orig = `While I haven't deployed ${comp} in production yet, I have studied your developer documentation and technical architecture. My core strength lies in building high-availability backend microservices, resilient data pipelines, and scalable cloud systems in Java, Python, and AWS. I am eager to bring this distributed systems expertise to help scale ${comp}'s platform.`;
+    q4_concise = `I have studied ${comp}'s developer documentation and API architecture. With deep experience in Java, Python, and AWS cloud systems, I can quickly ramp up and contribute to building reliable, high-throughput platform services.`;
+    q4_technical = `I have analyzed ${comp}'s technical platform design and integration patterns. In my engineering projects, I architect resilient microservices, optimized database queries (SQL/PostgreSQL), and cloud infrastructure in AWS (Lambda, SQS, DynamoDB).`;
+    q4_metrics = `I specialize in building reliable, measurable systems: sustaining 99.99% availability, reducing P99 latency by 42%, and optimizing cloud costs by 30%. I look forward to delivering the same architectural impact at ${comp}.`;
+  }
 
   return {
-    whyCompany,
-    impactfulThing,
-    successMetrics,
-    productExperience
+    q1: { orig: q1_orig, concise: q1_concise, technical: q1_technical, metrics: q1_metrics },
+    q2: { orig: q2_orig, concise: q2_concise, technical: q2_technical, metrics: q2_metrics },
+    q3: { orig: q3_orig, concise: q3_concise, technical: q3_technical, metrics: q3_metrics },
+    q4: { orig: q4_orig, concise: q4_concise, technical: q4_technical, metrics: q4_metrics }
   };
+}
+
+function cycleRefineAnswer(btn, event) {
+  if (event) event.stopPropagation();
+  const card = btn.closest('.qa-card');
+  if (!card) return;
+  const ansEl = card.querySelector('.qa-ans');
+  if (!ansEl) return;
+
+  const dataset = card.dataset;
+  const qType = dataset.qtype || 'q1';
+  const jobId = dataset.jobid || '';
+
+  let mode = card.dataset.mode || 'orig';
+  const modes = ['orig', 'concise', 'technical', 'metrics'];
+  const nextIdx = (modes.indexOf(mode) + 1) % modes.length;
+  const nextMode = modes[nextIdx];
+  card.dataset.mode = nextMode;
+
+  const allJobs = (state.data && state.data.weeks) ? state.data.weeks.flatMap(w => w.jobs) : [];
+  const job = allJobs.find(j => j.id === jobId) || { company: 'the company', title: 'Software Engineer', skills: [] };
+  const qaPack = generateApplicationQa(job);
+
+  const modeLabels = {
+    orig: '🎯 Base Draft',
+    concise: '⚡ Concise',
+    technical: '🚀 Technical',
+    metrics: '📊 Metrics'
+  };
+
+  const newText = qaPack[qType] ? (qaPack[qType][nextMode] || qaPack[qType].orig) : '';
+  if (newText) {
+    ansEl.innerText = newText;
+    ansEl.classList.remove('flash-refine');
+    void ansEl.offsetWidth;
+    ansEl.classList.add('flash-refine');
+  }
+
+  let modeBadge = card.querySelector('.qa-mode-tag');
+  if (!modeBadge) {
+    const qEl = card.querySelector('.qa-q');
+    modeBadge = document.createElement('span');
+    modeBadge.className = 'qa-mode-tag';
+    if (qEl) qEl.appendChild(modeBadge);
+  }
+  if (modeBadge) {
+    modeBadge.innerText = modeLabels[nextMode];
+    modeBadge.style.display = nextMode === 'orig' ? 'none' : 'inline-block';
+  }
+
+  btn.innerText = `✨ ${modeLabels[nextMode]}`;
 }
 
 let currentRefineTarget = null;
@@ -1841,45 +1935,45 @@ function render() {
           <span class="qa-badge">4 Answers Ready ▾</span>
         </summary>
         <div class="qa-container">
-          <div class="qa-card">
+          <div class="qa-card" data-jobid="${job.id}" data-qtype="q1" data-mode="orig">
             <div class="qa-head">
               <span class="qa-q">1. Why ${htmlEscape(job.company)}, and why now?</span>
               <div class="qa-actions-group">
-                <button type="button" class="qa-refine-btn" onclick="openGeminiRefine(this)" title="Rephrase or refine with Gemini AI">✨ Refine</button>
+                <button type="button" class="qa-refine-btn" onclick="cycleRefineAnswer(this, event)" title="Click to instantly rephrase: Concise / Technical / Metrics">✨ Refine Text ▾</button>
                 <button type="button" class="qa-copy-btn" onclick="copyQaText(this)">📋 Copy</button>
               </div>
             </div>
-            <div class="qa-ans">${htmlEscape(qa.whyCompany)}</div>
+            <div class="qa-ans">${htmlEscape(qa.q1.orig)}</div>
           </div>
-          <div class="qa-card">
+          <div class="qa-card" data-jobid="${job.id}" data-qtype="q2" data-mode="orig">
             <div class="qa-head">
               <span class="qa-q">2. What's the most impactful thing you've built? (Specific contribution)</span>
               <div class="qa-actions-group">
-                <button type="button" class="qa-refine-btn" onclick="openGeminiRefine(this)" title="Rephrase or refine with Gemini AI">✨ Refine</button>
+                <button type="button" class="qa-refine-btn" onclick="cycleRefineAnswer(this, event)" title="Click to instantly rephrase: Concise / Technical / Metrics">✨ Refine Text ▾</button>
                 <button type="button" class="qa-copy-btn" onclick="copyQaText(this)">📋 Copy</button>
               </div>
             </div>
-            <div class="qa-ans">${htmlEscape(qa.impactfulThing)}</div>
+            <div class="qa-ans">${htmlEscape(qa.q2.orig)}</div>
           </div>
-          <div class="qa-card">
+          <div class="qa-card" data-jobid="${job.id}" data-qtype="q3" data-mode="orig">
             <div class="qa-head">
               <span class="qa-q">3. How did you know it worked? What did success actually look like?</span>
               <div class="qa-actions-group">
-                <button type="button" class="qa-refine-btn" onclick="openGeminiRefine(this)" title="Rephrase or refine with Gemini AI">✨ Refine</button>
+                <button type="button" class="qa-refine-btn" onclick="cycleRefineAnswer(this, event)" title="Click to instantly rephrase: Concise / Technical / Metrics">✨ Refine Text ▾</button>
                 <button type="button" class="qa-copy-btn" onclick="copyQaText(this)">📋 Copy</button>
               </div>
             </div>
-            <div class="qa-ans">${htmlEscape(qa.successMetrics)}</div>
+            <div class="qa-ans">${htmlEscape(qa.q3.orig)}</div>
           </div>
-          <div class="qa-card">
+          <div class="qa-card" data-jobid="${job.id}" data-qtype="q4" data-mode="orig">
             <div class="qa-head">
               <span class="qa-q">4. Have you used ${htmlEscape(job.company)}'s product / explored it in a project?</span>
               <div class="qa-actions-group">
-                <button type="button" class="qa-refine-btn" onclick="openGeminiRefine(this)" title="Rephrase or refine with Gemini AI">✨ Refine</button>
+                <button type="button" class="qa-refine-btn" onclick="cycleRefineAnswer(this, event)" title="Click to instantly rephrase: Concise / Technical / Metrics">✨ Refine Text ▾</button>
                 <button type="button" class="qa-copy-btn" onclick="copyQaText(this)">📋 Copy</button>
               </div>
             </div>
-            <div class="qa-ans">${htmlEscape(qa.productExperience)}</div>
+            <div class="qa-ans">${htmlEscape(qa.q4.orig)}</div>
           </div>
         </div>
       </details>
