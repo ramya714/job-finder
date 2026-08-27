@@ -1,0 +1,378 @@
+{
+  "running": true,
+  "pid": 816,
+  "startedAt": "2026-07-02T03:53:08.684903+00:00",
+  "lastCycleAt": "2026-08-27T16:25:27.174885+00:00",
+  "nextCycleAt": "2026-08-27T16:55:27.174944+00:00",
+  "cycleCount": 1148,
+  "intervalMinutes": 30,
+  "sources": [
+    {
+      "name": "hn_hiring",
+      "lastRun": "2026-08-27T16:09:38.324650+00:00",
+      "status": "ok",
+      "found": 0,
+      "added": 0,
+      "error": null
+    },
+    {
+      "name": "remotive",
+      "lastRun": "2026-08-27T16:09:38.942916+00:00",
+      "status": "ok",
+      "found": 0,
+      "added": 0,
+      "error": null
+    },
+    {
+      "name": "jobicy",
+      "lastRun": "2026-08-27T16:09:39.199073+00:00",
+      "status": "ok",
+      "found": 0,
+      "added": 0,
+      "error": null
+    },
+    {
+      "name": "himalayas",
+      "lastRun": "2026-08-27T16:09:39.490747+00:00",
+      "status": "ok",
+      "found": 0,
+      "added": 0,
+      "error": null
+    },
+    {
+      "name": "arbeitnow",
+      "lastRun": "2026-08-27T16:09:39.847502+00:00",
+      "status": "ok",
+      "found": 0,
+      "added": 0,
+      "error": null
+    },
+    {
+      "name": "avature",
+      "lastRun": "2026-08-27T16:09:42.098930+00:00",
+      "status": "ok",
+      "found": 0,
+      "added": 0,
+      "error": null
+    },
+    {
+      "name": "tradeweb",
+      "lastRun": "2026-08-27T16:09:52.221640+00:00",
+      "status": "ok",
+      "found": 0,
+      "added": 0,
+      "error": null
+    },
+    {
+      "name": "themuse",
+      "lastRun": "2026-08-27T16:09:53.405986+00:00",
+      "status": "ok",
+      "found": 0,
+      "added": 0,
+      "error": null
+    },
+    {
+      "name": "builtin",
+      "lastRun": "2026-08-27T16:09:55.802074+00:00",
+      "status": "ok",
+      "found": 2,
+      "added": 0,
+      "error": null
+    },
+    {
+      "name": "goldman",
+      "lastRun": "2026-08-27T16:25:09.534128+00:00",
+      "status": "ok",
+      "found": 0,
+      "added": 0,
+      "error": null
+    },
+    {
+      "name": "millennium",
+      "lastRun": "2026-08-27T16:25:09.849392+00:00",
+      "status": "ok",
+      "found": 0,
+      "added": 0,
+      "error": null
+    },
+    {
+      "name": "sig",
+      "lastRun": "2026-08-27T16:25:10.524221+00:00",
+      "status": "ok",
+      "found": 0,
+      "added": 0,
+      "error": null
+    },
+    {
+      "name": "linkedin",
+      "lastRun": "2026-08-27T16:25:13.107401+00:00",
+      "status": "ok",
+      "found": null,
+      "added": 1,
+      "error": null
+    },
+    {
+      "name": "linkedin_wide",
+      "lastRun": null,
+      "status": "skipped",
+      "found": null,
+      "added": 0,
+      "error": null
+    },
+    {
+      "name": "ats_apis",
+      "lastRun": null,
+      "status": "skipped",
+      "found": null,
+      "added": 0,
+      "error": null
+    }
+  ],
+  "recentFinds": [
+    {
+      "company": "Comcast",
+      "title": "C++ Sr. Software Engineer",
+      "source": "Built In",
+      "at": "2026-08-27T07:20:27.799448+00:00"
+    },
+    {
+      "company": "Uber",
+      "title": "Staff Software Engineer - AV Labs",
+      "source": "The Muse",
+      "at": "2026-08-23T02:30:09.034138+00:00"
+    },
+    {
+      "company": "Uber",
+      "title": "Staff Software Engineer - AV Labs",
+      "source": "The Muse",
+      "at": "2026-08-23T00:24:22.827781+00:00"
+    },
+    {
+      "company": "Uber",
+      "title": "Staff Software Engineer - AV Labs",
+      "source": "The Muse",
+      "at": "2026-08-22T22:19:30.120739+00:00"
+    },
+    {
+      "company": "Uber",
+      "title": "Staff Software Engineer - AV Labs",
+      "source": "The Muse",
+      "at": "2026-08-22T20:13:30.418050+00:00"
+    },
+    {
+      "company": "Uber",
+      "title": "Staff Software Engineer - AV Labs",
+      "source": "The Muse",
+      "at": "2026-08-22T18:08:11.629966+00:00"
+    },
+    {
+      "company": "Uber",
+      "title": "Staff Software Engineer - AV Labs",
+      "source": "The Muse",
+      "at": "2026-08-22T16:03:18.348462+00:00"
+    },
+    {
+      "company": "Uber",
+      "title": "Staff Software Engineer - AV Labs",
+      "source": "The Muse",
+      "at": "2026-08-22T13:58:16.903565+00:00"
+    },
+    {
+      "company": "Uber",
+      "title": "Staff Software Engineer - AV Labs",
+      "source": "The Muse",
+      "at": "2026-08-22T10:26:18.846615+00:00"
+    },
+    {
+      "company": "Uber",
+      "title": "Staff Software Engineer - AV Labs",
+      "source": "The Muse",
+      "at": "2026-08-22T08:21:35.600546+00:00"
+    },
+    {
+      "company": "Quilter",
+      "title": "Senior/Staff Software Engineer (C++)",
+      "source": "Jobicy",
+      "at": "2026-08-22T07:17:38.144509+00:00"
+    },
+    {
+      "company": "Uber",
+      "title": "Staff Software Engineer - AV Labs",
+      "source": "The Muse",
+      "at": "2026-08-22T06:16:36.557406+00:00"
+    },
+    {
+      "company": "Uber",
+      "title": "Staff Software Engineer - AV Labs",
+      "source": "The Muse",
+      "at": "2026-08-22T04:11:30.214269+00:00"
+    },
+    {
+      "company": "Uber",
+      "title": "Staff Software Engineer - AV Labs",
+      "source": "The Muse",
+      "at": "2026-08-22T02:06:12.283052+00:00"
+    },
+    {
+      "company": "Summit Securities Group",
+      "title": "C++ Software Engineer",
+      "source": "Built In",
+      "at": "2026-08-22T01:33:02.337957+00:00"
+    },
+    {
+      "company": "Chicago Trading Company",
+      "title": "C++ Senior Engineer",
+      "source": "Built In",
+      "at": "2026-08-22T01:02:25.232136+00:00"
+    },
+    {
+      "company": "Uber",
+      "title": "Staff Software Engineer - AV Labs",
+      "source": "The Muse",
+      "at": "2026-08-22T00:01:09.435961+00:00"
+    },
+    {
+      "company": "Uber",
+      "title": "Staff Software Engineer - AV Labs",
+      "source": "The Muse",
+      "at": "2026-08-21T21:56:11.823706+00:00"
+    },
+    {
+      "company": "Uber",
+      "title": "Staff Software Engineer - AV Labs",
+      "source": "The Muse",
+      "at": "2026-08-21T19:49:57.090096+00:00"
+    },
+    {
+      "company": "Uber",
+      "title": "Staff Software Engineer - AV Labs",
+      "source": "The Muse",
+      "at": "2026-08-21T17:44:07.531835+00:00"
+    },
+    {
+      "company": "Uber",
+      "title": "Staff Software Engineer - AV Labs",
+      "source": "The Muse",
+      "at": "2026-08-21T15:36:45.053876+00:00"
+    },
+    {
+      "company": "Uber",
+      "title": "Staff Software Engineer - AV Labs",
+      "source": "The Muse",
+      "at": "2026-08-21T15:02:40.050193+00:00"
+    },
+    {
+      "company": "Goldman Sachs",
+      "title": "Global Banking & Markets, Equity Electronic Market Making C++ Developer, Associate/ Vice President, Hong Kong",
+      "source": "Goldman (higher.gs)",
+      "at": "2026-08-20T15:08:07.467130+00:00"
+    },
+    {
+      "company": "Morgan Stanley",
+      "title": "C++ Developer",
+      "source": "Built In",
+      "at": "2026-08-18T13:58:28.629975+00:00"
+    },
+    {
+      "company": "Databento",
+      "title": "Software Engineer (C++/Java)",
+      "source": "Built In",
+      "at": "2026-08-15T00:04:34.204487+00:00"
+    },
+    {
+      "company": "Comcast",
+      "title": "Junior C++ Software Engineer",
+      "source": "Built In",
+      "at": "2026-08-12T14:03:31.891590+00:00"
+    },
+    {
+      "company": "NVIDIA",
+      "title": "Senior Software Engineer, C++ and CUDA",
+      "source": "Built In",
+      "at": "2026-08-12T00:16:27.390434+00:00"
+    },
+    {
+      "company": "Cloud Peritus",
+      "title": "Quantitative Developer (C++ & Python)",
+      "source": "Built In",
+      "at": "2026-08-10T00:41:55.161671+00:00"
+    },
+    {
+      "company": "Wehrtyou",
+      "title": "Software Engineer \u2013 C++",
+      "source": "Arbeitnow",
+      "at": "2026-08-09T15:45:14.409791+00:00"
+    },
+    {
+      "company": "Citadel Securities",
+      "title": "Rates & Credit C++ Engineer",
+      "source": "Built In",
+      "at": "2026-08-09T05:47:50.682403+00:00"
+    },
+    {
+      "company": "Citadel Securities",
+      "title": "Rates & Credit C++ Engineer",
+      "source": "Built In",
+      "at": "2026-08-09T05:17:13.735148+00:00"
+    },
+    {
+      "company": "Citadel Securities",
+      "title": "Rates & Credit C++ Engineer",
+      "source": "Built In",
+      "at": "2026-08-09T04:46:39.575584+00:00"
+    },
+    {
+      "company": "Citadel Securities",
+      "title": "Rates & Credit C++ Engineer",
+      "source": "Built In",
+      "at": "2026-08-09T04:16:03.345575+00:00"
+    },
+    {
+      "company": "Citadel Securities",
+      "title": "Rates & Credit C++ Engineer",
+      "source": "Built In",
+      "at": "2026-08-09T03:43:22.582220+00:00"
+    },
+    {
+      "company": "Citadel Securities",
+      "title": "Rates & Credit C++ Engineer",
+      "source": "Built In",
+      "at": "2026-08-09T03:12:48.193682+00:00"
+    },
+    {
+      "company": "Citadel Securities",
+      "title": "Rates & Credit C++ Engineer",
+      "source": "Built In",
+      "at": "2026-08-09T02:42:13.487857+00:00"
+    },
+    {
+      "company": "Citadel Securities",
+      "title": "Rates & Credit C++ Engineer",
+      "source": "Built In",
+      "at": "2026-08-09T02:11:36.507669+00:00"
+    },
+    {
+      "company": "Citadel Securities",
+      "title": "Rates & Credit C++ Engineer",
+      "source": "Built In",
+      "at": "2026-08-09T01:38:25.866688+00:00"
+    },
+    {
+      "company": "Citadel Securities",
+      "title": "Rates & Credit C++ Engineer",
+      "source": "Built In",
+      "at": "2026-08-09T01:07:34.082830+00:00"
+    },
+    {
+      "company": "Citadel Securities",
+      "title": "Rates & Credit C++ Engineer",
+      "source": "Built In",
+      "at": "2026-08-09T00:36:59.103444+00:00"
+    }
+  ],
+  "totals": {
+    "day": "2026-08-27",
+    "addedToday": 12,
+    "cyclesToday": 22
+  }
+}

@@ -1,0 +1,2466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Senior C++ Job Tracker</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #161a22;
+    --panel2: #1c2230;
+    --border: #2a3142;
+    --text: #e6e8ee;
+    --muted: #8a93a6;
+    --accent: #6ea8ff;
+    --good: #4ade80;
+    --warn: #fbbf24;
+    --bad: #f87171;
+    --applied: #2a3142;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.5;
+  }
+  header {
+    padding: 24px 32px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
+  }
+  header h1 { margin: 0; font-size: 22px; }
+  header .sub { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  .stats { display: flex; gap: 16px; font-size: 13px; }
+  .stats span { background: var(--panel); padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); }
+  .stats b { color: var(--accent); }
+
+  .main-tabs {
+    display: flex; gap: 4px; padding: 0 32px; background: var(--panel);
+    border-bottom: 1px solid var(--border); overflow-x: auto;
+  }
+  .main-tabs button {
+    background: transparent; color: var(--muted); border: none;
+    border-bottom: 3px solid transparent; padding: 14px 18px;
+    cursor: pointer; font-size: 14px; font-weight: 500;
+    transition: color 0.15s, border-color 0.15s; white-space: nowrap;
+  }
+  .main-tabs button:hover { color: var(--text); }
+  .main-tabs button.active {
+    color: var(--accent); border-bottom-color: var(--accent); font-weight: 700;
+  }
+  .main-tabs button .badge {
+    display: inline-block; margin-left: 6px; background: var(--panel2);
+    border: 1px solid var(--border); padding: 1px 7px; border-radius: 10px;
+    font-size: 11px; color: var(--muted);
+  }
+  .main-tabs button.active .badge {
+    background: var(--accent); color: #0b1220; border-color: var(--accent);
+  }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .controls {
+    padding: 16px 32px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+    border-bottom: 1px solid var(--border); background: var(--panel);
+  }
+  .controls input, .controls select, .controls button {
+    background: var(--panel2); color: var(--text); border: 1px solid var(--border);
+    border-radius: 6px; padding: 8px 12px; font-size: 13px;
+  }
+  .controls input { min-width: 240px; }
+  .controls button { cursor: pointer; }
+  .controls button:hover { border-color: var(--accent); }
+  .controls label { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+
+  .weeks { padding: 16px 32px; }
+  .week-tabs {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;
+  }
+  .week-tabs button {
+    background: var(--panel); border: 1px solid var(--border); color: var(--text);
+    padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 13px;
+  }
+  .week-tabs button.active { background: var(--accent); color: #0b1220; border-color: var(--accent); font-weight: 600; }
+
+  .week-label { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+  .jobs { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 16px; }
+  .job {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px; display: flex; flex-direction: column; gap: 8px;
+    transition: border-color 0.15s, opacity 0.15s;
+  }
+  .job:hover { border-color: var(--accent); }
+  .job.applied { opacity: 0.55; background: var(--applied); }
+  .agency-sep {
+    margin: 26px 0 12px; padding: 10px 14px; border-top: 2px dashed var(--border);
+    color: var(--muted); font-size: 12px; font-weight: 600; letter-spacing: .6px;
+    text-transform: uppercase;
+  }
+  .agency-chip {
+    background: #3a2b12; color: #e0a94e; border: 1px solid #6b4e1e;
+    padding: 1px 8px; border-radius: 10px; font-size: 11px;
+  }
+  /* Agency cards: amber tint so they read as a different tier at a glance. */
+  .job.agency {
+    background: linear-gradient(180deg, #1d1810, #171310);
+    border-color: #6b4e1e;
+    border-left: 4px solid #b07d2a;
+  }
+  .job.agency .company { color: #e0a94e; }
+  .job.agency.applied { opacity: 0.55; }
+  .job.applied .title { text-decoration: line-through; }
+  .job-group { border: 1px solid var(--border); border-radius: 8px; background: var(--panel2); margin-bottom: 14px; overflow: hidden; }
+  .job-group.open { border-color: var(--accent); }
+  .job-group-head { display: flex; align-items: center; gap: 10px; padding: 11px 14px; cursor: pointer; user-select: none; background: linear-gradient(180deg, #1a212c, #131922); }
+  .job-group-head:hover { background: linear-gradient(180deg, #1f2733, #161c26); }
+  .job-group .group-toggle { color: var(--accent); font-size: 11px; width: 12px; }
+  .job-group .group-company { font-weight: 700; font-size: 15px; color: var(--text); }
+  .job-group .group-count { font-size: 12px; color: var(--muted); margin-left: auto; }
+  .job-group .group-pill { font-size: 11px; padding: 2px 8px; background: var(--good); color: #0b1220; border-radius: 10px; font-weight: 700; }
+  .job-group-body { padding: 10px 14px 14px; display: grid; grid-template-columns: 1fr; gap: 10px; }
+  .job-group-body .job { margin-bottom: 0; }
+  .job.unavailable {
+    opacity: 0.4; background: #2a1a1a; border-color: #4a2d2d;
+  }
+  .job.unavailable .title { text-decoration: line-through wavy var(--bad); }
+  .job.unavailable .company::after { content: " · STALE"; color: var(--bad); font-size: 11px; font-weight: 400; }
+  .job.cooldown { background: #2a2418; border-color: #5a4a2d; opacity: 0.7; }
+  .job .cooldown-badge {
+    display: inline-block; padding: 3px 8px; border-radius: 4px;
+    background: rgba(251, 191, 36, 0.12); color: var(--warn);
+    border: 1px solid rgba(251, 191, 36, 0.4); font-size: 11px; font-weight: 600; margin-top: 4px;
+  }
+  .company.cooldown-active {
+    background: #2a2418; border-color: var(--warn);
+  }
+  .company .cooldown-line {
+    color: var(--warn); font-size: 11px; font-weight: 600;
+    padding: 4px 6px; background: rgba(251, 191, 36, 0.1);
+    border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 4px; margin-top: 4px;
+  }
+  .company .interview-btn {
+    background: var(--panel); color: var(--muted); border: 1px solid var(--border);
+    border-radius: 4px; padding: 4px 8px; font-size: 11px; cursor: pointer;
+    margin-top: 4px; width: 100%;
+  }
+  .company .interview-btn:hover { color: var(--warn); border-color: var(--warn); }
+  .company .interview-btn.active { background: var(--warn); color: #0b1220; border-color: var(--warn); font-weight: 600; }
+  .job .title { font-weight: 600; font-size: 15px; color: var(--text); }
+  .job .company { color: var(--accent); font-size: 14px; font-weight: 500; }
+  .job .meta { display: flex; gap: 6px; flex-wrap: wrap; font-size: 11px; }
+  .job .meta span {
+    background: var(--panel2); border: 1px solid var(--border);
+    padding: 3px 8px; border-radius: 999px; color: var(--muted);
+  }
+  .job.todays-pick {
+    border: 1px solid #fbbf24;
+    box-shadow: 0 0 16px rgba(251, 191, 36, 0.22);
+    background: linear-gradient(180deg, rgba(251, 191, 36, 0.08), transparent 45%), var(--panel);
+  }
+  .job .pick-ribbon {
+    font-size: 11px; font-weight: 800; color: #fbbf24;
+    letter-spacing: 0.5px; text-transform: uppercase;
+    border-bottom: 1px dashed rgba(251, 191, 36, 0.35); padding-bottom: 5px;
+  }
+  .job .actions .callback-btn {
+    background: var(--panel2); border: 1px solid var(--border); color: var(--muted);
+    border-radius: 6px; padding: 5px 10px; font-size: 12px; cursor: pointer;
+  }
+  .job .actions .callback-btn.got-call { background: #14532d; color: #86efac; border-color: #22c55e; font-weight: 600; }
+  .job .actions .reject-btn {
+    background: var(--panel2); border: 1px solid var(--border); color: var(--muted);
+    border-radius: 6px; padding: 5px 10px; font-size: 12px; cursor: pointer;
+  }
+  .job .actions .reject-btn.is-rejected { background: #450a0a; color: #fca5a5; border-color: #ef4444; font-weight: 600; }
+  .job .actions .notsel-btn {
+    background: var(--panel2); border: 1px solid var(--border); color: var(--muted);
+    border-radius: 6px; padding: 5px 10px; font-size: 12px; cursor: pointer;
+  }
+  .job .actions .notsel-btn.is-notsel { background: #431407; color: #fdba74; border-color: #f97316; font-weight: 600; }
+  .job.has-callback { border-color: #22c55e; box-shadow: 0 0 14px rgba(34, 197, 94, 0.25); }
+  .job.not-eligible { opacity: 0.55; border-color: #7f1d1d; }
+  .job .actions .noelig-select {
+    background: var(--panel2); border: 1px solid var(--border); color: var(--muted);
+    border-radius: 6px; padding: 4px 6px; font-size: 11.5px; cursor: pointer; max-width: 130px;
+  }
+  .job .actions .noelig-clear {
+    background: #450a0a; border: 1px solid #7f1d1d; color: #fca5a5;
+    border-radius: 6px; padding: 5px 10px; font-size: 11.5px; cursor: pointer;
+  }
+  .job .actions .badrec-btn {
+    background: var(--panel2); border: 1px solid var(--border); color: var(--muted);
+    border-radius: 6px; padding: 5px 10px; font-size: 11.5px; cursor: pointer;
+  }
+  .job .actions .badrec-btn:hover { border-color: #a855f7; color: #d8b4fe; }
+  .job .repost-warn {
+    background: rgba(251, 191, 36, 0.08); border: 1px solid rgba(251, 191, 36, 0.4);
+    color: #fbbf24; border-radius: 6px; padding: 7px 10px; font-size: 12px; margin: 6px 0;
+  }
+  .job .repost-warn .repost-same {
+    background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.5);
+    color: #fde68a; border-radius: 5px; padding: 2px 8px; font-size: 11.5px; cursor: pointer;
+  }
+  .job .pick-kit { display: flex; gap: 6px; border-top: 1px dashed rgba(251, 191, 36, 0.25); padding-top: 8px; }
+  .job .pick-kit .copy-btn {
+    background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.4);
+    color: #fbbf24; border-radius: 6px; padding: 4px 10px; font-size: 11.5px; cursor: pointer;
+  }
+  .job .meta .region-chip { font-weight: 600; }
+  .job .meta .region-east { color: #4ade80; border-color: #4ade8055; }
+  .job .meta .region-remote { color: #60a5fa; border-color: #60a5fa55; }
+  .job .meta .region-central { color: #fbbf24; border-color: #fbbf2455; }
+  .job .meta .region-mountain { color: #fb923c; border-color: #fb923c55; }
+  .job .meta .region-west { color: #f87171; border-color: #f8717155; }
+  .job .summary { font-size: 13px; color: #c6cad6; }
+  .job .skills { display: flex; gap: 4px; flex-wrap: wrap; }
+  .job .skills span {
+    background: rgba(110, 168, 255, 0.1); border: 1px solid rgba(110, 168, 255, 0.3);
+    color: var(--accent); font-size: 10px; padding: 2px 7px; border-radius: 4px;
+  }
+  .job .fit { display: flex; flex-direction: column; gap: 4px; font-size: 11px; margin-top: 4px; }
+  .job .fit .row { display: flex; gap: 6px; align-items: center; }
+  .job .fit .label { color: var(--muted); min-width: 56px; }
+  .fit-good { color: var(--good); }
+  .fit-warn { color: var(--warn); }
+  .fit-bad { color: var(--bad); }
+  .job .actions { display: flex; gap: 8px; margin-top: 8px; }
+  .job .actions a, .job .actions button {
+    flex: 1; text-align: center; padding: 8px; border-radius: 6px; font-size: 13px;
+    text-decoration: none; cursor: pointer; border: 1px solid var(--border);
+    background: var(--panel2); color: var(--text);
+  }
+  .job .actions a { background: var(--accent); color: #0b1220; font-weight: 600; border-color: var(--accent); }
+  .job .actions a:hover { opacity: 0.9; }
+  .job .actions .apply-btn.applied { background: var(--good); color: #0b1220; border-color: var(--good); }
+  .job .actions .unavail-btn { font-size: 11px; padding: 8px 6px; }
+  .job .actions .unavail-btn.unavailable { background: var(--bad); color: #0b1220; border-color: var(--bad); font-weight: 600; }
+
+  .removed { margin-top: 24px; padding: 16px; background: var(--panel); border: 1px dashed var(--border); border-radius: 8px; font-size: 12px; color: var(--muted); }
+  .removed h3 { margin: 0 0 8px 0; color: var(--warn); font-size: 13px; }
+  .removed ul { margin: 4px 0 0 18px; }
+
+  .edge {
+    margin: 0 32px 8px 32px; padding: 16px 20px;
+    background: linear-gradient(180deg, #1a2233, #161a22);
+    border: 1px solid var(--border); border-radius: 10px;
+  }
+  .edge h2 {
+    margin: 0 0 4px 0; font-size: 16px; color: var(--accent);
+    cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+  }
+  .edge h2 small { font-weight: 400; color: var(--muted); font-size: 12px; }
+  .edge .grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 10px; margin-top: 12px;
+  }
+  .edge .tip {
+    background: var(--panel2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px; font-size: 12.5px;
+  }
+  .edge .tip b { color: var(--good); display: block; margin-bottom: 4px; font-size: 13px; }
+  .edge.collapsed .grid { display: none; }
+
+  .live, .companies-panel {
+    margin: 8px 32px; padding: 16px 20px;
+    background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+  }
+  .live h2, .companies-panel h2 {
+    margin: 0 0 4px 0; font-size: 16px; color: var(--accent);
+    cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+  }
+  .live h2 small, .companies-panel h2 small { font-weight: 400; color: var(--muted); font-size: 12px; }
+  .live .row, .companies-panel .grid { margin-top: 12px; }
+  .live .grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 10px; margin-top: 12px;
+  }
+  .live .tracker {
+    background: var(--panel2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px;
+  }
+  .live .tracker a {
+    color: var(--good); font-weight: 600; text-decoration: none; font-size: 13px;
+    display: block; margin-bottom: 4px; word-break: break-word;
+  }
+  .live .tracker a:hover { text-decoration: underline; }
+  .live .tracker small { color: var(--muted); font-size: 11px; display: block; margin-bottom: 4px; }
+  .live .tracker .note { color: #c6cad6; font-size: 12px; }
+  .live .actions, .companies-panel .actions {
+    margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-size: 12px;
+  }
+  .live .actions button, .companies-panel .actions button {
+    background: var(--panel2); color: var(--text); border: 1px solid var(--border);
+    border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 12px;
+  }
+  .live .actions button:hover, .companies-panel .actions button:hover { border-color: var(--accent); }
+  .live .actions .stamp { color: var(--muted); font-style: italic; }
+
+  .companies-panel .grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px;
+  }
+  .company {
+    background: var(--panel2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px; display: flex; flex-direction: column; gap: 6px;
+  }
+  .company .name { font-weight: 700; color: var(--text); font-size: 14px; }
+  .company .industry { color: var(--muted); font-size: 11px; }
+  .company .h1b { font-size: 11px; }
+  .company .h1b.yes { color: var(--good); }
+  .company .h1b.confirm { color: var(--warn); }
+  .company .links { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+  .company .links a {
+    flex: 1; min-width: 60px; text-align: center; text-decoration: none;
+    background: rgba(110, 168, 255, 0.08); border: 1px solid rgba(110, 168, 255, 0.3);
+    color: var(--accent); padding: 4px 6px; border-radius: 4px; font-size: 11px;
+  }
+  .company .links a:hover { background: rgba(110, 168, 255, 0.2); }
+  .company .edge-note {
+    color: var(--good); font-size: 11px; font-style: italic; margin-top: 4px;
+    background: rgba(74, 222, 128, 0.08); padding: 4px 6px; border-radius: 4px;
+  }
+
+  .live.collapsed .grid, .live.collapsed .actions,
+  .companies-panel.collapsed .grid, .companies-panel.collapsed .actions { display: none; }
+
+  /* Action Plan tab */
+  .action-header { padding: 20px 32px; }
+  .action-header h2 { margin: 0 0 4px 0; font-size: 20px; color: var(--accent); }
+  .action-header p { color: var(--muted); font-size: 13px; max-width: 800px; margin: 4px 0 12px; }
+  .action-stats { display: flex; gap: 12px; font-size: 13px; flex-wrap: wrap; }
+  .action-stats span { background: var(--panel2); border: 1px solid var(--border); padding: 6px 12px; border-radius: 6px; }
+  .action-stats b { color: var(--good); }
+  .ats-coverage {
+    margin-top: 14px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px;
+    background: linear-gradient(180deg, #131922, #0f141c);
+    font-size: 12.5px; color: var(--muted);
+  }
+  .ats-coverage .ats-title { color: var(--text); font-weight: 700; font-size: 13px; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+  .ats-coverage .ats-title .pulse { width: 8px; height: 8px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 8px #4ade80; animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .ats-coverage .ats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 6px 14px; margin-top: 6px; }
+  .ats-coverage .ats-row { display: flex; justify-content: space-between; gap: 8px; padding: 2px 0; }
+  .ats-coverage .ats-row code { background: var(--panel2); padding: 1px 6px; border-radius: 4px; color: var(--accent); font-size: 11px; }
+  .ats-coverage .ats-row b { color: var(--text); font-weight: 600; }
+  .ats-coverage .ats-note { margin-top: 8px; font-size: 11.5px; color: var(--muted); border-top: 1px dashed var(--border); padding-top: 6px; }
+  .action-cards { padding: 0 32px 32px; display: grid; grid-template-columns: 1fr; gap: 16px; max-width: 1100px; }
+  .action-card {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 18px;
+  }
+  .action-card.done { opacity: 0.55; border-color: var(--good); background: linear-gradient(180deg, #1a2b1a, #161a22); }
+  .action-card .a-rank {
+    display: inline-block; background: var(--accent); color: #0b1220; font-weight: 700;
+    border-radius: 50%; width: 28px; height: 28px; line-height: 28px; text-align: center; font-size: 13px;
+    margin-right: 8px;
+  }
+  .action-card .a-title { font-size: 16px; font-weight: 700; display: inline; }
+  .action-card .a-company { color: var(--accent); font-size: 14px; margin-top: 2px; }
+  .action-card .a-meta { color: var(--muted); font-size: 12px; margin: 6px 0; }
+  .fresh-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; margin-left: 6px; vertical-align: middle; }
+  .fresh-badge.hot { background: #ff4d4d; color: #fff; box-shadow: 0 0 6px rgba(255,77,77,0.55); }
+  .fresh-badge.warm { background: #ffb020; color: #1a1a1a; }
+  .fresh-badge.mild { background: #2d4a2d; color: #c8e6c9; }
+  .cb-score { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; background: #1a2a3a; color: #9ec5fe; margin-left: 4px; vertical-align: middle; }
+  .action-card .a-section { margin-top: 14px; }
+  .action-card .a-section h4 {
+    margin: 0 0 6px 0; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .action-card .a-snippet {
+    background: var(--panel2); border: 1px solid var(--border); border-radius: 6px;
+    padding: 10px; font-size: 13px; color: #c6cad6; white-space: pre-wrap; line-height: 1.4;
+    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  }
+  .action-card .a-snippet.dm {
+    border-left: 3px solid var(--good);
+  }
+  .action-card .a-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+  .action-card .a-actions a, .action-card .a-actions button {
+    background: var(--panel2); color: var(--text); border: 1px solid var(--border);
+    border-radius: 6px; padding: 7px 12px; font-size: 12px; cursor: pointer; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .action-card .a-actions a:hover, .action-card .a-actions button:hover { border-color: var(--accent); }
+  .action-card .a-actions .primary { background: var(--accent); color: #0b1220; font-weight: 600; border-color: var(--accent); }
+  .action-card .a-actions .copy-btn.copied { background: var(--good); color: #0b1220; border-color: var(--good); }
+  .action-card .a-checks {
+    margin-top: 14px; display: flex; gap: 16px; flex-wrap: wrap;
+    padding: 10px; background: rgba(110, 168, 255, 0.05); border-radius: 6px;
+    border: 1px dashed var(--border);
+  }
+  .action-card .a-checks label { font-size: 13px; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  .action-card .a-checks input[type=checkbox] { width: 16px; height: 16px; }
+  .action-empty {
+    background: var(--panel); border: 1px dashed var(--border); border-radius: 10px;
+    padding: 32px; text-align: center; color: var(--muted); font-size: 14px;
+  }
+
+  .auto {
+    margin: 8px 32px; padding: 14px 20px;
+    background: linear-gradient(180deg, #1b2a18, #161a22);
+    border: 1px solid #2d4a2f; border-radius: 10px;
+    display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  .auto.error {
+    background: linear-gradient(180deg, #2a1818, #161a22);
+    border-color: #4a2d2d;
+  }
+  .auto.unset {
+    background: var(--panel);
+    border: 1px dashed var(--border);
+  }
+  .auto .left { display: flex; flex-direction: column; gap: 4px; min-width: 260px; }
+  .auto .title { font-size: 14px; font-weight: 700; color: var(--text); }
+  .auto .meta { font-size: 12px; color: var(--muted); }
+  .auto .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;
+    margin-right: 6px;
+  }
+  .auto .badge.success { background: rgba(74, 222, 128, 0.15); color: var(--good); border: 1px solid var(--good); }
+  .auto .badge.error { background: rgba(248, 113, 113, 0.15); color: var(--bad); border: 1px solid var(--bad); }
+  .auto .badge.unset { background: rgba(138, 147, 166, 0.15); color: var(--muted); border: 1px solid var(--border); }
+  .auto .newjobs { font-size: 13px; color: var(--good); }
+  .auto .newjobs.zero { color: var(--muted); }
+  .auto .right { display: flex; gap: 8px; flex-wrap: wrap; font-size: 12px; }
+  .auto .right code {
+    background: var(--panel2); border: 1px solid var(--border); border-radius: 4px;
+    padding: 4px 8px; font-size: 11px; color: #c6cad6;
+  }
+
+  footer { padding: 24px 32px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--border); }
+
+  /* Authentication Gate Overlay */
+  #auth-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 17, 21, 0.94);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .auth-box {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 34px 28px;
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 24px 38px rgba(0,0,0,0.55);
+  }
+  .auth-box .auth-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #2563eb, #4f46e5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin: 0 auto 16px;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+  }
+  .auth-box h2 {
+    margin: 0 0 6px 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .auth-box p {
+    margin: 0 0 20px 0;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .auth-form {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .auth-field label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .auth-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .auth-input {
+    width: 100%;
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .auth-input:focus {
+    border-color: var(--accent);
+  }
+  .auth-toggle {
+    position: absolute;
+    right: 8px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px;
+    color: var(--muted);
+  }
+  .auth-remember {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--muted);
+    cursor: pointer;
+    user-select: none;
+  }
+  .auth-remember input {
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+  .auth-btn {
+    width: 100%;
+    background: var(--accent);
+    color: #0b1220;
+    border: none;
+    border-radius: 8px;
+    padding: 11px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    margin-top: 4px;
+  }
+  .auth-btn:hover {
+    opacity: 0.9;
+  }
+  .auth-error {
+    background: rgba(248, 113, 113, 0.15);
+    border: 1px solid rgba(248, 113, 113, 0.4);
+    color: var(--bad);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    display: none;
+    text-align: center;
+  }
+  .auth-user-tag {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .auth-logout-btn {
+    background: transparent;
+    border: 1px solid rgba(248, 113, 113, 0.4);
+    color: var(--bad);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .auth-logout-btn:hover {
+    background: var(--bad);
+    color: #0b1220;
+  }
+</style>
+</head>
+<body>
+<!-- Authentication Overlay -->
+<div id="auth-overlay">
+  <div class="auth-box">
+    <div class="auth-icon">🔒</div>
+    <h2>JobFinder &bull; Private Access</h2>
+    <p>Enter your credentials to unlock your dashboard</p>
+    <div id="auth-error" class="auth-error">Invalid username or password</div>
+    <form class="auth-form" id="auth-form" onsubmit="event.preventDefault(); handleAuthLogin();">
+      <div class="auth-field">
+        <label for="auth-user">Username</label>
+        <div class="auth-input-wrap">
+          <input type="text" id="auth-user" class="auth-input" value="ramya" placeholder="Enter username..." autocomplete="username" required />
+        </div>
+      </div>
+      <div class="auth-field">
+        <label for="auth-pass">Password</label>
+        <div class="auth-input-wrap">
+          <input type="password" id="auth-pass" class="auth-input" placeholder="Enter password..." autocomplete="current-password" required autofocus />
+          <button type="button" class="auth-toggle" id="auth-toggle-btn" onclick="toggleAuthPass(event)" title="Toggle password visibility">👁️</button>
+        </div>
+      </div>
+      <label class="auth-remember">
+        <input type="checkbox" id="auth-remember" checked />
+        <span>Remember me on this browser</span>
+      </label>
+      <button type="submit" class="auth-btn" id="auth-submit-btn">Unlock Dashboard</button>
+    </form>
+  </div>
+</div>
+
+<div id="main-app" style="display:none;">
+<header>
+  <div>
+    <h1>Senior C++ Job Tracker</h1>
+    <div class="sub" id="profile-sub">Loading…</div>
+  </div>
+  <div class="stats">
+    <span>Total: <b id="stat-total">0</b></span>
+    <span>Applied: <b id="stat-applied">0</b></span>
+    <span>Stale: <b id="stat-stale">0</b></span>
+    <span>Cooldown: <b id="stat-cooldown">0</b></span>
+    <span>Open: <b id="stat-open">0</b></span>
+    <span id="auth-badge" class="auth-user-tag" style="display:none;">
+      👤 <b id="auth-user-name">ramya</b>
+      <button class="auth-logout-btn" onclick="handleAuthLogout()" title="Log out">Logout</button>
+    </span>
+    <span id="cloud-chip" style="cursor:pointer" title="Cross-device sync via Supabase">☁ sync: …</span>
+  </div>
+</header>
+
+<div id="auto-block"></div>
+
+<nav class="main-tabs" id="main-tabs">
+  <button data-tab="action" class="active">🎯 Today's Plan <span class="badge" id="tab-action-badge">5</span></button>
+  <button data-tab="jobs">Jobs <span class="badge" id="tab-jobs-badge">0</span></button>
+  <button data-tab="applied">Applied <span class="badge" id="tab-applied-badge">0</span></button>
+  <button data-tab="live">Live Trackers <span class="badge" id="tab-live-badge">0</span></button>
+  <button data-tab="companies">Companies <span class="badge" id="tab-companies-badge">0</span></button>
+  <button data-tab="tactics">Edge Tactics <span class="badge" id="tab-tactics-badge">0</span></button>
+</nav>
+
+<section class="tab-content active" id="tab-content-action">
+  <div class="action-header">
+    <h2>🎯 Today's Action Plan — drive 5 interviews</h2>
+    <p>Top 5 high-fit jobs from your Open queue. Each card has a tailored cover-letter snippet, a referral-DM template, and LinkedIn search URLs to find employees + alumni. Check off as you go — progress persists per day.</p>
+    <div class="action-stats" id="action-stats"></div>
+    <div class="ats-coverage" id="live-tracker-panel"></div>
+    <div class="ats-coverage" id="ats-coverage"></div>
+    <div class="ats-coverage" id="manual-check-panel"></div>
+  </div>
+  <div class="action-cards" id="action-cards"></div>
+</section>
+
+<section class="tab-content" id="tab-content-jobs">
+  <div class="controls">
+    <input id="search" placeholder="Search company, title, skill…" />
+    <label>Remote
+      <select id="filter-remote">
+        <option value="">Any</option>
+        <option>Remote</option>
+        <option>Hybrid</option>
+        <option>Onsite</option>
+      </select>
+    </label>
+    <label>H1B fit
+      <select id="filter-h1b">
+        <option value="">Any</option>
+        <option value="yes">Likely Yes</option>
+        <option value="uncertain">Uncertain</option>
+      </select>
+    </label>
+    <label>
+      <input type="checkbox" id="hide-unavailable" checked />
+      Hide stale
+    </label>
+    <label>
+      <input type="checkbox" id="hide-cooldown" checked />
+      Hide cooldown
+    </label>
+    <button id="reset-unavailable">Reset stale</button>
+    <span style="color: var(--muted); font-size: 12px;">Applied jobs auto-move to the Applied tab.</span>
+  </div>
+  <div class="weeks">
+    <div class="week-tabs" id="week-tabs"></div>
+    <div class="week-label" id="week-label"></div>
+    <div class="jobs" id="jobs"></div>
+    <div id="removed-block"></div>
+  </div>
+</section>
+
+<section class="tab-content" id="tab-content-applied">
+  <div class="controls">
+    <input id="applied-search" placeholder="Search applied jobs…" />
+    <button id="applied-export">Export as JSON</button>
+    <button id="applied-clear">Clear all applied</button>
+    <span style="color: var(--muted); font-size: 12px;">These persist in your browser. Use Export to back them up.</span>
+  </div>
+  <div class="weeks">
+    <div class="jobs" id="applied-jobs"></div>
+  </div>
+</section>
+
+<section class="tab-content" id="tab-content-live">
+  <div id="live-block"></div>
+</section>
+
+<section class="tab-content" id="tab-content-companies">
+  <div id="companies-block"></div>
+</section>
+
+<section class="tab-content" id="tab-content-tactics">
+  <div id="edge-block"></div>
+</section>
+
+<footer>
+  Synced tracker. Applied state loads from the shared cloud DB on every device; saving changes
+  needs the board key once per browser (click the ☁ chip). localStorage is the offline cache.
+</footer>
+</div><!-- end main-app -->
+
+<script>
+// --- Secure Cryptographic Authentication Gate ---
+// Note: Passwords are NEVER stored in plaintext. Only one-way salted SHA-256 hashes are used.
+const AUTH_SALT = "jobfinder_salt_2025";
+const VALID_HASHES = [
+  "c6c027b6547ec855954136a065978fac019aacdcfb57f77ac9a6528fcbe46b9c",
+  "f2af9badd3a627d3afc46184b812b357533f162850e4454c80fbbe802158cd58"
+];
+
+function sha256Sync(ascii) {
+  function rightRotate(value, amount) { return (value >>> amount) | (value << (32 - amount)); }
+  const mathPow = Math.pow, maxWord = mathPow(2, 32);
+  let i, j, result = "";
+  const words = [];
+  const asciiBitLength = ascii.length * 8;
+  let hash = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
+  const k = [
+    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+    0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+    0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+    0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+    0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+    0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+    0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+  ];
+  ascii += "\x80";
+  while (ascii.length % 64 - 56) ascii += "\x00";
+  for (i = 0; i < ascii.length; i++) {
+    j = ascii.charCodeAt(i);
+    words[i >> 2] |= j << ((3 - i) % 4) * 8;
+  }
+  words[words.length] = ((asciiBitLength / maxWord) | 0);
+  words[words.length] = (asciiBitLength);
+  for (j = 0; j < words.length;) {
+    const w = words.slice(j, j += 16);
+    const oldHash = hash;
+    hash = hash.slice(0, 8);
+    for (i = 0; i < 64; i++) {
+      const w15 = w[i - 15], w2 = w[i - 2];
+      const a = hash[0], e = hash[4];
+      const temp1 = hash[7]
+        + (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25))
+        + ((e & hash[5]) ^ ((~e) & hash[6]))
+        + k[i]
+        + (w[i] = (i < 16) ? w[i] : (
+          w[i - 16]
+          + (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3))
+          + w[i - 7]
+          + (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10))
+        ) | 0
+        );
+      const temp2 = (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22))
+        + ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
+      hash = [(temp1 + temp2) | 0].concat(hash);
+      hash[4] = (hash[4] + temp1) | 0;
+    }
+    for (i = 0; i < 8; i++) { hash[i] = (hash[i] + oldHash[i]) | 0; }
+  }
+  for (i = 0; i < 8; i++) {
+    for (j = 3; j >= 0; j--) {
+      const b = (hash[i] >> (8 * j)) & 255;
+      result += (b < 16 ? "0" : "") + b.toString(16);
+    }
+  }
+  return result;
+}
+
+function isAuthValid(user, pass) {
+  if (!user || !pass) return false;
+  const u = user.toLowerCase().trim();
+  const p = pass.trim();
+  const calculatedHash = sha256Sync(AUTH_SALT + ":" + u + ":" + p);
+  return VALID_HASHES.includes(calculatedHash);
+}
+
+function handleAuthLogin() {
+  const uInput = document.getElementById('auth-user');
+  const pInput = document.getElementById('auth-pass');
+  const err = document.getElementById('auth-error');
+  const remember = document.getElementById('auth-remember');
+  const user = (uInput ? uInput.value : '').trim();
+  const pass = (pInput ? pInput.value : '').trim();
+
+  if (!user || !pass) {
+    if (err) {
+      err.innerText = 'Please enter both username and password.';
+      err.style.display = 'block';
+    }
+    return;
+  }
+
+  if (isAuthValid(user, pass)) {
+    if (err) err.style.display = 'none';
+    sessionStorage.setItem('jobfinder_auth_ok', 'true');
+    sessionStorage.setItem('jobfinder_auth_user', user);
+    if (remember && remember.checked) {
+      localStorage.setItem('jobfinder_auth_ok', 'true');
+      localStorage.setItem('jobfinder_auth_user', user);
+    } else {
+      localStorage.removeItem('jobfinder_auth_ok');
+      localStorage.removeItem('jobfinder_auth_user');
+    }
+    revealDashboard(user);
+  } else {
+    if (err) {
+      err.innerText = 'Incorrect username or password. Please try again.';
+      err.style.display = 'block';
+    }
+    if (pInput) {
+      pInput.select();
+      pInput.focus();
+    }
+  }
+}
+
+function revealDashboard(user) {
+  const overlay = document.getElementById('auth-overlay');
+  const mainApp = document.getElementById('main-app');
+  const badge = document.getElementById('auth-badge');
+  const nameEl = document.getElementById('auth-user-name');
+
+  if (overlay) overlay.style.display = 'none';
+  if (mainApp) mainApp.style.display = 'block';
+  if (badge) badge.style.display = 'inline-flex';
+  if (nameEl && user) nameEl.innerText = user;
+}
+
+function handleAuthLogout() {
+  sessionStorage.removeItem('jobfinder_auth_ok');
+  sessionStorage.removeItem('jobfinder_auth_user');
+  localStorage.removeItem('jobfinder_auth_ok');
+  localStorage.removeItem('jobfinder_auth_user');
+
+  const overlay = document.getElementById('auth-overlay');
+  const mainApp = document.getElementById('main-app');
+  const pInput = document.getElementById('auth-pass');
+  const err = document.getElementById('auth-error');
+
+  if (err) err.style.display = 'none';
+  if (pInput) pInput.value = '';
+  if (mainApp) mainApp.style.display = 'none';
+  if (overlay) overlay.style.display = 'flex';
+
+  setTimeout(() => {
+    if (pInput) pInput.focus();
+  }, 100);
+}
+
+function toggleAuthPass(e) {
+  if (e) e.preventDefault();
+  const pInput = document.getElementById('auth-pass');
+  const btn = document.getElementById('auth-toggle-btn');
+  if (!pInput) return;
+  const val = pInput.value;
+  if (pInput.type === 'password') {
+    pInput.type = 'text';
+    if (btn) btn.innerText = '🙈';
+  } else {
+    pInput.type = 'password';
+    if (btn) btn.innerText = '👁️';
+  }
+  pInput.value = val;
+  pInput.focus();
+}
+
+function initAuthGate() {
+  const isAuth = sessionStorage.getItem('jobfinder_auth_ok') === 'true' || localStorage.getItem('jobfinder_auth_ok') === 'true';
+  const savedUser = sessionStorage.getItem('jobfinder_auth_user') || localStorage.getItem('jobfinder_auth_user') || 'ramya';
+
+  if (isAuth) {
+    revealDashboard(savedUser);
+  } else {
+    const overlay = document.getElementById('auth-overlay');
+    const mainApp = document.getElementById('main-app');
+    if (overlay) overlay.style.display = 'flex';
+    if (mainApp) mainApp.style.display = 'none';
+    setTimeout(() => {
+      const pInput = document.getElementById('auth-pass');
+      if (pInput) pInput.focus();
+    }, 100);
+  }
+}
+
+initAuthGate();
+
+const STORAGE_KEY = 'raviCppJobsApplied';
+const UNAVAIL_KEY = 'raviCppJobsUnavailable';
+const INTERVIEWED_KEY = 'raviCppJobsInterviewed';
+const SEED_KEY = 'raviCppJobsSeedVersion';
+const SETTINGS_KEY = 'raviCppJobsSettings';
+const COOLDOWN_MONTHS = 6;
+
+// Centralised, persisted user settings — anything in here is saved across reloads.
+const defaultSettings = {
+  activeTab: 'jobs',
+  search: '',
+  remote: '',
+  h1b: '',
+  hideApplied: false,
+  hideUnavailable: true,
+  hideCooldown: true,
+  currentWeek: null,
+  companySearch: '',
+  companyH1B: '',
+  edgeCollapsed: false,
+  liveCollapsed: false,
+  companiesCollapsed: false,
+  appliedSearch: '',
+};
+const savedSettings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
+const settings = Object.assign({}, defaultSettings, savedSettings);
+function saveSettings() { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); }
+
+const state = {
+  data: null,
+  applied: new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')),
+  unavailable: new Set(JSON.parse(localStorage.getItem(UNAVAIL_KEY) || '[]')),
+  // {companyName: ISO date string} — companies you've already interviewed at
+  interviewed: JSON.parse(localStorage.getItem(INTERVIEWED_KEY) || '{}'),
+  // {companyName: true} — cooldowns set automatically by "Call received"
+  // (vs. manually on the Companies tab). Auto ones lift if the mark is undone.
+  autoCooldown: JSON.parse(localStorage.getItem(INTERVIEWED_KEY + 'Auto') || '{}'),
+  autoStale: new Set(),       // IDs auto-detected dead by verify_urls.py
+  autoStaleCheckedAt: null,    // ISO timestamp from jobs_stale.json
+  // {jobId: "callback"|"rejected"} — application outcomes. Mirrored to the
+  // server (outcomes.json) so the nightly self-improve pass can learn which
+  // kinds of JDs actually convert to calls.
+  outcomes: JSON.parse(localStorage.getItem('raviCppJobsOutcomes') || '{}'),
+  // {jobId: reason} — jobs you CAN'T apply to (no sponsorship, clearance,
+  // compliance conflict, other). Strong negative signal for the improver.
+  notEligible: JSON.parse(localStorage.getItem('raviCppJobsNotEligible') || '{}'),
+  // IDs flagged "wrong recommendation" — the tracker surfaced a job that
+  // doesn't fit the profile at all. Teaches the improver what NOT to fetch.
+  badRecs: new Set(JSON.parse(localStorage.getItem('raviCppJobsBadRecs') || '[]')),
+};
+
+const NOELIG_REASONS = {
+  no_sponsorship: '🛂 No H1B sponsorship',
+  clearance: '🎖️ Citizenship / clearance required',
+  compliance: '⚖️ Compliance conflict',
+  other: '🚫 Other reason',
+};
+
+function saveNotEligible() {
+  localStorage.setItem('raviCppJobsNotEligible', JSON.stringify(state.notEligible));
+}
+
+async function setNotEligible(id, reason) {
+  if (!reason) {
+    delete state.notEligible[id];
+    postOutcome(id, 'none');
+  } else {
+    state.notEligible[id] = reason;
+    try {
+      // Order matters: record the outcome FIRST (it snapshots the job from
+      // jobs.json for the improver), THEN physically remove the entry.
+      await fetch('/api/outcome', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, outcome: 'not_eligible', reason }),
+      });
+      await fetch('/api/remove', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      });
+    } catch (e) { /* offline serve.py — localStorage still hides it */ }
+  }
+  saveNotEligible();
+}
+
+function saveBadRecs() {
+  localStorage.setItem('raviCppJobsBadRecs', JSON.stringify([...state.badRecs]));
+}
+
+async function setBadRec(id) {
+  state.badRecs.add(id);
+  saveBadRecs();
+  try {
+    // Record FIRST (snapshots the job for the improver), THEN remove it.
+    await fetch('/api/outcome', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, outcome: 'bad_recommendation' }),
+    });
+    await fetch('/api/remove', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id }),
+    });
+  } catch (e) { /* offline serve.py — localStorage still hides it */ }
+}
+
+function saveOutcomes() {
+  localStorage.setItem('raviCppJobsOutcomes', JSON.stringify(state.outcomes));
+}
+
+// Report an outcome to the backend (fire-and-forget — localStorage is the
+// UI's source of truth; outcomes.json is the learning log for the improver).
+function postOutcome(id, outcome) {
+  fetch('/api/outcome', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id, outcome }),
+  }).catch(() => {});
+}
+
+function setOutcome(id, outcome) {
+  const job = state.data ? state.data.weeks.flatMap(w => w.jobs).find(j => j.id === id) : null;
+  if (outcome === 'none') {
+    const wasCallback = state.outcomes[id] === 'callback';
+    delete state.outcomes[id];
+    // Un-marking a callback lifts the cooldown it created (manual cooldowns
+    // from the Companies tab are left alone).
+    if (wasCallback && job && state.autoCooldown[job.company]) {
+      delete state.interviewed[job.company];
+      delete state.autoCooldown[job.company];
+      saveInterviewed(); saveAutoCooldown();
+    }
+  } else {
+    state.outcomes[id] = outcome;
+    // A call back means you're in process — the company's re-application
+    // policy kicks in, so stop recommending it for COOLDOWN_MONTHS.
+    if (outcome === 'callback' && job && !state.interviewed[job.company]) {
+      state.interviewed[job.company] = new Date().toISOString().slice(0, 10);
+      state.autoCooldown[job.company] = true;
+      saveInterviewed(); saveAutoCooldown();
+    }
+  }
+  saveOutcomes();
+  postOutcome(id, outcome);
+}
+
+function saveAutoCooldown() {
+  localStorage.setItem(INTERVIEWED_KEY + 'Auto', JSON.stringify(state.autoCooldown));
+}
+
+// Is this job stale (user-marked OR auto-detected)?
+function isStale(id) {
+  return state.unavailable.has(id) || state.autoStale.has(id);
+}
+
+function saveInterviewed() {
+  localStorage.setItem(INTERVIEWED_KEY, JSON.stringify(state.interviewed));
+}
+
+// Returns months remaining in 6-month cooldown, or 0 if not in cooldown / not marked.
+function cooldownMonthsLeft(company) {
+  const iso = state.interviewed[company];
+  if (!iso) return 0;
+  const interviewed = new Date(iso);
+  const expires = new Date(interviewed);
+  expires.setMonth(expires.getMonth() + COOLDOWN_MONTHS);
+  const now = new Date();
+  const msLeft = expires - now;
+  if (msLeft <= 0) return 0;
+  return Math.max(1, Math.ceil(msLeft / (30 * 24 * 60 * 60 * 1000)));
+}
+
+function isInCooldown(company) {
+  return cooldownMonthsLeft(company) > 0;
+}
+
+function saveApplied() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify([...state.applied]));
+}
+function saveUnavailable() {
+  localStorage.setItem(UNAVAIL_KEY, JSON.stringify([...state.unavailable]));
+}
+
+function fitClass(text) {
+  if (!text) return '';
+  const t = text.toLowerCase();
+  if (t.includes('likely yes') || t.includes('yes') || t.startsWith('good')) return 'fit-good';
+  if (t.includes('uncertain') || t.includes('confirm') || t.includes('stretch') || t.includes('edge')) return 'fit-warn';
+  if (t.includes('no')) return 'fit-bad';
+  return '';
+}
+
+function renderTabs() {
+  const tabs = document.getElementById('week-tabs');
+  tabs.innerHTML = '';
+  const allBtn = document.createElement('button');
+  allBtn.textContent = 'All open';
+  allBtn.title = 'Every open job across all weeks';
+  if (settings.currentWeek === 'ALL') allBtn.classList.add('active');
+  allBtn.onclick = () => { settings.currentWeek = 'ALL'; saveSettings(); render(); };
+  tabs.appendChild(allBtn);
+  state.data.weeks.forEach(w => {
+    const b = document.createElement('button');
+    b.textContent = w.weekId;
+    b.title = w.label;
+    if (w.weekId === settings.currentWeek) b.classList.add('active');
+    b.onclick = () => { settings.currentWeek = w.weekId; saveSettings(); render(); };
+    tabs.appendChild(b);
+  });
+}
+
+function matches(job) {
+  // Applied jobs always hidden from the Jobs view — they live in the Applied tab.
+  if (state.applied.has(job.id)) return false;
+  if (settings.hideUnavailable && isStale(job.id)) return false;
+  if (settings.hideCooldown && isInCooldown(job.company)) return false;
+  if (settings.remote && !(job.remote || '').toLowerCase().includes(settings.remote.toLowerCase())) return false;
+  if (settings.h1b) {
+    const f = (job.h1bFit || '').toLowerCase();
+    if (settings.h1b === 'yes' && !f.includes('yes')) return false;
+    if (settings.h1b === 'uncertain' && !(f.includes('uncertain') || f.includes('confirm'))) return false;
+  }
+  if (settings.search) {
+    const q = settings.search.toLowerCase();
+    const hay = [job.company, job.title, job.industry, job.location, (job.skills||[]).join(' '), job.summary].join(' ').toLowerCase();
+    if (!hay.includes(q)) return false;
+  }
+  return true;
+}
+
+// Region priority: East(1) -> Remote(2) -> Central(3) -> Mountain(4) -> West(5).
+// Entries are tagged by live_tracker.py; client-side fallback for untagged ones.
+const REGION_RANKS = { East: 1, Remote: 2, Central: 3, Mountain: 4, West: 5, Other: 6 };
+function regionName(j) {
+  if (j.region) return j.region;
+  const loc = j.location || '';
+  if (/\b(ME|NH|VT|MA|RI|CT|NY|NJ|PA|DE|MD|DC|VA|WV|NC|SC|GA|FL|OH|MI|IN|KY)\b|New York|Boston|Philadelphia|Pittsburgh|Charlotte|Atlanta|Miami|Jersey City/i.test(loc)) return 'East';
+  if (/\b(IL|TX|MN|WI|MO|TN|AL|MS|LA|AR|OK|KS|NE|SD|ND|IA)\b|Chicago|Austin|Dallas|Houston|Nashville/i.test(loc)) return 'Central';
+  if (/\b(CO|UT|AZ|NM|MT|WY|ID)\b|Denver|Phoenix|Salt Lake/i.test(loc)) return 'Mountain';
+  if (/\b(CA|WA|OR|NV|AK|HI)\b|California|San Francisco|Seattle|San Jose|Los Angeles/i.test(loc)) return 'West';
+  if (/remote|united states|usa|worldwide|anywhere/i.test(loc) || !loc.trim()) return 'Remote';
+  return 'Other';
+}
+function regionRank(j) { return j.regionRank || REGION_RANKS[regionName(j)] || 6; }
+
+// Staffing/recruiting agencies always sort to the bottom — last resort.
+// Heuristic catches the tagged names; the set catches known firms without tags.
+const AGENCY_COMPANIES = new Set([
+  'actalent', 'akkodis', 'apex systems', 'bcforward', 'beacon hill', 'creative circle',
+  'cypress hcm', 'swoon', 'xoriant', 'infovision inc.', 'nlb services', 'aptask',
+  'kyyba inc', 'kpg99 inc', 'baanyan software services, inc.', 'accord technologies inc',
+  'minisoft technologies llc', 'anvik technologies', 'cintal, inc.', 'covet it inc',
+  'largeton group', 'srm digital llc', 'rayvector technologies',
+  'jeevan technologies (a nobl q company)', 'josh pros', 'warwick consulting',
+  'cps, inc.', 'parkwood llc', 'balin technologies', 'agilegrid solutions',
+  'goliath partners', 'durlston partners', 'thurn partners', 'entec partners',
+  'njf global holdings ltd', 'techfellow limited', 'umatr', 'strativ group', 'x4 alpha',
+  'hackajob x mercor', 'huxley', 'pentangle tech services', 'turing', 'crossing hurdles',
+  'the aes group (consulting)', 'tailored management',
+]);
+function isAgency(j) {
+  const c = (j.company || '').toLowerCase().replace(/[®™]/g, '').trim();
+  if (AGENCY_COMPANIES.has(c)) return true;
+  return /\(agency\)|\(contract\)|staffing|recruit|resourcing|talent|careers|associates|on behalf of|\(via |\bsearch\b/.test(c);
+}
+function regionEmoji(j) {
+  return { East: '🌅', Remote: '🏠', Central: '🌾', Mountain: '⛰️', West: '🌉', Other: '📌' }[j.region || regionName(j)] || '📌';
+}
+
+function render() {
+  const isAll = settings.currentWeek === 'ALL';
+  const week = isAll ? null : (state.data.weeks.find(w => w.weekId === settings.currentWeek) || state.data.weeks[0]);
+  document.getElementById('week-label').textContent = isAll
+    ? 'All open jobs — every week, east → west, freshest first'
+    : week.label;
+
+  const allThisWeek = isAll ? state.data.weeks.flatMap(w => w.jobs) : week.jobs;
+  // notEligible entries are physically removed server-side, but a rescrape
+  // can re-add the same posting — the localStorage map keeps them hidden.
+  const shown = allThisWeek.filter(matches).filter(j => !state.notEligible[j.id] && !state.badRecs.has(j.id));
+
+  // Stats are global across all weeks
+  const all = state.data.weeks.flatMap(w => w.jobs);
+  document.getElementById('stat-total').textContent = all.length;
+  const appliedCount = all.filter(j => state.applied.has(j.id)).length;
+  const staleCount = all.filter(j => isStale(j.id)).length;
+  const cooldownCount = all.filter(j => isInCooldown(j.company)).length;
+  const openCount = all.filter(j => !state.applied.has(j.id) && !isStale(j.id) && !isInCooldown(j.company) && !state.notEligible[j.id] && !state.badRecs.has(j.id)).length;
+  document.getElementById('stat-applied').textContent = appliedCount;
+  document.getElementById('stat-stale').textContent = staleCount;
+  document.getElementById('stat-cooldown').textContent = cooldownCount;
+  document.getElementById('stat-open').textContent = openCount;
+
+  const container = document.getElementById('jobs');
+  container.innerHTML = '';
+
+  // Flat list — no company grouping, no pinned "Today's Pick" cards.
+  // Direct employers first (east -> west, freshest first within each region
+  // tier); staffing/recruiting agencies always at the very bottom.
+  const flat = [...shown].sort((a, b) => {
+    const ga = isAgency(a) ? 1 : 0, gb = isAgency(b) ? 1 : 0;
+    if (ga !== gb) return ga - gb;
+    const ra = regionRank(a), rb = regionRank(b);
+    if (ra !== rb) return ra - rb;
+    const ta = a.postedAtUtc ? Date.parse(a.postedAtUtc) : 0;
+    const tb = b.postedAtUtc ? Date.parse(b.postedAtUtc) : 0;
+    return tb - ta;
+  });
+  let agencySepAdded = false;
+  flat.forEach(job => {
+    if (!agencySepAdded && isAgency(job)) {
+      agencySepAdded = true;
+      const sep = document.createElement('div');
+      sep.className = 'agency-sep';
+      sep.textContent = '⬇ Staffing / recruiting agencies — last resort';
+      container.appendChild(sep);
+    }
+    try { container.appendChild(buildJobCard(job)); }
+    catch (e) { console.error('bad job card skipped:', job && job.id, e); }
+  });
+
+  // Original per-card builder — refactored from the inline forEach loop.
+  function buildJobCard(job) {
+    // Data from multi-source sweeps can be malformed — never let one row
+    // kill the whole render (skills as string, null fields, …).
+    if (!Array.isArray(job.skills)) job.skills = job.skills ? String(job.skills).split(',').map(s => s.trim()).filter(Boolean) : [];
+    const card = document.createElement('div');
+    const isApplied = state.applied.has(job.id);
+    const stale = isStale(job.id);
+    const autoStale = state.autoStale.has(job.id);
+    const cdMonths = cooldownMonthsLeft(job.company);
+    const inCooldown = cdMonths > 0;
+    card.className = 'job' + (isApplied ? ' applied' : '') + (stale ? ' unavailable' : '') + (inCooldown ? ' cooldown' : '') + (isAgency(job) ? ' agency' : '');
+    // Hot UI — same freshness badge + callback chip the action cards use.
+    let freshBadge = '';
+    let hp = job.postedAtUtc ? Date.parse(job.postedAtUtc) : NaN;
+    if (isNaN(hp) && job.postedApprox) {
+      const mh = /(\d+)\s*hour/.exec(job.postedApprox);
+      const md = /(\d+)\s*day/.exec(job.postedApprox);
+      const hh = mh ? +mh[1] : md ? +md[1] * 24 : /just now|today/i.test(job.postedApprox) ? 1 : NaN;
+      if (!isNaN(hh)) hp = Date.now() - hh * 3600 * 1000;
+    }
+    if (!isNaN(hp)) {
+      const hours = (Date.now() - hp) / 3600000;
+      if (hours < 12) freshBadge = `<span class="fresh-badge hot">🔥 FRESH · ${Math.round(hours)}h ago</span>`;
+      else if (hours < 24) freshBadge = `<span class="fresh-badge warm">⚡ Today · ${Math.round(hours)}h ago</span>`;
+      else if (hours < 48) freshBadge = `<span class="fresh-badge warm">⚡ ${Math.round(hours)}h ago</span>`;
+      else if (hours < 96) freshBadge = `<span class="fresh-badge mild">📅 ${Math.round(hours/24)}d ago</span>`;
+    }
+    const cbChip = typeof job.callbackScore === 'number'
+      ? `<span class="cb-score">callback: ${job.callbackScore.toFixed(0)}/100</span>` : '';
+    card.innerHTML = `
+      <div class="company">${job.company}</div>
+      <div class="title">${job.title}${freshBadge}${cbChip}</div>
+      ${inCooldown ? `<div class="cooldown-badge">⏰ ${state.autoCooldown[job.company] ? 'Call received' : 'Interviewed'} ${state.interviewed[job.company]} · ${cdMonths} ${cdMonths === 1 ? 'month' : 'months'} until eligible — company re-apply policy</div>` : ''}
+      <div class="meta">
+        <span>📍 ${job.location}</span>
+        <span class="region-chip region-${(job.region || regionName(job)).toLowerCase()}">${regionEmoji(job)} ${job.region || regionName(job)}</span>
+        ${isAgency(job) ? '<span class="agency-chip">🏷 agency</span>' : ''}
+        <span>🏢 ${job.industry}</span>
+        ${job.salary ? `<span>💰 ${job.salary}</span>` : ''}
+        <span>🌐 ${job.remote}</span>
+        ${job.postedApprox ? `<span>📅 ${job.postedApprox}</span>` : ''}
+      </div>
+      ${job.possibleRepost ? `<div class="repost-warn">🔁 Looks similar to a job you already applied to: “${job.possibleRepost}” — LinkedIn reposts get a new ID and a fresh date. Double-check before applying, or
+        <button class="repost-same" data-id="${job.id}">it's the same — mark applied</button></div>` : ''}
+      <div class="summary">${job.summary}</div>
+      <div class="skills">${(job.skills||[]).map(s => `<span>${s}</span>`).join('')}</div>
+      <div class="fit">
+        <div class="row"><span class="label">H1B:</span><span class="${fitClass(job.h1bFit)}">${job.h1bFit || '—'}</span></div>
+        <div class="row"><span class="label">YOE:</span><span class="${fitClass(job.yoeFit)}">${job.yoeFit || '—'}</span></div>
+        ${job.yoeNote ? `<div class="row"><span class="label"></span><span style="color: var(--muted); font-style: italic;">${job.yoeNote}</span></div>` : ''}
+      </div>
+      <div class="actions">
+        <a href="${job.url}" target="_blank" rel="noopener">Open ↗</a>
+        <button class="apply-btn ${isApplied ? 'applied' : ''}" data-id="${job.id}">
+          ${isApplied ? '✓ Applied' : 'Mark applied'}
+        </button>
+        <button class="callback-btn ${state.outcomes[job.id] === 'callback' ? 'got-call' : ''}" data-id="${job.id}"
+                title="Mark that a recruiter called / emailed back — feeds the nightly tracker-improver">
+          ${state.outcomes[job.id] === 'callback' ? '📞 Callback ✓' : '📞 Call received'}
+        </button>
+        <button class="unavail-btn ${stale ? 'unavailable' : ''}" data-id="${job.id}" title="${autoStale ? 'Auto-detected dead URL — click to un-mark' : 'Mark as no-longer-available / stale link'}">
+          ${stale ? (autoStale ? '✗ Auto-stale' : '✗ Stale') : 'Not available'}
+        </button>
+        ${state.notEligible[job.id]
+          ? `<button class="noelig-clear" data-id="${job.id}" title="Click to un-mark">${NOELIG_REASONS[state.notEligible[job.id]] || '🚫 Not eligible'} ✕</button>`
+          : `<select class="noelig-select" data-id="${job.id}" title="Mark why you can't apply — teaches the tracker-improver what to avoid">
+              <option value="">🚫 Can't apply…</option>
+              <option value="no_sponsorship">No H1B sponsorship</option>
+              <option value="clearance">Citizenship / clearance</option>
+              <option value="compliance">Compliance conflict</option>
+              <option value="other">Other reason</option>
+            </select>`}
+        <button class="badrec-btn" data-id="${job.id}"
+                title="This job shouldn't have been recommended (wrong tech, wrong level, not really C++). Removes it and teaches the tracker what to skip.">
+          👎 Wrong match
+        </button>
+      </div>
+    `;
+    if (state.outcomes[job.id] === 'callback') card.classList.add('has-callback');
+    if (state.notEligible[job.id]) card.classList.add('not-eligible');
+    return card;
+  }
+
+  // Marking one card applied also marks its twins (same employer + near-same
+  // title, or same canonical posting id) — cross-source duplicates and
+  // LinkedIn reposts stop being recommended the moment you apply anywhere.
+  function markAppliedWithTwins(id) {
+    state.applied.add(id);
+    postOutcome(id, 'applied');
+    const all = state.data.weeks.flatMap(w => w.jobs);
+    const me = all.find(j => j.id === id);
+    if (!me) return;
+    const myCo = normCompany(me.company), myToks = titleTokens(me.title);
+    for (const j of all) {
+      if (j.id === id || state.applied.has(j.id)) continue;
+      const sameExt = me.externalId && j.externalId === me.externalId;
+      const co = normCompany(j.company);
+      const sameCo = co === myCo || (co.length >= 4 && myCo.startsWith(co)) || (myCo.length >= 4 && co.startsWith(myCo));
+      const tk = titleTokens(j.title);
+      const union = new Set([...tk, ...myToks]);
+      const inter = [...tk].filter(x => myToks.has(x)).length;
+      if (sameExt || (sameCo && union.size && inter / union.size >= 0.7)) {
+        state.applied.add(j.id);
+        postOutcome(j.id, 'applied');
+      }
+    }
+  }
+  function normCompany(c) {
+    return (c || '').toLowerCase().replace(/\s*\(.*?\)/g, '')
+      .replace(/\b(inc|llc|ltd|corp|corporation|technologies|technology|group|holdings)\b\.?/g, '')
+      .replace(/[^a-z0-9]+/g, '');
+  }
+  function titleTokens(t) { return new Set((t || '').toLowerCase().match(/[a-z0-9+]+/g) || []); }
+
+  container.querySelectorAll('.apply-btn').forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.dataset.id;
+      if (state.applied.has(id)) {
+        state.applied.delete(id);
+        postOutcome(id, 'none');  // clear server record so sync doesn't re-add it
+      } else {
+        markAppliedWithTwins(id);
+      }
+      saveApplied(); render(); updateBadges();
+    };
+  });
+  container.querySelectorAll('.repost-same').forEach(btn => {
+    btn.onclick = () => {
+      markAppliedWithTwins(btn.dataset.id);
+      saveApplied(); render(); updateBadges();
+    };
+  });
+  container.querySelectorAll('.callback-btn').forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.dataset.id;
+      setOutcome(id, state.outcomes[id] === 'callback' ? 'none' : 'callback');
+      render(); updateBadges();
+    };
+  });
+  container.querySelectorAll('.noelig-select').forEach(sel => {
+    sel.onchange = async () => {
+      if (!sel.value) return;
+      const card = sel.closest('.job');
+      if (card) { card.style.transition = 'opacity 0.25s ease'; card.style.opacity = '0.3'; }
+      await setNotEligible(sel.dataset.id, sel.value);
+      await load();  // re-fetch jobs.json so the removed entry is gone everywhere
+      updateBadges();
+    };
+  });
+  container.querySelectorAll('.noelig-clear').forEach(btn => {
+    btn.onclick = () => {
+      setNotEligible(btn.dataset.id, null);
+      render(); updateBadges();
+    };
+  });
+  container.querySelectorAll('.badrec-btn').forEach(btn => {
+    btn.onclick = async () => {
+      const card = btn.closest('.job');
+      if (card) { card.style.transition = 'opacity 0.25s ease'; card.style.opacity = '0.3'; }
+      await setBadRec(btn.dataset.id);
+      await load();  // re-fetch jobs.json so the removed entry is gone everywhere
+      updateBadges();
+    };
+  });
+  container.querySelectorAll('.unavail-btn').forEach(btn => {
+    btn.onclick = async () => {
+      const id = btn.dataset.id;
+      const alreadyStale = state.unavailable.has(id);
+      // Toggle local state immediately so the UI reflects the click no matter
+      // whether the backend prune succeeds.
+      if (alreadyStale) state.unavailable.delete(id); else state.unavailable.add(id);
+      saveUnavailable();
+      // If we're MARKING (not un-marking), tell the server to physically remove
+      // the entry from jobs.json. Works only when serving via serve.py — the
+      // plain http.server returns 501 which we treat as graceful fallback.
+      if (!alreadyStale) {
+        const card = btn.closest('.job');
+        if (card) {
+          card.style.transition = 'opacity 0.25s ease, max-height 0.35s ease';
+          card.style.opacity = '0.35';
+        }
+        try {
+          const r = await fetch('/api/remove', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id })
+          });
+          if (r.ok) {
+            // Reload the data so the entry is gone for good — not just hidden.
+            await load();
+            render();
+            updateBadges();
+            return;
+          }
+        } catch (e) { /* server-less mode — fall through to local hide */ }
+      }
+      render(); updateBadges();
+    };
+  });
+
+  // Removed-jobs block (week-specific)
+  const rem = document.getElementById('removed-block');
+  rem.innerHTML = '';
+  if (week && week.removedNotes && week.removedNotes.length) {
+    const div = document.createElement('div');
+    div.className = 'removed';
+    div.innerHTML = `<h3>Filtered out for H1B / ≤6 yrs YOE</h3><ul>${week.removedNotes.map(n => `<li>${n}</li>`).join('')}</ul>`;
+    rem.appendChild(div);
+  }
+
+  renderTabs();
+}
+
+function renderEdge() {
+  const edgeBlock = document.getElementById('edge-block');
+  edgeBlock.innerHTML = '';
+  const tactics = state.data.edgeTactics || [];
+  if (!tactics.length) return;
+  const div = document.createElement('div');
+  div.className = 'edge' + (settings.edgeCollapsed ? ' collapsed' : '');
+  div.innerHTML = `
+    <h2 id="edge-toggle">⚡ Edge tactics — applying smart, not just more
+      <small>${settings.edgeCollapsed ? 'click to expand' : 'click to collapse'}</small>
+    </h2>
+    <div class="grid">
+      ${tactics.map(t => `<div class="tip"><b>${t.title}</b>${t.detail}</div>`).join('')}
+    </div>
+  `;
+  edgeBlock.appendChild(div);
+  document.getElementById('edge-toggle').onclick = () => {
+    settings.edgeCollapsed = !settings.edgeCollapsed;
+    saveSettings();
+    renderEdge();
+  };
+}
+
+async function renderAuto() {
+  const block = document.getElementById('auto-block');
+  block.innerHTML = '';
+  let status = null;
+  try {
+    const r = await fetch('auto_update_status.json?_=' + Date.now());
+    if (r.ok) status = await r.json();
+  } catch (e) { /* not yet generated */ }
+
+  const div = document.createElement('div');
+
+  if (!status) {
+    div.className = 'auto unset';
+    div.innerHTML = `
+      <div class="left">
+        <div class="title"><span class="badge unset">Not yet run</span>Daily auto-updater</div>
+        <div class="meta">Install with: <code>./install_auto_update.sh</code> — runs daily at 10:00 AM, finds new C++ postings via Claude CLI, appends to this site.</div>
+      </div>
+      <div class="right"><code>./install_auto_update.sh</code></div>
+    `;
+  } else {
+    const isErr = status.status !== 'success';
+    div.className = 'auto' + (isErr ? ' error' : '');
+    const newJobs = status.newJobsCount || 0;
+    const lastRun = status.lastRun ? new Date(status.lastRun).toLocaleString() : '—';
+    div.innerHTML = `
+      <div class="left">
+        <div class="title">
+          <span class="badge ${isErr ? 'error' : 'success'}">${isErr ? 'Last run errored' : 'Auto-updater healthy'}</span>
+          Daily 10:00 AM C++ job sweep
+        </div>
+        <div class="meta">Last run: ${lastRun} · Queries: ${status.queriesRun || 0}</div>
+        <div class="newjobs ${newJobs === 0 ? 'zero' : ''}">
+          ${newJobs === 0
+            ? '0 new jobs found today'
+            : `+${newJobs} new ${newJobs === 1 ? 'job' : 'jobs'} today${(status.newCompanies || []).length ? ' — ' + status.newCompanies.join(', ') : ''}`}
+        </div>
+        ${status.notes ? `<div class="meta" style="font-style: italic;">${status.notes}</div>` : ''}
+      </div>
+      <div class="right">
+        <code>launchctl start com.ravi.cppjobs.daily</code>
+        <code>tail -f logs/launchd.out.log</code>
+      </div>
+    `;
+  }
+  block.appendChild(div);
+}
+
+function renderLive() {
+  const block = document.getElementById('live-block');
+  block.innerHTML = '';
+  const trackers = state.data.liveTrackers || [];
+  if (!trackers.length) return;
+  const lastChecked = localStorage.getItem('liveLastChecked') || 'never';
+  const div = document.createElement('div');
+  div.className = 'live' + (settings.liveCollapsed ? ' collapsed' : '');
+  div.innerHTML = `
+    <h2 id="live-toggle">📡 Live trackers — always-current C++ job feeds
+      <small>${settings.liveCollapsed ? 'click to expand' : 'click to collapse'}</small>
+    </h2>
+    <div class="grid">
+      ${trackers.map(t => `
+        <div class="tracker">
+          <small>${t.source}</small>
+          <a href="${t.url}" target="_blank" rel="noopener">${t.label} ↗</a>
+          <div class="note">${t.note || ''}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="actions">
+      <button id="open-all-trackers">Open all trackers in tabs</button>
+      <button id="stamp-checked">Stamp "checked today"</button>
+      <span class="stamp">Last checked: ${lastChecked}</span>
+    </div>
+  `;
+  block.appendChild(div);
+  document.getElementById('live-toggle').onclick = () => {
+    settings.liveCollapsed = !settings.liveCollapsed;
+    saveSettings();
+    renderLive();
+  };
+  document.getElementById('open-all-trackers').onclick = () => {
+    trackers.forEach(t => window.open(t.url, '_blank', 'noopener'));
+  };
+  document.getElementById('stamp-checked').onclick = () => {
+    const today = new Date().toISOString().slice(0, 10);
+    localStorage.setItem('liveLastChecked', today);
+    renderLive();
+  };
+}
+
+function renderCompanies() {
+  const block = document.getElementById('companies-block');
+  block.innerHTML = '';
+  const companies = state.data.companies || [];
+  if (!companies.length) return;
+  const filtered = companies.filter(c => {
+    if (settings.companyH1B === 'yes' && !c.h1bFit.toLowerCase().includes('yes')) return false;
+    if (settings.companyH1B === 'confirm' && !c.h1bFit.toLowerCase().includes('confirm')) return false;
+    if (settings.companySearch) {
+      const q = settings.companySearch.toLowerCase();
+      const hay = (c.name + ' ' + c.industry + ' ' + (c.h1bNote || '')).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+  const div = document.createElement('div');
+  div.className = 'companies-panel' + (settings.companiesCollapsed ? ' collapsed' : '');
+  div.innerHTML = `
+    <h2 id="companies-toggle">🏢 Companies to watch — ${companies.length} H1B-friendly C++ employers
+      <small>${settings.companiesCollapsed ? 'click to expand' : 'click to collapse'}</small>
+    </h2>
+    <div class="actions">
+      <input id="company-search" placeholder="Filter companies…" value="${settings.companySearch}" style="background: var(--panel2); color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; font-size: 12px;" />
+      <select id="company-h1b" style="background: var(--panel2); color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; font-size: 12px;">
+        <option value="">All H1B</option>
+        <option value="yes" ${settings.companyH1B==='yes'?'selected':''}>Likely Yes</option>
+        <option value="confirm" ${settings.companyH1B==='confirm'?'selected':''}>Confirm per role</option>
+      </select>
+      <span class="stamp">Showing ${filtered.length} of ${companies.length}</span>
+    </div>
+    <div class="grid">
+      ${filtered.map(c => {
+        const cdMonths = cooldownMonthsLeft(c.name);
+        const inCooldown = cdMonths > 0;
+        const iso = state.interviewed[c.name] || '';
+        return `
+        <div class="company ${inCooldown ? 'cooldown-active' : ''}" data-company="${encodeURIComponent(c.name)}">
+          <div class="name">${c.name}</div>
+          <div class="industry">${c.industry}</div>
+          <div class="h1b ${c.h1bFit.toLowerCase().includes('yes')?'yes':'confirm'}">H1B: ${c.h1bFit}${c.h1bNote ? ' — '+c.h1bNote : ''}</div>
+          ${inCooldown ? `<div class="cooldown-line">⏰ Interviewed ${iso} · ${cdMonths} ${cdMonths===1?'month':'months'} until eligible</div>` : ''}
+          <div class="links">
+            ${c.careers ? `<a href="${c.careers}" target="_blank" rel="noopener">Careers</a>` : ''}
+            ${c.linkedinJobs ? `<a href="${c.linkedinJobs}" target="_blank" rel="noopener">LinkedIn (7d)</a>` : ''}
+            ${c.ossRepo ? `<a href="${c.ossRepo}" target="_blank" rel="noopener">OSS</a>` : ''}
+          </div>
+          ${c.edge ? `<div class="edge-note">💡 ${c.edge}</div>` : ''}
+          <button class="interview-btn ${iso ? 'active' : ''}" data-company="${encodeURIComponent(c.name)}">
+            ${iso ? `🕒 Interviewed ${iso} — click to clear` : '🕒 Mark interviewed (6mo cooldown)'}
+          </button>
+        </div>
+      `;}).join('')}
+    </div>
+  `;
+  block.appendChild(div);
+  document.getElementById('companies-toggle').onclick = () => {
+    settings.companiesCollapsed = !settings.companiesCollapsed;
+    saveSettings();
+    renderCompanies();
+  };
+  const cs = document.getElementById('company-search');
+  if (cs) {
+    cs.oninput = e => { settings.companySearch = e.target.value; saveSettings(); renderCompanies(); cs.focus(); };
+  }
+  const ch = document.getElementById('company-h1b');
+  if (ch) ch.onchange = e => { settings.companyH1B = e.target.value; saveSettings(); renderCompanies(); };
+
+  // Mark-interviewed buttons (per company card)
+  block.querySelectorAll('.interview-btn').forEach(btn => {
+    btn.onclick = () => {
+      const name = decodeURIComponent(btn.dataset.company);
+      if (state.interviewed[name]) {
+        if (confirm(`Clear interview mark for ${name}?`)) {
+          delete state.interviewed[name];
+          saveInterviewed();
+          renderCompanies(); render(); updateBadges();
+        }
+      } else {
+        const today = new Date().toISOString().slice(0, 10);
+        const dateStr = prompt(`Date you interviewed at ${name} (YYYY-MM-DD)? 6-month cooldown will start from this date.`, today);
+        if (!dateStr) return;
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+          alert('Date must be in YYYY-MM-DD format.'); return;
+        }
+        state.interviewed[name] = dateStr;
+        saveInterviewed();
+        renderCompanies(); render(); updateBadges();
+      }
+    };
+  });
+}
+
+function renderApplied() {
+  const container = document.getElementById('applied-jobs');
+  container.innerHTML = '';
+  const all = state.data.weeks.flatMap(w => w.jobs.map(j => ({...j, _weekId: w.weekId, _weekLabel: w.label})));
+  let appliedJobs = all.filter(j => state.applied.has(j.id));
+  if (settings.appliedSearch) {
+    const q = settings.appliedSearch.toLowerCase();
+    appliedJobs = appliedJobs.filter(j => {
+      const hay = [j.company, j.title, j.industry, j.location, (j.skills||[]).join(' '), j.summary, j._weekId].join(' ').toLowerCase();
+      return hay.includes(q);
+    });
+  }
+  if (appliedJobs.length === 0) {
+    container.innerHTML = `<div style="color: var(--muted); padding: 24px; text-align: center; grid-column: 1/-1;">No applied jobs yet. Mark some jobs from the Jobs tab to see them here.</div>`;
+    return;
+  }
+  appliedJobs.forEach(job => {
+    const stale = isStale(job.id);
+    const card = document.createElement('div');
+    card.className = 'job applied' + (stale ? ' unavailable' : '') + (isAgency(job) ? ' agency' : '');
+    card.innerHTML = `
+      <div class="company">${job.company}</div>
+      <div class="title">${job.title}</div>
+      <div class="meta">
+        <span>📍 ${job.location}</span>
+        <span class="region-chip region-${(job.region || regionName(job)).toLowerCase()}">${regionEmoji(job)} ${job.region || regionName(job)}</span>
+        ${isAgency(job) ? '<span class="agency-chip">🏷 agency</span>' : ''}
+        <span>🏢 ${job.industry}</span>
+        ${job.salary ? `<span>💰 ${job.salary}</span>` : ''}
+        <span>🌐 ${job.remote}</span>
+        <span>📂 ${job._weekId}</span>
+      </div>
+      <div class="summary">${job.summary}</div>
+      <div class="skills">${(job.skills||[]).map(s => `<span>${s}</span>`).join('')}</div>
+      <div class="actions">
+        <a href="${job.url}" target="_blank" rel="noopener">Open ↗</a>
+        <button class="apply-btn applied" data-id="${job.id}" title="Un-mark applied">✓ Applied</button>
+        <button class="callback-btn ${state.outcomes[job.id] === 'callback' ? 'got-call' : ''}" data-id="${job.id}">
+          ${state.outcomes[job.id] === 'callback' ? '📞 Callback ✓' : '📞 Call received'}
+        </button>
+        <button class="reject-btn ${state.outcomes[job.id] === 'rejected' ? 'is-rejected' : ''}" data-id="${job.id}"
+                title="Mark rejected — negative signal for the tracker-improver">
+          ${state.outcomes[job.id] === 'rejected' ? '❌ Rejected ✓' : 'Rejected'}
+        </button>
+        <button class="notsel-btn ${state.outcomes[job.id] === 'not_selected' ? 'is-notsel' : ''}" data-id="${job.id}"
+                title="Position filled / another candidate chosen — softer negative signal than a rejection">
+          ${state.outcomes[job.id] === 'not_selected' ? '🚷 Not selected ✓' : 'Not selected'}
+        </button>
+        <button class="unavail-btn ${stale ? 'unavailable' : ''}" data-id="${job.id}">
+          ${stale ? '✗ Stale' : 'Not available'}
+        </button>
+      </div>
+    `;
+    if (state.outcomes[job.id] === 'callback') card.classList.add('has-callback');
+    container.appendChild(card);
+  });
+  container.querySelectorAll('.callback-btn').forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.dataset.id;
+      setOutcome(id, state.outcomes[id] === 'callback' ? 'none' : 'callback');
+      renderApplied(); render(); updateBadges();
+    };
+  });
+  container.querySelectorAll('.reject-btn').forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.dataset.id;
+      setOutcome(id, state.outcomes[id] === 'rejected' ? 'none' : 'rejected');
+      renderApplied(); render(); updateBadges();
+    };
+  });
+  container.querySelectorAll('.notsel-btn').forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.dataset.id;
+      setOutcome(id, state.outcomes[id] === 'not_selected' ? 'none' : 'not_selected');
+      renderApplied(); render(); updateBadges();
+    };
+  });
+  container.querySelectorAll('.apply-btn').forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.dataset.id;
+      state.applied.delete(id);
+      postOutcome(id, 'none');  // clear server record so sync doesn't re-add it
+      saveApplied();
+      renderApplied(); render(); updateBadges();
+    };
+  });
+  container.querySelectorAll('.unavail-btn').forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.dataset.id;
+      if (state.unavailable.has(id)) state.unavailable.delete(id); else state.unavailable.add(id);
+      saveUnavailable();
+      renderApplied(); render();
+    };
+  });
+}
+
+// === Action Plan ===
+
+// Map an industry/skill into a cover-letter snippet tailored to the candidate.
+function snippetFor(job) {
+  const ind = (job.industry || '').toLowerCase();
+  const sk = (job.skills || []).map(s => s.toLowerCase()).join(' ');
+  const text = (job.title + ' ' + job.summary + ' ' + ind).toLowerCase();
+
+  if (text.match(/hft|low.?latency|trading|market.?making|quant|matching engine|exchange/)) {
+    return "I spent the last 3 years building real-time C++ on Wabtec's locomotive control engine — sub-50ms deterministic latency, lock-free SPSC sensor fusion with hazard pointers, custom allocators to eliminate allocation jitter. That perf discipline maps directly to low-latency market-data and order-entry work.";
+  }
+  if (text.match(/robot|autonom|av|self.?driv|drone|humanoid|perception|sensor fusion/)) {
+    return "I've shipped real-time C++17 on 12,000+ locomotives — multi-rate sensor fusion via atomic operations + hazard pointers, convex optimization under floating-point constraints, and physics-correctness GTest suites with >95% coverage on critical paths. Strong overlap with your perception/planning/controls stack.";
+  }
+  if (text.match(/game|engine|graphics|console/)) {
+    return "I build memory-pooled, allocator-controlled real-time C++ on locomotive control engines — same perf-engineering discipline as a game engine subsystem. Looking to apply the same patterns to engine-tier work.";
+  }
+  if (text.match(/database|storage|distributed|query|kafka|postgres|scylla|mongo|warehouse/)) {
+    return "I architected a C++17 distributed platform processing real-time train-movement authorities at sub-second latency from hundreds of concurrent producers — Kafka decoupling, PostgreSQL connection pooling, multithreaded service tiers debugged under sustained load. Direct fit for your distributed-systems work.";
+  }
+  if (text.match(/embedded|firmware|iot|kernel|endpoint|security|os|systems/)) {
+    return "At Samsung I shipped multithreaded C/C++ on constrained ARM IoT hardware — diagnosed race conditions and memory leaks under sustained high-throughput, plus on-device ML inference via model compression. Strong overlap with low-level systems work.";
+  }
+  if (text.match(/media|audio|video|streaming/)) {
+    return "I build real-time C++ control loops with deterministic latency and lock-free producer/consumer plumbing on locomotive telemetry — the same real-time discipline transfers to audio/video pipelines.";
+  }
+  return "I'm a Senior C++ Developer at Wabtec building real-time optimization engines on 12,000+ locomotives — sub-50ms latency, lock-free, GTest >95% coverage. I'm looking for senior C++ roles with strong systems work.";
+}
+
+// Generate LinkedIn search URLs for referrals / hiring managers / alumni.
+function referralUrls(company) {
+  const q = encodeURIComponent(company);
+  return {
+    employees: `https://www.linkedin.com/search/results/people/?keywords=%22C%2B%2B%22%20%22${q}%22`,
+    hiringMgr: `https://www.linkedin.com/search/results/people/?keywords=%22engineering%20manager%22%20%22${q}%22`,
+    binghamton: `https://www.linkedin.com/search/results/people/?keywords=%22Binghamton%22%20%22${q}%22`,
+    samsung: `https://www.linkedin.com/search/results/people/?keywords=%22Samsung%22%20%22${q}%22`,
+    wabtec: `https://www.linkedin.com/search/results/people/?keywords=%22Wabtec%22%20%22${q}%22`,
+  };
+}
+
+function referralDM(job) {
+  return `Hi [FirstName],
+
+Saw you're at ${job.company} — I just applied for the ${job.title} role and noticed our paths might overlap.
+
+Quick context: I'm a Senior C++ Developer at Wabtec building real-time optimization engines deployed on 12,000+ locomotives (sub-50ms deterministic latency, lock-free sensor fusion, custom allocators). I think there's strong overlap with the ${job.industry} work you're doing.
+
+If you'd be open to a 15-min call — or willing to forward my resume internally — I'd really appreciate it. Resume + GitHub at github.com/[your-github].
+
+Either way, thanks for your time!
+— [your name]
+[your-email]`;
+}
+
+function actionDateKey() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+// Pick top 5 open jobs (alive, not applied, not stale, not in cooldown), prioritised by H1B + YOE fit.
+function topOpenJobs() {
+  if (!state.data) return [];
+  const all = state.data.weeks.flatMap(w => w.jobs.map(j => ({...j, _weekId: w.weekId})));
+  const open = all.filter(j =>
+    !state.applied.has(j.id) &&
+    !isStale(j.id) &&
+    !isInCooldown(j.company) &&
+    !state.notEligible[j.id] &&
+    !state.badRecs.has(j.id)
+  );
+  // Score: callback potential dominates. Fresh ATS posts (< 48h) get a huge
+  // boost because that's when recruiters actually review applications.
+  // H1B fit, YOE, salary are tiebreakers.
+  function freshnessBoost(j) {
+    if (!j.postedAtUtc) return 0;
+    const posted = new Date(j.postedAtUtc).getTime();
+    if (isNaN(posted)) return 0;
+    const hours = (Date.now() - posted) / 3600000;
+    if (hours < 6) return 20;
+    if (hours < 12) return 16;
+    if (hours < 24) return 12;
+    if (hours < 48) return 8;
+    if (hours < 72) return 5;
+    if (hours < 168) return 2;
+    return 0;
+  }
+  function score(j) {
+    let s = 0;
+    // East-to-west priority: East +20, Remote +16, Central +10, Mountain +5, West +0.
+    s += ({ 1: 20, 2: 16, 3: 10, 4: 5, 5: 0, 6: 0 })[regionRank(j)] || 0;
+    if (typeof j.callbackScore === 'number') s += j.callbackScore / 10;
+    s += freshnessBoost(j);
+    const h = (j.h1bFit || '').toLowerCase();
+    if (h.includes('yes')) s += 3;
+    else if (h.includes('confirm')) s += 1;
+    const y = (j.yoeFit || '').toLowerCase();
+    if (y.startsWith('good')) s += 2;
+    else if (y.includes('stretch') || y.includes('edge')) s += 1;
+    if (j.salary) s += 1;
+    const src = (j.source || '').toLowerCase();
+    if (src.includes('api (live)')) s += 4;
+    if (isAgency(j)) s -= 30;  // last resort: never outrank a direct employer
+    return s;
+  }
+  return open.map(j => ({...j, _score: score(j)}))
+             .sort((a, b) => b._score - a._score)
+             .slice(0, 5);
+}
+
+function renderAtsCoverage() {
+  const el = document.getElementById('ats-coverage');
+  if (!el) return;
+  // Live coverage map — counts come straight from jobs.json sources, so this
+  // stays in sync with whatever the daily updater pulled in.
+  const counts = { greenhouse: 0, ashby: 0, lever: 0, workday: 0, smartrecruiters: 0, linkedin: 0, other: 0 };
+  const fresh24 = { count: 0, top: null };
+  const now = Date.now();
+  if (state.data) {
+    for (const w of (state.data.weeks || [])) {
+      for (const j of (w.jobs || [])) {
+        const src = (j.source || '').toLowerCase();
+        if (src.includes('greenhouse')) counts.greenhouse++;
+        else if (src.includes('ashby')) counts.ashby++;
+        else if (src.includes('lever')) counts.lever++;
+        else if (src.includes('workday')) counts.workday++;
+        else if (src.includes('smartrecruiters') || src.includes('smart recruiters')) counts.smartrecruiters++;
+        else if (src.includes('linkedin')) counts.linkedin++;
+        else counts.other++;
+        // 24h freshness: postedAtUtc when present, else parse postedApprox
+        // ("N hours ago" / "N days ago") so LinkedIn/tracker entries count too.
+        let p = j.postedAtUtc ? new Date(j.postedAtUtc).getTime() : NaN;
+        if (isNaN(p) && j.postedApprox) {
+          const mh = /(\d+)\s*hour/.exec(j.postedApprox);
+          const md = /(\d+)\s*day/.exec(j.postedApprox);
+          const hrs = mh ? +mh[1] : md ? +md[1] * 24 : /just now|today/i.test(j.postedApprox) ? 1 : NaN;
+          if (!isNaN(hrs)) p = now - hrs * 3600 * 1000;
+        }
+        {
+          if (!isNaN(p) && (now - p) < 24 * 3600 * 1000) {
+            fresh24.count++;
+            if (!fresh24.top || (j.callbackScore || 0) > (fresh24.top.callbackScore || 0)) {
+              fresh24.top = j;
+            }
+          }
+        }
+      }
+    }
+  }
+  const rows = [
+    ['Greenhouse',     '95 companies polled', counts.greenhouse],
+    ['Ashby',          '23 companies polled', counts.ashby],
+    ['Lever',          '5 companies polled',  counts.lever],
+    ['Workday',        '10 enterprise tenants', counts.workday],
+    ['SmartRecruiters','1 enterprise (Visa)',  counts.smartrecruiters],
+    ['LinkedIn 24h',   'EDT-states C++ titles', counts.linkedin],
+  ];
+  el.innerHTML = `
+    <div class="ats-title"><span class="pulse"></span>Live pipeline — 5 ATS systems · 140 companies · daily 10am sweep</div>
+    <div class="ats-grid">
+      ${rows.map(([name, sub, n]) => `
+        <div class="ats-row"><span><b>${name}</b> <code>${sub}</code></span><span>${n} jobs</span></div>
+      `).join('')}
+    </div>
+    <div class="ats-note">
+      Next run pulls fresh postings from Capital One, Salesforce, Morgan Stanley, Mastercard, Cisco, Visa, Adobe, Intel, Citi, Nasdaq (Workday) + Greenhouse/Ashby/Lever boards.
+      ${fresh24.count > 0
+        ? ` &nbsp;·&nbsp; <b style="color:#ff8a8a;">🔥 ${fresh24.count} posted in last 24h</b>`
+        : ''}
+    </div>
+  `;
+}
+
+let trackerState = { lastCycleAt: null };
+
+function trackerCountdown(nextIso) {
+  if (!nextIso) return '—';
+  const ms = new Date(nextIso).getTime() - Date.now();
+  if (isNaN(ms)) return '—';
+  if (ms <= 0) return 'due now';
+  const m = Math.floor(ms / 60000), s = Math.floor((ms % 60000) / 1000);
+  return `${m}m ${String(s).padStart(2, '0')}s`;
+}
+
+function renderTrackerPanel(st) {
+  const el = document.getElementById('live-tracker-panel');
+  if (!el) return;
+  if (!st) {
+    el.innerHTML = `
+      <div class="ats-title"><span class="pulse" style="background:#71717a;box-shadow:none;"></span>Live tracker — offline</div>
+      <div class="ats-note" style="border-top:none;padding-top:0;">Start it with <code>python3 live_tracker.py --interval-min 30</code> (or the launchd agent). The daily 10am sweep still runs either way.</div>`;
+    return;
+  }
+  const running = !!st.running;
+  const dot = running
+    ? '<span class="pulse"></span>'
+    : '<span class="pulse" style="background:#f87171;box-shadow:0 0 8px #f87171;animation:none;"></span>';
+  const srcLabels = {
+    hn_hiring: 'HN Who-is-Hiring', remotive: 'Remotive', jobicy: 'Jobicy',
+    himalayas: 'Himalayas', arbeitnow: 'Arbeitnow', linkedin: 'LinkedIn 24h', ats_apis: 'ATS APIs ×140',
+  };
+  const rows = (st.sources || []).map(s => {
+    const mark = s.status === 'ok' ? '🟢' : s.status === 'skipped' ? '⚪' : '🔴';
+    const info = s.status === 'error' ? (s.error || 'error').slice(0, 40)
+      : s.status === 'skipped' ? 'every 4th cycle'
+      : `${s.found === null ? '' : s.found + ' found · '}${s.added} added`;
+    return `<div class="ats-row"><span>${mark} <b>${srcLabels[s.name] || s.name}</b></span><span>${info}</span></div>`;
+  }).join('');
+  const finds = (st.recentFinds || []).slice(0, 6).map(f =>
+    `<div class="ats-row" style="font-size:11px;"><span>✨ <b>${f.company}</b> — ${f.title.slice(0, 48)}</span><code>${f.source}</code></div>`
+  ).join('') || '<div class="ats-row" style="font-size:11px;color:var(--muted);"><span>No new finds yet this session — sources polled, board already has everything they returned.</span></div>';
+  const t = st.totals || {};
+  el.innerHTML = `
+    <div class="ats-title">${dot}Live internet-wide tracker — ${running ? 'running' : 'stopped'} · cycle ${st.cycleCount || 0} · +${t.addedToday || 0} jobs today · next cycle in <span id="tracker-countdown">${trackerCountdown(st.nextCycleAt)}</span></div>
+    <div class="ats-grid">${rows}</div>
+    <div class="ats-note"><b>Latest finds:</b></div>
+    <div class="ats-grid" style="grid-template-columns:1fr;">${finds}</div>`;
+}
+
+// Sync outcome state from the server. outcomes.json is the source of truth
+// (latest-wins per id), so marks made in another browser/profile — or ones
+// this profile made while the server was down — show up here too. Called at
+// load AND every tracker poll, so Today's Picks drop a job within ~30s of
+// you applying to it anywhere. Returns true when anything changed.
+async function syncOutcomes() {
+  try {
+    const r = await fetch('/api/outcomes?_=' + Date.now());
+    if (!r.ok) return false;
+    const server = await r.json();
+    let changed = false;
+    const clearedAt = localStorage.getItem('raviCppJobsAppliedClearedAt') || '';
+    for (const rec of (server.outcomes || [])) {
+      const { id, outcome, reason } = rec;
+      if (!id) continue;
+      // Respect a local "Clear all applied": don't resurrect applied marks
+      // recorded before the clear.
+      const preClear = clearedAt && (rec.at || '') < clearedAt;
+      if (outcome === 'applied') {
+        if (!preClear && !state.applied.has(id)) { state.applied.add(id); changed = true; }
+      } else if (outcome === 'callback' || outcome === 'rejected' ||
+                 outcome === 'not_selected' || outcome === 'no_response') {
+        if (state.outcomes[id] !== outcome) { state.outcomes[id] = outcome; changed = true; }
+        // A callback implies the job was applied to.
+        if (outcome === 'callback' && !preClear && !state.applied.has(id)) { state.applied.add(id); changed = true; }
+      } else if (outcome === 'not_eligible') {
+        const why = reason || 'other';
+        if (state.notEligible[id] !== why) { state.notEligible[id] = why; changed = true; }
+      } else if (outcome === 'bad_recommendation') {
+        if (!state.badRecs.has(id)) { state.badRecs.add(id); changed = true; }
+      }
+      // outcome === 'none' → an un-mark; local state may legitimately differ, skip.
+    }
+    if (changed) { saveApplied(); saveOutcomes(); saveNotEligible(); saveBadRecs(); }
+    return changed;
+  } catch (e) { return false; /* server offline — localStorage still works */ }
+}
+
+async function pollTracker() {
+  let st = null;
+  try {
+    const r = await fetch('tracker_status.json?_=' + Date.now());
+    if (r.ok) st = await r.json();
+  } catch (e) { /* offline is fine */ }
+  renderTrackerPanel(st);
+  // When a new cycle lands, hot-reload jobs.json so new cards appear without a manual refresh.
+  if (st && st.lastCycleAt && trackerState.lastCycleAt && st.lastCycleAt !== trackerState.lastCycleAt) {
+    await load();
+  } else if (await syncOutcomes()) {
+    // Marks made in another browser landed — refresh picks/lists right away.
+    render(); renderApplied(); updateBadges();
+  }
+  if (st) { trackerState.lastCycleAt = st.lastCycleAt; trackerState.nextCycleAt = st.nextCycleAt; }
+}
+setInterval(pollTracker, 30000);
+pollTracker();
+setInterval(() => {
+  const el = document.getElementById('tracker-countdown');
+  if (el && trackerState.nextCycleAt) el.textContent = trackerCountdown(trackerState.nextCycleAt);
+}, 1000);
+
+async function renderManualCheckPanel() {
+  const el = document.getElementById('manual-check-panel');
+  if (!el) return;
+  try {
+    const r = await fetch('manual_check_employers.json?v=' + Date.now());
+    if (!r.ok) return;
+    const data = await r.json();
+    const employers = data.employers || [];
+    el.innerHTML = `
+      <div class="ats-title"><span class="pulse" style="background:#fbbf24;box-shadow:0 0 8px #fbbf24;"></span>Manual-check tier — ${employers.length} employers whose fresh reqs aren't scrapeable</div>
+      <div class="ats-note" style="border-top:none;padding-top:0;margin-top:4px;">
+        These companies use Avature/custom career sites that block scraping. Visit each once a week — 2 minute ritual.
+      </div>
+      <div class="ats-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin-top:8px;">
+        ${employers.map(e => `
+          <div class="ats-row" style="flex-direction:column;align-items:flex-start;gap:2px;padding:6px 0;border-bottom:1px dashed var(--border);">
+            <a href="${e.url}" target="_blank" rel="noopener" style="font-weight:600;color:var(--accent);text-decoration:none;">${e.name}</a>
+            <span style="font-size:11px;color:var(--muted);">📍 ${e.location}</span>
+            <span style="font-size:11px;color:var(--muted);">Teams: ${e.cppTeams}</span>
+            <span style="font-size:10.5px;color:#a1a1aa;font-style:italic;">${e.note}</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  } catch (err) {
+    el.innerHTML = '';
+  }
+}
+
+function renderAction() {
+  const cards = document.getElementById('action-cards');
+  const stats = document.getElementById('action-stats');
+  cards.innerHTML = '';
+  renderAtsCoverage();
+  renderManualCheckPanel();
+  if (!state.data) return;
+
+  // Jobs tab lists everything east -> west; no pinned pick cards.
+  // This tab is now the pipeline dashboard: live tracker, ATS coverage,
+  // and the manual-check employer list.
+  document.getElementById('tab-action-badge').textContent = '';
+  const picks = topOpenJobs();
+  const outcomeVals = Object.values(state.outcomes);
+  const nCallbacks = outcomeVals.filter(o => o === 'callback').length;
+  const nRejected = outcomeVals.filter(o => o === 'rejected').length;
+  const nNotSelected = outcomeVals.filter(o => o === 'not_selected').length;
+  const nApplied = state.applied.size;
+  const rate = nApplied ? Math.round((nCallbacks / nApplied) * 100) : 0;
+  const nNoElig = Object.keys(state.notEligible).length;
+  stats.innerHTML = `
+    <span>⭐ Top picks: <b>${picks.length}</b> — now shown as gold cards at the top of the <b>Jobs</b> tab</span>
+    <span>📞 Callbacks: <b>${nCallbacks}</b> / ${nApplied} applied${nApplied ? ` (<b>${rate}%</b>)` : ''}</span>
+    ${nRejected ? `<span>❌ Rejected: <b>${nRejected}</b></span>` : ''}
+    ${nNotSelected ? `<span>🚷 Not selected: <b>${nNotSelected}</b></span>` : ''}
+    ${nNoElig ? `<span>🚫 Not eligible: <b>${nNoElig}</b></span>` : ''}
+    <span style="color: var(--muted);">Outcomes feed the nightly tracker-improver — mark 📞 on every recruiter response and 🚫 on every sponsorship/compliance block.</span>`;
+  cards.innerHTML = `<div class="action-empty">The <b>Jobs</b> tab lists everything east → west (East Coast first), freshest first within each region. This tab keeps the live-tracker status, ATS pipeline coverage, and the weekly manual-check employer list.</div>`;
+}
+
+function updateBadges() {
+  if (!state.data) return;
+  const all = state.data.weeks.flatMap(w => w.jobs);
+  const open = all.filter(j => !state.applied.has(j.id) && !isStale(j.id)).length;
+  document.getElementById('tab-jobs-badge').textContent = open;
+  document.getElementById('tab-applied-badge').textContent = all.filter(j => state.applied.has(j.id)).length;
+  document.getElementById('tab-live-badge').textContent = (state.data.liveTrackers || []).length;
+  document.getElementById('tab-companies-badge').textContent = (state.data.companies || []).length;
+  document.getElementById('tab-tactics-badge').textContent = (state.data.edgeTactics || []).length;
+}
+
+function switchTab(name) {
+  settings.activeTab = name;
+  saveSettings();
+  document.querySelectorAll('.main-tabs button').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === name);
+  });
+  document.querySelectorAll('.tab-content').forEach(s => {
+    s.classList.toggle('active', s.id === 'tab-content-' + name);
+  });
+  if (name === 'applied') renderApplied();
+  if (name === 'action') renderAction();
+}
+
+// ============================================================================
+// Cloud sync (Supabase) — centralizes applied/callback/cooldown state so every
+// device and origin (localhost board, public github.io board, phone) shares
+// one store instead of per-browser localStorage. localStorage remains the
+// offline cache; the cloud is the source of truth once connected.
+//
+// Config comes from supabase_config.json (url + anonKey; the private Mac copy
+// also carries boardKey so the local board connects automatically). Reads are
+// public (RLS allows select for everyone), so ANY device shows the shared
+// state immediately. Writes require the x-board-key header — entered once per
+// device via the ☁ chip. No config file → everything below is inert.
+// ============================================================================
+const CLOUD_KEY_LS = 'raviCppJobsBoardKey';
+const cloud = { cfg: null, key: '', on: false, applying: false, timers: {} };
+
+const CLOUD_SLICES = {
+  applied:      { get: () => [...state.applied],     put: v => { state.applied = new Set(v); },      save: 'saveApplied',      merge: v => [...new Set([...state.applied, ...v])] },
+  unavailable:  { get: () => [...state.unavailable], put: v => { state.unavailable = new Set(v); },  save: 'saveUnavailable',  merge: v => [...new Set([...state.unavailable, ...v])] },
+  badRecs:      { get: () => [...state.badRecs],     put: v => { state.badRecs = new Set(v); },      save: 'saveBadRecs',      merge: v => [...new Set([...state.badRecs, ...v])] },
+  outcomes:     { get: () => state.outcomes,         put: v => { state.outcomes = v || {}; },        save: 'saveOutcomes',     merge: v => ({ ...state.outcomes, ...v }) },
+  notEligible:  { get: () => state.notEligible,      put: v => { state.notEligible = v || {}; },     save: 'saveNotEligible',  merge: v => ({ ...state.notEligible, ...v }) },
+  interviewed:  { get: () => state.interviewed,      put: v => { state.interviewed = v || {}; },     save: 'saveInterviewed',  merge: v => ({ ...state.interviewed, ...v }) },
+  autoCooldown: { get: () => state.autoCooldown,     put: v => { state.autoCooldown = v || {}; },    save: 'saveAutoCooldown', merge: v => ({ ...state.autoCooldown, ...v }) },
+};
+
+function cloudHeaders() {
+  return {
+    'apikey': cloud.cfg.anonKey,
+    'Authorization': 'Bearer ' + cloud.cfg.anonKey,
+    'x-board-key': cloud.key,
+    'Content-Type': 'application/json',
+  };
+}
+
+function cloudChip(text, title) {
+  const el = document.getElementById('cloud-chip');
+  if (!el) return;
+  el.textContent = text;
+  if (title) el.title = title;
+}
+
+async function cloudInit() {
+  try {
+    const r = await fetch('supabase_config.json?_=' + Date.now());
+    if (!r.ok) { cloudChip('☁ sync: not set up', 'No supabase_config.json — state stays in this browser only'); return; }
+    const cfg = await r.json();
+    if (!cfg.url || !cfg.anonKey) { cloudChip('☁ sync: not set up'); return; }
+    cloud.cfg = cfg;
+    cloud.key = cfg.boardKey || localStorage.getItem(CLOUD_KEY_LS) || '';
+  } catch (e) { cloudChip('☁ sync: not set up'); return; }
+  if (!cloud.key) cloudChip('☁ sync: click to sign in', 'Sign in (☁ click) to sync across devices');
+}
+
+async function cloudHydrate() {
+  if (!cloud.cfg) return;
+  let rows;
+  try {
+    const r = await fetch(cloud.cfg.url.replace(/\/$/, '') + '/rest/v1/board_state?select=key,value', { headers: cloudHeaders() });
+    if (r.status === 401 || r.status === 403) { cloudChip('☁ sync: sign-in expired — click to sign in'); return; }
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    rows = await r.json();
+  } catch (e) { cloudChip('☁ sync: offline', String(e)); return; }
+
+  cloud.on = true;
+  const byKey = Object.fromEntries(rows.map(x => [x.key, x.value]));
+
+  // No board key: read-only device. Board state is publicly readable, so show
+  // the shared cloud state as-is; edits stay local-only until a key is entered.
+  if (!cloud.key) {
+    if (rows.length) {
+      cloud.applying = true;
+      try {
+        for (const [slice, s] of Object.entries(CLOUD_SLICES)) {
+          if (slice in byKey) { s.put(byKey[slice]); window[s.save](); }
+        }
+      } finally { cloud.applying = false; }
+      cloudChip('☁ read-only — click to enable saving',
+        'Showing the shared cloud state. Sign in (☁ click) to save changes from this device.');
+    } else {
+      cloudChip('☁ sync: click to sign in', 'Sign in (☁ click) to sync across devices');
+    }
+    return;
+  }
+
+  let pushAll = false;
+  cloud.applying = true;
+  try {
+    if (rows.length === 0) {
+      // First connect ever: seed the cloud with everything this browser knows.
+      pushAll = true;
+    } else if (!localStorage.getItem('raviCppJobsCloudMergedV1')) {
+      // First connect from THIS browser while cloud already has data:
+      // union-merge so neither side's history is lost, then push.
+      for (const [slice, s] of Object.entries(CLOUD_SLICES)) {
+        if (slice in byKey) s.put(s.merge(byKey[slice]));
+        window[s.save]();  // persist merged result to localStorage
+      }
+      pushAll = true;
+    } else {
+      // Normal load: cloud is the source of truth (deletes propagate too).
+      for (const [slice, s] of Object.entries(CLOUD_SLICES)) {
+        if (slice in byKey) { s.put(byKey[slice]); window[s.save](); }
+      }
+    }
+    localStorage.setItem('raviCppJobsCloudMergedV1', '1');
+  } finally { cloud.applying = false; }
+  if (pushAll) for (const slice of Object.keys(CLOUD_SLICES)) cloudPushSlice(slice, 0);
+  cloudChip('☁ sync: on', 'State is shared across your devices via Supabase');
+}
+
+function cloudPushSlice(slice, delay = 400) {
+  if (!cloud.cfg || !cloud.key || cloud.applying) return;
+  clearTimeout(cloud.timers[slice]);
+  cloud.timers[slice] = setTimeout(async () => {
+    try {
+      const r = await fetch(cloud.cfg.url.replace(/\/$/, '') + '/rest/v1/board_state?on_conflict=key', {
+        method: 'POST',
+        headers: { ...cloudHeaders(), 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+        body: JSON.stringify([{ key: slice, value: CLOUD_SLICES[slice].get() }]),
+      });
+      if (r.status === 401 || r.status === 403) cloudChip('☁ sync: not signed in — click to sign in', 'This device could not save to the cloud. Click the chip and sign in again.');
+      else if (!r.ok) cloudChip('☁ sync: save failed (HTTP ' + r.status + ')');
+    } catch (e) { cloudChip('☁ sync: offline (retries on next change)'); }
+  }, delay);
+}
+
+function cloudEvent(jobId, outcome, reason) {
+  if (!cloud.cfg || !cloud.key) return;
+  fetch(cloud.cfg.url.replace(/\/$/, '') + '/rest/v1/outcome_events', {
+    method: 'POST',
+    headers: { ...cloudHeaders(), 'Prefer': 'return=minimal' },
+    body: JSON.stringify([{ job_id: jobId, outcome, reason: reason || null }]),
+  }).catch(() => {});
+}
+
+// Route every state change through the cloud: wrap the existing save/record
+// functions (classic-script declarations are reassignable window properties).
+(function hookCloud() {
+  for (const [slice, s] of Object.entries(CLOUD_SLICES)) {
+    const orig = window[s.save];
+    window[s.save] = function (...a) { const r = orig.apply(this, a); cloudPushSlice(slice); return r; };
+  }
+  const origPost = window.postOutcome;
+  window.postOutcome = function (id, outcome) { cloudEvent(id, outcome); return origPost.call(this, id, outcome); };
+  const origBadRec = window.setBadRec;
+  window.setBadRec = function (id) { cloudEvent(id, 'bad_recommendation'); return origBadRec.call(this, id); };
+  const origNoElig = window.setNotEligible;
+  window.setNotEligible = function (id, reason) {
+    cloudEvent(id, reason ? 'not_eligible' : 'none', reason || undefined);
+    return origNoElig.call(this, id, reason);
+  };
+  document.addEventListener('DOMContentLoaded', () => {
+    const chip = document.getElementById('cloud-chip');
+    if (chip) chip.onclick = () => {
+      if (!cloud.cfg) { alert('Cloud sync is not set up yet — see supabase_config.example.json in the site folder.'); return; }
+      showCloudLogin();
+    };
+  });
+})();
+
+// --- Login: username+password → derived board key (sha-256 of "user:pass").
+// The DB stores the same derived key in board_secret, so a correct login and
+// only a correct login yields a key that board_key_ok() accepts. The raw
+// boardKey in the Mac's private config keeps working alongside it.
+async function loginDerivedKey(user, pass) {
+  const bytes = new TextEncoder().encode(user.trim().toLowerCase() + ':' + pass);
+  const h = await crypto.subtle.digest('SHA-256', bytes);
+  return [...new Uint8Array(h)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// true = key accepted, false = key rejected, null = server unreachable.
+async function cloudKeyValid(k) {
+  try {
+    const r = await fetch(cloud.cfg.url.replace(/\/$/, '') + '/rest/v1/rpc/board_key_ok', {
+      method: 'POST',
+      headers: { 'apikey': cloud.cfg.anonKey, 'Authorization': 'Bearer ' + cloud.cfg.anonKey,
+                 'x-board-key': k, 'Content-Type': 'application/json' },
+      body: '{}',
+    });
+    if (!r.ok) return false;
+    return (await r.json()) === true;
+  } catch (e) { return null; }
+}
+
+function showCloudLogin(opts) {
+  const required = !!(opts && opts.required);
+  if (document.getElementById('cloud-login')) return;
+  const div = document.createElement('div');
+  div.id = 'cloud-login';
+  // Required mode: opaque wall — nothing behind it is visible until sign-in.
+  div.style.cssText = 'position:fixed;inset:0;background:' + (required ? 'var(--bg)' : 'rgba(0,0,0,.6)') + ';display:flex;align-items:center;justify-content:center;z-index:1000;';
+  div.innerHTML = `
+    <form id="cl-form" style="background:var(--panel);border:1px solid var(--border);color:var(--text);padding:22px;border-radius:12px;min-width:290px;display:flex;flex-direction:column;gap:10px;box-shadow:0 10px 34px rgba(0,0,0,.5);">
+      <b style="font-size:15px;">${required ? 'Sign in' : 'Sign in to sync'}</b>
+      <span style="color:var(--muted);font-size:12px;">${required ? 'This board requires a login.' : 'Unlocks saving from this device.'}</span>
+      <input id="cl-user" placeholder="username" autocomplete="username" autocapitalize="none"
+        style="padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);">
+      <input id="cl-pass" type="password" placeholder="password" autocomplete="current-password"
+        style="padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);">
+      <div id="cl-err" style="color:#ff6b6b;font-size:12px;display:none;">Wrong username or password.</div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        ${required ? '' : '<button type="button" id="cl-cancel" style="padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--panel2);color:var(--text);cursor:pointer;">Cancel</button>'}
+        <button type="submit" id="cl-go" style="padding:6px 14px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:#0b1220;font-weight:600;cursor:pointer;">Sign in</button>
+      </div>
+    </form>`;
+  document.body.appendChild(div);
+  const cancel = div.querySelector('#cl-cancel');
+  if (cancel) cancel.onclick = () => div.remove();
+  if (!required) div.onclick = e => { if (e.target === div) div.remove(); };
+  div.querySelector('#cl-form').onsubmit = async (e) => {
+    e.preventDefault();
+    const btn = div.querySelector('#cl-go'), err = div.querySelector('#cl-err');
+    btn.disabled = true; btn.textContent = '…';
+    const k = await loginDerivedKey(div.querySelector('#cl-user').value, div.querySelector('#cl-pass').value);
+    const ok = await cloudKeyValid(k);
+    if (ok === true) {
+      cloud.key = k;
+      localStorage.setItem(CLOUD_KEY_LS, cloud.key);
+      div.remove();
+      await cloudHydrate();
+      render(); updateBadges();
+    } else {
+      btn.disabled = false; btn.textContent = 'Sign in';
+      err.textContent = ok === null ? "Can't reach the server — check your internet." : 'Wrong username or password.';
+      err.style.display = 'block';
+    }
+  };
+  setTimeout(() => div.querySelector('#cl-user').focus(), 50);
+}
+
+async function load() {
+  const res = await fetch('jobs.json?_=' + Date.now());
+  state.data = await res.json();
+
+  // Apply seeded applied set if the seedVersion in data is newer than what we've stored
+  const storedSeed = parseInt(localStorage.getItem(SEED_KEY) || '0', 10);
+  const dataSeed = state.data.seedVersion || 0;
+  if (dataSeed > storedSeed && Array.isArray(state.data.appliedSeed)) {
+    state.data.appliedSeed.forEach(id => state.applied.add(id));
+    localStorage.setItem(SEED_KEY, String(dataSeed));
+    saveApplied();
+  }
+
+  // Try to fetch the auto-stale list (written by verify_urls.py). Missing is OK.
+  try {
+    const r = await fetch('jobs_stale.json?_=' + Date.now());
+    if (r.ok) {
+      const stale = await r.json();
+      state.autoStale = new Set(stale.deadIds || []);
+      state.autoStaleCheckedAt = stale.checkedAt || null;
+    }
+  } catch (e) { /* file missing — that's fine */ }
+
+  await syncOutcomes();
+  await cloudInit();
+  // Compulsory login: without a working key an opaque sign-in wall blocks the
+  // board. Stored/config keys are revalidated each load; if the server is
+  // unreachable (offline) the cached session is kept instead of locking out.
+  if (cloud.cfg) {
+    if (cloud.key && (await cloudKeyValid(cloud.key)) === false) {
+      cloud.key = '';
+      localStorage.removeItem(CLOUD_KEY_LS);
+    }
+    if (!cloud.key) showCloudLogin({ required: true });
+  }
+  await cloudHydrate();
+
+  // Initialize current week if not already saved or if the saved week no longer exists
+  // One-time migration: default everyone to the all-weeks view (jobs used to
+  // hide in per-week buckets — "I only see 15 on the board").
+  if (!localStorage.getItem('raviCppJobsAllWeeksV1')) {
+    settings.currentWeek = 'ALL';
+    localStorage.setItem('raviCppJobsAllWeeksV1', '1');
+    saveSettings();
+  }
+  const weekIds = state.data.weeks.map(w => w.weekId);
+  if (!settings.currentWeek || (settings.currentWeek !== 'ALL' && !weekIds.includes(settings.currentWeek))) {
+    settings.currentWeek = 'ALL';
+    saveSettings();
+  }
+
+  // Restore form-control state from settings BEFORE first render
+  document.getElementById('search').value = settings.search || '';
+  document.getElementById('filter-remote').value = settings.remote || '';
+  document.getElementById('filter-h1b').value = settings.h1b || '';
+  document.getElementById('hide-unavailable').checked = !!settings.hideUnavailable;
+  document.getElementById('hide-cooldown').checked = !!settings.hideCooldown;
+  document.getElementById('applied-search').value = settings.appliedSearch || '';
+
+  const p = state.data.candidateProfile || {};
+  document.getElementById('profile-sub').textContent =
+    `${p.mustHave} required · ${p.yoe} YOE · ${p.visa} · last updated ${state.data.lastUpdated}`;
+
+  renderAuto();
+  renderEdge();
+  renderLive();
+  renderCompanies();
+  render();
+  renderAction();
+  updateBadges();
+  switchTab(settings.activeTab || 'action');
+}
+
+// Main tab nav
+document.querySelectorAll('.main-tabs button').forEach(b => {
+  b.onclick = () => switchTab(b.dataset.tab);
+});
+
+// Jobs-tab controls — every change saves settings.
+document.getElementById('search').oninput = e => { settings.search = e.target.value; saveSettings(); render(); };
+document.getElementById('filter-remote').onchange = e => { settings.remote = e.target.value; saveSettings(); render(); };
+document.getElementById('filter-h1b').onchange = e => { settings.h1b = e.target.value; saveSettings(); render(); };
+document.getElementById('hide-unavailable').onchange = e => {
+  settings.hideUnavailable = e.target.checked;
+  saveSettings();
+  render();
+};
+document.getElementById('hide-cooldown').onchange = e => {
+  settings.hideCooldown = e.target.checked;
+  saveSettings();
+  render();
+};
+document.getElementById('reset-unavailable').onclick = () => {
+  if (confirm('Clear all stale marks?')) { state.unavailable.clear(); saveUnavailable(); render(); updateBadges(); }
+};
+
+// Applied-tab controls
+document.getElementById('applied-search').oninput = e => {
+  settings.appliedSearch = e.target.value; saveSettings(); renderApplied();
+};
+document.getElementById('applied-export').onclick = () => {
+  const all = state.data.weeks.flatMap(w => w.jobs);
+  const applied = all.filter(j => state.applied.has(j.id));
+  const blob = new Blob([JSON.stringify(applied, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'applied.json'; a.click();
+  URL.revokeObjectURL(url);
+};
+document.getElementById('applied-clear').onclick = () => {
+  if (confirm('Clear ALL applied marks?')) {
+    // Tombstone so the server-outcome sync doesn't re-add older applied records
+    // on the next load (the server keeps them as learning data).
+    localStorage.setItem('raviCppJobsAppliedClearedAt', new Date().toISOString());
+    state.applied.clear(); saveApplied(); renderApplied(); render(); updateBadges();
+  }
+};
+
+load();
+</script>
+</body>
+</html>
