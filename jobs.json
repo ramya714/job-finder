@@ -1,7 +1,7 @@
 {
   "lastUpdated": "2026-08-27",
   "lastChecked": "2026-08-27",
-  "seedVersion": 3,
+  "seedVersion": 4,
   "candidateProfile": {
     "name": "Ramya Bangaru",
     "targetRole": "Senior Full Stack & Software Engineer",
@@ -59,7 +59,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live verified opening",
           "callbackScore": 93.0,
-          "postedAtUtc": "2026-08-27T15:55:15.051098",
+          "postedAtUtc": "2026-08-27T16:12:30.815986",
           "atsJobId": "240d459b-696d-43eb-8497-fab3e56ecd9b",
           "region": "West",
           "regionRank": 1
@@ -88,7 +88,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live verified opening",
           "callbackScore": 93.0,
-          "postedAtUtc": "2026-08-27T15:55:15.051124",
+          "postedAtUtc": "2026-08-27T16:12:30.816009",
           "atsJobId": "13995549-e8cc-498f-9eaa-1869067ac35b",
           "region": "West",
           "regionRank": 1
@@ -117,7 +117,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live verified opening",
           "callbackScore": 93.0,
-          "postedAtUtc": "2026-08-27T15:55:15.433362",
+          "postedAtUtc": "2026-08-27T16:12:31.103159",
           "atsJobId": "043d6a58-87a1-4e3c-bf47-4dc351b94cf4",
           "region": "West",
           "regionRank": 1
@@ -146,7 +146,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live verified opening",
           "callbackScore": 93.0,
-          "postedAtUtc": "2026-08-27T15:55:15.433405",
+          "postedAtUtc": "2026-08-27T16:12:31.103216",
           "atsJobId": "8a976851-9bef-4b07-8d36-567fa9540aef",
           "region": "West",
           "regionRank": 1
@@ -175,7 +175,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live verified opening",
           "callbackScore": 93.0,
-          "postedAtUtc": "2026-08-27T15:55:15.683397",
+          "postedAtUtc": "2026-08-27T16:12:31.442889",
           "atsJobId": "275f43d0-b62d-401d-830c-7c1ac0e688aa",
           "region": "West",
           "regionRank": 1
@@ -204,7 +204,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live verified opening",
           "callbackScore": 93.0,
-          "postedAtUtc": "2026-08-27T15:55:15.683525",
+          "postedAtUtc": "2026-08-27T16:12:31.443031",
           "atsJobId": "b081fafb-3659-4bf6-8e87-eb5ccc3ff234",
           "region": "West",
           "regionRank": 1
@@ -219,7 +219,9 @@
           "salary": "$170,000 \u2013 $260,000 + Equity",
           "summary": "Live opening at Databricks focused on scalable engineering with AWS and cloud infrastructure.",
           "skills": [
-            "AWS"
+            "AWS",
+            "SQL",
+            "Go"
           ],
           "url": "https://databricks.com/company/careers/open-positions/job?gh_jid=8574655002",
           "source": "Greenhouse API (Live)",
@@ -228,7 +230,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-08-27T15:55:19.415681",
+          "postedAtUtc": "2026-08-27T16:12:32.121827",
           "atsJobId": "8574655002",
           "region": "West",
           "regionRank": 2
@@ -243,7 +245,9 @@
           "salary": "$170,000 \u2013 $260,000 + Equity",
           "summary": "Live opening at Databricks focused on scalable engineering with AWS and cloud infrastructure.",
           "skills": [
-            "AWS"
+            "AWS",
+            "SQL",
+            "Go"
           ],
           "url": "https://databricks.com/company/careers/open-positions/job?gh_jid=8749859002",
           "source": "Greenhouse API (Live)",
@@ -252,7 +256,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-08-27T15:55:19.417048",
+          "postedAtUtc": "2026-08-27T16:12:32.122244",
           "atsJobId": "8749859002",
           "region": "West",
           "regionRank": 2
@@ -279,7 +283,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-08-27T15:55:26.947807",
+          "postedAtUtc": "2026-08-27T16:12:32.683060",
           "atsJobId": "8044460",
           "region": "West",
           "regionRank": 2
@@ -294,7 +298,8 @@
           "salary": "$170,000 \u2013 $260,000 + Equity",
           "summary": "Live opening at Stripe focused on scalable engineering with Java and cloud infrastructure.",
           "skills": [
-            "Java"
+            "Java",
+            "C++"
           ],
           "url": "https://stripe.com/jobs/search?gh_jid=8074125",
           "source": "Greenhouse API (Live)",
@@ -303,7 +308,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-08-27T15:55:26.949262",
+          "postedAtUtc": "2026-08-27T16:12:32.683510",
           "atsJobId": "8074125",
           "region": "West",
           "regionRank": 2
@@ -319,6 +324,7 @@
           "summary": "Live opening at Figma focused on scalable engineering with Python and cloud infrastructure.",
           "skills": [
             "Python",
+            "AWS",
             "SQL",
             "Go"
           ],
@@ -329,7 +335,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-08-27T15:55:27.172897",
+          "postedAtUtc": "2026-08-27T16:12:33.000924",
           "atsJobId": "5220003004",
           "region": "East",
           "regionRank": 2
@@ -342,10 +348,12 @@
           "remote": "US / Onsite",
           "industry": "Collaborative Design Platform",
           "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at Figma focused on scalable engineering with Python and cloud infrastructure.",
+          "summary": "Live opening at Figma focused on scalable engineering with Java and cloud infrastructure.",
           "skills": [
+            "Java",
             "Python",
             "TypeScript",
+            "AWS",
             "Go"
           ],
           "url": "https://boards.greenhouse.io/figma/jobs/6158162004?gh_jid=6158162004",
@@ -355,7 +363,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-08-27T15:55:27.176098",
+          "postedAtUtc": "2026-08-27T16:12:33.002455",
           "atsJobId": "6158162004",
           "region": "East",
           "regionRank": 2
@@ -372,6 +380,7 @@
           "skills": [
             "Python",
             "AWS",
+            "C++",
             "Docker",
             "Kubernetes",
             "Go"
@@ -383,7 +392,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-08-27T15:55:27.513552",
+          "postedAtUtc": "2026-08-27T16:12:33.242394",
           "atsJobId": "4520320005",
           "region": "East",
           "regionRank": 2
@@ -396,8 +405,11 @@
           "remote": "US / Onsite",
           "industry": "AI Data Infrastructure & Evaluation",
           "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at Scale AI focused on scalable engineering with Docker and cloud infrastructure.",
+          "summary": "Live opening at Scale AI focused on scalable engineering with React and cloud infrastructure.",
           "skills": [
+            "React",
+            "AWS",
+            "C++",
             "Docker",
             "Kubernetes",
             "Go"
@@ -409,7 +421,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-08-27T15:55:27.516669",
+          "postedAtUtc": "2026-08-27T16:12:33.243092",
           "atsJobId": "4716453005",
           "region": "East",
           "regionRank": 2
@@ -422,13 +434,10 @@
           "remote": "Remote",
           "industry": "Crypto & Digital Asset Fintech",
           "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at Coinbase focused on scalable engineering with Java and cloud infrastructure.",
+          "summary": "Live opening at Coinbase focused on scalable engineering with AWS and cloud infrastructure.",
           "skills": [
-            "Java",
-            "Python",
-            "TypeScript",
             "AWS",
-            "PostgreSQL"
+            "Go"
           ],
           "url": "https://www.coinbase.com/careers/positions/8099099?gh_jid=8099099",
           "source": "Greenhouse API (Live)",
@@ -437,7 +446,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 95.0,
-          "postedAtUtc": "2026-08-27T15:55:27.729819",
+          "postedAtUtc": "2026-08-27T16:12:33.647397",
           "atsJobId": "8099099",
           "region": "Remote",
           "regionRank": 1
@@ -450,13 +459,10 @@
           "remote": "Remote",
           "industry": "Crypto & Digital Asset Fintech",
           "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at Coinbase focused on scalable engineering with Java and cloud infrastructure.",
+          "summary": "Live opening at Coinbase focused on scalable engineering with AWS and cloud infrastructure.",
           "skills": [
-            "Java",
-            "Python",
-            "TypeScript",
             "AWS",
-            "PostgreSQL"
+            "Go"
           ],
           "url": "https://www.coinbase.com/careers/positions/8072932?gh_jid=8072932",
           "source": "Greenhouse API (Live)",
@@ -465,7 +471,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 95.0,
-          "postedAtUtc": "2026-08-27T15:55:27.733716",
+          "postedAtUtc": "2026-08-27T16:12:33.648350",
           "atsJobId": "8072932",
           "region": "Remote",
           "regionRank": 1
@@ -480,7 +486,9 @@
           "salary": "$170,000 \u2013 $260,000 + Equity",
           "summary": "Live opening at Robinhood focused on scalable engineering with Java and cloud infrastructure.",
           "skills": [
-            "Java"
+            "Java",
+            "AWS",
+            "Go"
           ],
           "url": "https://boards.greenhouse.io/robinhood/jobs/6669758?t=gh_src=&gh_jid=6669758",
           "source": "Greenhouse API (Live)",
@@ -489,7 +497,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-08-27T15:55:28.038580",
+          "postedAtUtc": "2026-08-27T16:12:33.961158",
           "atsJobId": "6669758",
           "region": "East",
           "regionRank": 2
@@ -504,7 +512,9 @@
           "salary": "$170,000 \u2013 $260,000 + Equity",
           "summary": "Live opening at Robinhood focused on scalable engineering with Java and cloud infrastructure.",
           "skills": [
-            "Java"
+            "Java",
+            "AWS",
+            "Go"
           ],
           "url": "https://boards.greenhouse.io/robinhood/jobs/7350823?t=gh_src=&gh_jid=7350823",
           "source": "Greenhouse API (Live)",
@@ -513,7 +523,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-08-27T15:55:28.040273",
+          "postedAtUtc": "2026-08-27T16:12:33.962113",
           "atsJobId": "7350823",
           "region": "West",
           "regionRank": 2
@@ -528,7 +538,8 @@
           "salary": "$170,000 \u2013 $260,000 + Equity",
           "summary": "Live opening at Hudson River Trading focused on scalable engineering with Python and cloud infrastructure.",
           "skills": [
-            "Python"
+            "Python",
+            "Go"
           ],
           "url": "https://www.hudsonrivertrading.com/careers/job/?gh_jid=8097335",
           "source": "Greenhouse API (Live)",
@@ -537,7 +548,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-08-27T15:55:28.266160",
+          "postedAtUtc": "2026-08-27T16:12:39.785341",
           "atsJobId": "8097335",
           "region": "East",
           "regionRank": 2
@@ -552,7 +563,9 @@
           "salary": "$170,000 \u2013 $260,000 + Equity",
           "summary": "Live opening at Hudson River Trading focused on scalable engineering with Python and cloud infrastructure.",
           "skills": [
-            "Python"
+            "Python",
+            "C++",
+            "Go"
           ],
           "url": "https://www.hudsonrivertrading.com/careers/job/?gh_jid=6726219",
           "source": "Greenhouse API (Live)",
@@ -561,7 +574,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-08-27T15:55:28.269656",
+          "postedAtUtc": "2026-08-27T16:12:39.786500",
           "atsJobId": "6726219",
           "region": "East",
           "regionRank": 2
@@ -587,7 +600,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-08-27T15:55:28.502093",
+          "postedAtUtc": "2026-08-27T16:12:39.923131",
           "atsJobId": "8124953002",
           "region": "East",
           "regionRank": 2
@@ -600,10 +613,12 @@
           "remote": "US / Onsite",
           "industry": "Low-Code Cloud Database Platform",
           "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at Airtable focused on scalable engineering with Kubernetes and cloud infrastructure.",
+          "summary": "Live opening at Airtable focused on scalable engineering with AWS and cloud infrastructure.",
           "skills": [
+            "AWS",
             "Kubernetes",
-            "Distributed Systems"
+            "Distributed Systems",
+            "Go"
           ],
           "url": "https://job-boards.greenhouse.io/airtable/jobs/8400373002",
           "source": "Greenhouse API (Live)",
@@ -612,7 +627,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-08-27T15:55:28.507598",
+          "postedAtUtc": "2026-08-27T16:12:39.924656",
           "atsJobId": "8400373002",
           "region": "East",
           "regionRank": 2
@@ -625,9 +640,12 @@
           "remote": "Hybrid",
           "industry": "Payroll & Cloud People Platform",
           "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at Gusto focused on scalable engineering with Python and cloud infrastructure.",
+          "summary": "Live opening at Gusto focused on scalable engineering with Java and cloud infrastructure.",
           "skills": [
-            "Python"
+            "Java",
+            "Python",
+            "React",
+            "Go"
           ],
           "url": "https://job-boards.greenhouse.io/gusto/jobs/7369003",
           "source": "Greenhouse API (Live)",
@@ -636,7 +654,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-08-27T15:55:29.124170",
+          "postedAtUtc": "2026-08-27T16:12:42.005178",
           "atsJobId": "7369003",
           "region": "West",
           "regionRank": 2
@@ -649,13 +667,9 @@
           "remote": "Hybrid",
           "industry": "Payroll & Cloud People Platform",
           "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at Gusto focused on scalable engineering with Java and cloud infrastructure.",
+          "summary": "Live opening at Gusto focused on scalable engineering with Go and cloud infrastructure.",
           "skills": [
-            "Java",
-            "Python",
-            "TypeScript",
-            "AWS",
-            "PostgreSQL"
+            "Go"
           ],
           "url": "https://job-boards.greenhouse.io/gusto/jobs/7905578",
           "source": "Greenhouse API (Live)",
@@ -664,7 +678,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-08-27T15:55:29.128358",
+          "postedAtUtc": "2026-08-27T16:12:42.006306",
           "atsJobId": "7905578",
           "region": "West",
           "regionRank": 2
@@ -692,7 +706,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-08-27T15:55:29.628552",
+          "postedAtUtc": "2026-08-27T16:12:42.479790",
           "atsJobId": "8606885002",
           "region": "West",
           "regionRank": 2
@@ -720,7 +734,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-08-27T15:55:29.630866",
+          "postedAtUtc": "2026-08-27T16:12:42.480386",
           "atsJobId": "8606890002",
           "region": "West",
           "regionRank": 2
@@ -749,7 +763,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live verified opening",
           "callbackScore": 93.0,
-          "postedAtUtc": "2026-08-27T15:55:29.830212",
+          "postedAtUtc": "2026-08-27T16:12:42.713721",
           "atsJobId": "34413f8d-26bf-4bbc-8ade-eb309a0e2245",
           "region": "West",
           "regionRank": 1
@@ -778,7 +792,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live verified opening",
           "callbackScore": 93.0,
-          "postedAtUtc": "2026-08-27T15:55:29.830250",
+          "postedAtUtc": "2026-08-27T16:12:42.713753",
           "atsJobId": "f564dcf9-9390-4a3f-896f-8047a5086040",
           "region": "West",
           "regionRank": 1
@@ -807,7 +821,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live verified opening",
           "callbackScore": 93.0,
-          "postedAtUtc": "2026-08-27T15:55:30.054784",
+          "postedAtUtc": "2026-08-27T16:12:42.927303",
           "atsJobId": "d3bc1ced-3ce4-4086-a050-555055dbb1ff",
           "region": "West",
           "regionRank": 1
@@ -836,7 +850,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live verified opening",
           "callbackScore": 93.0,
-          "postedAtUtc": "2026-08-27T15:55:30.054800",
+          "postedAtUtc": "2026-08-27T16:12:42.927339",
           "atsJobId": "cd5ae036-0223-427a-b038-ba16ef9dcb32",
           "region": "West",
           "regionRank": 1
@@ -860,7 +874,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-08-27T15:55:30.274578",
+          "postedAtUtc": "2026-08-27T16:12:44.221589",
           "atsJobId": "6122437004",
           "region": "East",
           "regionRank": 2
@@ -876,7 +890,8 @@
           "summary": "Live opening at Vercel focused on scalable engineering with TypeScript and cloud infrastructure.",
           "skills": [
             "TypeScript",
-            "React"
+            "React",
+            "Go"
           ],
           "url": "https://job-boards.greenhouse.io/vercel/jobs/5752684004",
           "source": "Greenhouse API (Live)",
@@ -885,7 +900,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-08-27T15:55:30.279381",
+          "postedAtUtc": "2026-08-27T16:12:44.222840",
           "atsJobId": "5752684004",
           "region": "East",
           "regionRank": 2
@@ -914,7 +929,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live verified opening",
           "callbackScore": 93.0,
-          "postedAtUtc": "2026-08-27T15:55:30.514750",
+          "postedAtUtc": "2026-08-27T16:12:44.458598",
           "atsJobId": "c01f7436-1fdd-4a3e-8b96-8cadc33b006e",
           "region": "Remote",
           "regionRank": 1
@@ -943,7 +958,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live verified opening",
           "callbackScore": 93.0,
-          "postedAtUtc": "2026-08-27T15:55:30.514788",
+          "postedAtUtc": "2026-08-27T16:12:44.458644",
           "atsJobId": "e4e3ccb7-7b7d-42a2-be0f-26cbb5ae4abd",
           "region": "Remote",
           "regionRank": 1
@@ -961,7 +976,8 @@
             "AWS",
             "Kubernetes",
             "Distributed Systems",
-            "Node.js"
+            "Node.js",
+            "Go"
           ],
           "url": "https://job-boards.greenhouse.io/postman/jobs/7485114003",
           "source": "Greenhouse API (Live)",
@@ -970,7 +986,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-08-27T15:55:30.697279",
+          "postedAtUtc": "2026-08-27T16:12:44.635837",
           "atsJobId": "7485114003",
           "region": "East",
           "regionRank": 2
@@ -986,10 +1002,7 @@
           "summary": "Live opening at Postman focused on scalable engineering with Java and cloud infrastructure.",
           "skills": [
             "Java",
-            "Python",
-            "TypeScript",
-            "AWS",
-            "PostgreSQL"
+            "Go"
           ],
           "url": "https://job-boards.greenhouse.io/postman/jobs/7789144003",
           "source": "Greenhouse API (Live)",
@@ -998,7 +1011,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-08-27T15:55:30.700636",
+          "postedAtUtc": "2026-08-27T16:12:44.636963",
           "atsJobId": "7789144003",
           "region": "West",
           "regionRank": 2
@@ -1014,7 +1027,8 @@
           "summary": "Live opening at Affirm focused on scalable engineering with Python and cloud infrastructure.",
           "skills": [
             "Python",
-            "SQL"
+            "SQL",
+            "Go"
           ],
           "url": "https://job-boards.greenhouse.io/affirm/jobs/7916080003",
           "source": "Greenhouse API (Live)",
@@ -1023,7 +1037,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 95.0,
-          "postedAtUtc": "2026-08-27T15:55:31.081994",
+          "postedAtUtc": "2026-08-27T16:12:44.970308",
           "atsJobId": "7916080003",
           "region": "Remote",
           "regionRank": 1
@@ -1049,7 +1063,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 95.0,
-          "postedAtUtc": "2026-08-27T15:55:31.084730",
+          "postedAtUtc": "2026-08-27T16:12:44.971149",
           "atsJobId": "7793242003",
           "region": "Remote",
           "regionRank": 1
@@ -1062,13 +1076,10 @@
           "remote": "US / Onsite",
           "industry": "Visual Discovery & Machine Learning",
           "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at Pinterest focused on scalable engineering with Java and cloud infrastructure.",
+          "summary": "Live opening at Pinterest focused on scalable engineering with AWS and cloud infrastructure.",
           "skills": [
-            "Java",
-            "Python",
-            "TypeScript",
             "AWS",
-            "PostgreSQL"
+            "Go"
           ],
           "url": "https://www.pinterestcareers.com/jobs/?gh_jid=8103612",
           "source": "Greenhouse API (Live)",
@@ -1077,7 +1088,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-08-27T15:55:31.344445",
+          "postedAtUtc": "2026-08-27T16:12:45.818747",
           "atsJobId": "8103612",
           "region": "West",
           "regionRank": 2
@@ -1090,9 +1101,11 @@
           "remote": "Remote",
           "industry": "Visual Discovery & Machine Learning",
           "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at Pinterest focused on scalable engineering with SQL and cloud infrastructure.",
+          "summary": "Live opening at Pinterest focused on scalable engineering with AWS and cloud infrastructure.",
           "skills": [
-            "SQL"
+            "AWS",
+            "SQL",
+            "Go"
           ],
           "url": "https://www.pinterestcareers.com/jobs/?gh_jid=7816424",
           "source": "Greenhouse API (Live)",
@@ -1101,7 +1114,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 95.0,
-          "postedAtUtc": "2026-08-27T15:55:31.348344",
+          "postedAtUtc": "2026-08-27T16:12:45.819623",
           "atsJobId": "7816424",
           "region": "Remote",
           "regionRank": 1
@@ -1127,7 +1140,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 95.0,
-          "postedAtUtc": "2026-08-27T15:55:31.663814",
+          "postedAtUtc": "2026-08-27T16:12:46.123784",
           "atsJobId": "8148431",
           "region": "Remote",
           "regionRank": 1
@@ -1147,7 +1160,7 @@
             "PostgreSQL",
             "Docker",
             "Kubernetes",
-            "Go"
+            "SQL"
           ],
           "url": "https://job-boards.greenhouse.io/reddit/jobs/7895468",
           "source": "Greenhouse API (Live)",
@@ -1156,7 +1169,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 95.0,
-          "postedAtUtc": "2026-08-27T15:55:31.667225",
+          "postedAtUtc": "2026-08-27T16:12:46.124290",
           "atsJobId": "7895468",
           "region": "Remote",
           "regionRank": 1
@@ -1171,7 +1184,8 @@
           "salary": "$170,000 \u2013 $260,000 + Equity",
           "summary": "Live opening at Instacart focused on scalable engineering with React and cloud infrastructure.",
           "skills": [
-            "React"
+            "React",
+            "Go"
           ],
           "url": "https://instacart.careers/job/?gh_jid=8154479",
           "source": "Greenhouse API (Live)",
@@ -1180,7 +1194,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-08-27T15:55:32.168616",
+          "postedAtUtc": "2026-08-27T16:12:46.619696",
           "atsJobId": "8154479",
           "region": "West",
           "regionRank": 2
@@ -1195,7 +1209,9 @@
           "salary": "$170,000 \u2013 $260,000 + Equity",
           "summary": "Live opening at Instacart focused on scalable engineering with Python and cloud infrastructure.",
           "skills": [
-            "Python"
+            "Python",
+            "C++",
+            "Go"
           ],
           "url": "https://instacart.careers/job/?gh_jid=8155140",
           "source": "Greenhouse API (Live)",
@@ -1204,7 +1220,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-08-27T15:55:32.170616",
+          "postedAtUtc": "2026-08-27T16:12:46.620561",
           "atsJobId": "8155140",
           "region": "West",
           "regionRank": 2
@@ -1231,7 +1247,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-08-27T15:55:32.384858",
+          "postedAtUtc": "2026-08-27T16:12:46.887027",
           "atsJobId": "8639200002",
           "region": "West",
           "regionRank": 2
@@ -1246,7 +1262,8 @@
           "salary": "$170,000 \u2013 $260,000 + Equity",
           "summary": "Live opening at Lyft focused on scalable engineering with Python and cloud infrastructure.",
           "skills": [
-            "Python"
+            "Python",
+            "Go"
           ],
           "url": "https://app.careerpuck.com/job-board/lyft/job/8430552002?gh_jid=8430552002",
           "source": "Greenhouse API (Live)",
@@ -1255,7 +1272,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-08-27T15:55:32.387498",
+          "postedAtUtc": "2026-08-27T16:12:46.887881",
           "atsJobId": "8430552002",
           "region": "West",
           "regionRank": 2
