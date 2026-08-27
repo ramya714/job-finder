@@ -874,7 +874,7 @@
 </head>
 <body>
 <!-- Authentication Overlay -->
-<div id="auth-overlay">
+<div id="auth-overlay" style="display:none;">
   <div class="auth-box">
     <div class="auth-icon">🔒</div>
     <h2>JobFinder &bull; Private Access</h2>
@@ -903,7 +903,7 @@
   </div>
 </div>
 
-<div id="main-app" style="display:none;">
+<div id="main-app" style="display:block;">
 <header>
   <div>
     <h1>Ramya Bangaru &bull; Job Tracker</h1>
@@ -2541,22 +2541,7 @@ function toggleAuthPass(e) {
 }
 
 function initAuthGate() {
-  revealDashboard("ramya");
-  const isAuth = sessionStorage.getItem('jobfinder_auth_ok') === 'true' || localStorage.getItem('jobfinder_auth_ok') === 'true';
-  const savedUser = sessionStorage.getItem('jobfinder_auth_user') || localStorage.getItem('jobfinder_auth_user') || 'ramya';
-
-  if (isAuth) {
-    revealDashboard(savedUser);
-  } else {
-    const overlay = document.getElementById('auth-overlay');
-    const mainApp = document.getElementById('main-app');
-    if (overlay) overlay.style.display = 'flex';
-    if (mainApp) mainApp.style.display = 'none';
-    setTimeout(() => {
-      const pInput = document.getElementById('auth-pass');
-      if (pInput) pInput.focus();
-    }, 100);
-  }
+  revealDashboard('ramya');
 }
 
 initAuthGate();
@@ -4338,8 +4323,22 @@ function showCloudLogin(opts) {
 }
 
 async function load() {
-  const res = await fetch('jobs.json?_=' + Date.now());
-  state.data = await res.json();
+  // Use embedded data first (works on file:// and offline)
+  if (typeof EMBEDDED_JOBS_DATA !== 'undefined' && EMBEDDED_JOBS_DATA) {
+    state.data = JSON.parse(JSON.stringify(EMBEDDED_JOBS_DATA));
+  }
+
+  // Try fetching fresh data (works on http/https)
+  try {
+    const res = await fetch('jobs.json?_=' + Date.now());
+    if (res.ok) {
+      state.data = await res.json();
+    }
+  } catch (e) {
+    console.log('Using embedded jobs data (fetch unavailable).');
+  }
+
+  if (!state.data) { console.error('No jobs data available'); return; }
 
   // Apply seeded applied set if the seedVersion in data is newer than what we've stored
   const storedSeed = parseInt(localStorage.getItem(SEED_KEY) || '0', 10);
