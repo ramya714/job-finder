@@ -65,7 +65,24 @@
     "co-op",
     "coop"
   ],
-  "require_visa_sponsorship": true,
+  "require_visa_sponsorship": false,
+  "clearance_deny": [
+    "ts/sci",
+    "ts-sci",
+    "top secret",
+    "secret clearance",
+    "security clearance",
+    "public sector",
+    "us citizenship required",
+    "u.s. citizenship required",
+    "u.s. citizen only",
+    "us citizen only",
+    "polygraph",
+    "dod clearance",
+    "active clearance",
+    "clearance required",
+    "single scope background investigation"
+  ],
   "locations_allow": [
     "remote",
     "seattle",
@@ -92,6 +109,11 @@
     "santa clara",
     "menlo park",
     "cupertino",
+    "austin",
+    "new york",
+    "nyc",
+    "chicago",
+    "boston",
     "us",
     "united states",
     "usa"
@@ -122,17 +144,8 @@
     "mexico",
     "poland"
   ],
-  "favorite_companies": [
-    "Anthropic",
-    "OpenAI",
-    "Stripe",
-    "Hudson River Trading",
-    "Perplexity AI",
-    "Databricks",
-    "Snowflake",
-    "Figma"
-  ],
+  "favorite_companies": [],
   "excluded_companies": [],
   "extra_companies": [],
-  "max_jobs_per_company": 1
+  "max_jobs_per_company": 3
 }
