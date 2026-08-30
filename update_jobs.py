@@ -150,9 +150,10 @@ for comp_name, btype, slug, industry in COMPANY_BOARDS:
                     if is_clearance_or_citizen_restricted(full_text):
                         continue
 
-                    job_url = j.get('absolute_url')
-                    if not job_url:
+                    ats_id = str(j.get('id', ''))
+                    if not ats_id:
                         continue
+                    job_url = f"https://job-boards.greenhouse.io/{slug}/jobs/{ats_id}"
 
                     company_counts[comp_name] += 1
 

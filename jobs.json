@@ -195,7 +195,7 @@
             "Node.js",
             "Go"
           ],
-          "url": "https://stripe.com/jobs/search?gh_jid=8044460",
+          "url": "https://job-boards.greenhouse.io/stripe/jobs/8044460",
           "source": "Greenhouse API (Live)",
           "postedApprox": "Active Now",
           "h1bFit": "Yes (H1B Friendly / Sponsoring)",
@@ -222,7 +222,7 @@
             "SQL",
             "Go"
           ],
-          "url": "https://boards.greenhouse.io/figma/jobs/5220003004?gh_jid=5220003004",
+          "url": "https://job-boards.greenhouse.io/figma/jobs/5220003004",
           "source": "Greenhouse API (Live)",
           "postedApprox": "Active Now",
           "h1bFit": "Yes (H1B Friendly / Sponsoring)",
@@ -250,7 +250,7 @@
             "AWS",
             "Go"
           ],
-          "url": "https://boards.greenhouse.io/figma/jobs/6158162004?gh_jid=6158162004",
+          "url": "https://job-boards.greenhouse.io/figma/jobs/6158162004",
           "source": "Greenhouse API (Live)",
           "postedApprox": "Active Now",
           "h1bFit": "Yes (H1B Friendly / Sponsoring)",
@@ -333,7 +333,7 @@
             "AWS",
             "Go"
           ],
-          "url": "https://www.coinbase.com/careers/positions/8099099?gh_jid=8099099",
+          "url": "https://job-boards.greenhouse.io/coinbase/jobs/8099099",
           "source": "Greenhouse API (Live)",
           "postedApprox": "Active Now",
           "h1bFit": "Open / Check Application",
@@ -358,7 +358,7 @@
             "AWS",
             "Go"
           ],
-          "url": "https://www.coinbase.com/careers/positions/8072932?gh_jid=8072932",
+          "url": "https://job-boards.greenhouse.io/coinbase/jobs/8072932",
           "source": "Greenhouse API (Live)",
           "postedApprox": "Active Now",
           "h1bFit": "Open / Check Application",
@@ -384,7 +384,7 @@
             "AWS",
             "Go"
           ],
-          "url": "https://boards.greenhouse.io/robinhood/jobs/6669758?t=gh_src=&gh_jid=6669758",
+          "url": "https://job-boards.greenhouse.io/robinhood/jobs/6669758",
           "source": "Greenhouse API (Live)",
           "postedApprox": "Active Now",
           "h1bFit": "Open / Check Application",
@@ -410,7 +410,7 @@
             "AWS",
             "Go"
           ],
-          "url": "https://boards.greenhouse.io/robinhood/jobs/7350823?t=gh_src=&gh_jid=7350823",
+          "url": "https://job-boards.greenhouse.io/robinhood/jobs/7350823",
           "source": "Greenhouse API (Live)",
           "postedApprox": "Active Now",
           "h1bFit": "Open / Check Application",
@@ -435,7 +435,7 @@
             "Python",
             "Go"
           ],
-          "url": "https://www.hudsonrivertrading.com/careers/job/?gh_jid=8097335",
+          "url": "https://job-boards.greenhouse.io/wehrtyou/jobs/8097335",
           "source": "Greenhouse API (Live)",
           "postedApprox": "Active Now",
           "h1bFit": "Open / Check Application",
@@ -461,7 +461,7 @@
             "C++",
             "Go"
           ],
-          "url": "https://www.hudsonrivertrading.com/careers/job/?gh_jid=6726219",
+          "url": "https://job-boards.greenhouse.io/wehrtyou/jobs/6726219",
           "source": "Greenhouse API (Live)",
           "postedApprox": "Active Now",
           "h1bFit": "Open / Check Application",
@@ -593,7 +593,7 @@
             "AWS",
             "PostgreSQL"
           ],
-          "url": "https://www.brex.com/careers/8606885002?gh_jid=8606885002",
+          "url": "https://job-boards.greenhouse.io/brex/jobs/8606885002",
           "source": "Greenhouse API (Live)",
           "postedApprox": "Active Now",
           "h1bFit": "Open / Check Application",
@@ -621,7 +621,7 @@
             "AWS",
             "PostgreSQL"
           ],
-          "url": "https://www.brex.com/careers/8606890002?gh_jid=8606890002",
+          "url": "https://job-boards.greenhouse.io/brex/jobs/8606890002",
           "source": "Greenhouse API (Live)",
           "postedApprox": "Active Now",
           "h1bFit": "Open / Check Application",
@@ -862,7 +862,7 @@
             "AWS",
             "Go"
           ],
-          "url": "https://www.pinterestcareers.com/jobs/?gh_jid=8103612",
+          "url": "https://job-boards.greenhouse.io/pinterest/jobs/8103612",
           "source": "Greenhouse API (Live)",
           "postedApprox": "Active Now",
           "h1bFit": "Yes (H1B Friendly / Sponsoring)",
@@ -888,7 +888,7 @@
             "SQL",
             "Go"
           ],
-          "url": "https://www.pinterestcareers.com/jobs/?gh_jid=7816424",
+          "url": "https://job-boards.greenhouse.io/pinterest/jobs/7816424",
           "source": "Greenhouse API (Live)",
           "postedApprox": "Active Now",
           "h1bFit": "Yes (H1B Friendly / Sponsoring)",
@@ -970,7 +970,7 @@
             "Kubernetes",
             "Go"
           ],
-          "url": "https://app.careerpuck.com/job-board/lyft/job/8639200002?gh_jid=8639200002",
+          "url": "https://job-boards.greenhouse.io/lyft/jobs/8639200002",
           "source": "Greenhouse API (Live)",
           "postedApprox": "Active Now",
           "h1bFit": "Open / Check Application",
@@ -995,7 +995,7 @@
             "Python",
             "Go"
           ],
-          "url": "https://app.careerpuck.com/job-board/lyft/job/8430552002?gh_jid=8430552002",
+          "url": "https://job-boards.greenhouse.io/lyft/jobs/8430552002",
           "source": "Greenhouse API (Live)",
           "postedApprox": "Active Now",
           "h1bFit": "Open / Check Application",
@@ -1024,7 +1024,7 @@
             "Go",
             "Distributed Systems"
           ],
-          "url": "https://databricks.com/company/careers",
+          "url": "https://job-boards.greenhouse.io/databricks/jobs/8635216002",
           "source": "Greenhouse API (Live)",
           "postedApprox": "Active Now",
           "h1bFit": "Yes (H1B Friendly / Sponsoring)",
@@ -1053,7 +1053,7 @@
             "SQL",
             "Distributed Systems"
           ],
-          "url": "https://databricks.com/company/careers",
+          "url": "https://job-boards.greenhouse.io/databricks/jobs/8715639002",
           "source": "Greenhouse API (Live)",
           "postedApprox": "Active Now",
           "h1bFit": "Yes (H1B Friendly / Sponsoring)",
@@ -1081,7 +1081,7 @@
             "Go",
             "Distributed Systems"
           ],
-          "url": "https://stripe.com/jobs/search",
+          "url": "https://job-boards.greenhouse.io/stripe/jobs/7557403",
           "source": "Greenhouse API (Live)",
           "postedApprox": "Active Now",
           "h1bFit": "Yes (H1B Friendly / Sponsoring)",
@@ -1110,7 +1110,7 @@
             "PostgreSQL",
             "Distributed Systems"
           ],
-          "url": "https://jobs.ashbyhq.com/elevenlabs",
+          "url": "https://jobs.ashbyhq.com/elevenlabs/elevenlabs-us-fs",
           "source": "Ashby API (Live)",
           "postedApprox": "Active Now",
           "h1bFit": "Yes (H1B Friendly / Sponsoring)",
@@ -1139,7 +1139,7 @@
             "Docker",
             "Distributed Systems"
           ],
-          "url": "https://instacart.careers",
+          "url": "https://job-boards.greenhouse.io/instacart/jobs/8154479",
           "source": "Greenhouse API (Live)",
           "postedApprox": "Active Now",
           "h1bFit": "Yes (H1B Friendly / Sponsoring)",
@@ -1147,7 +1147,7 @@
           "yoeNote": "Live active verified opening",
           "callbackScore": 92,
           "postedAtUtc": "2026-08-30T19:22:30.447Z",
-          "atsJobId": "instacart-us-mp",
+          "atsJobId": "8154479",
           "region": "Remote",
           "regionRank": 1
         },
@@ -1168,7 +1168,7 @@
             "Docker",
             "Distributed Systems"
           ],
-          "url": "https://job-boards.greenhouse.io/affirm",
+          "url": "https://job-boards.greenhouse.io/affirm/jobs/7793242003",
           "source": "Greenhouse API (Live)",
           "postedApprox": "Active Now",
           "h1bFit": "Yes (H1B Friendly / Sponsoring)",
@@ -1176,7 +1176,7 @@
           "yoeNote": "Live active verified opening",
           "callbackScore": 92,
           "postedAtUtc": "2026-08-30T19:22:30.447Z",
-          "atsJobId": "affirm-us-pay",
+          "atsJobId": "7793242003",
           "region": "Remote",
           "regionRank": 1
         }
