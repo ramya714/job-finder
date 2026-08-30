@@ -36,7 +36,6 @@ COMPANY_BOARDS = [
     ('Reddit', 'greenhouse', 'reddit', 'Community & Social Platform Infrastructure'),
     ('Snap', 'greenhouse', 'snapchat', 'Augmented Reality & Social Messaging'),
     ('DoorDash', 'greenhouse', 'doordash', 'Logistics & Real-time Delivery Platform'),
-    ('Instacart', 'greenhouse', 'instacart', 'E-Commerce & Grocery Fulfillment Platform'),
     ('Lyft', 'greenhouse', 'lyft', 'Mobility & Autonomous Systems')
 ]
 
