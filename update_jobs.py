@@ -213,11 +213,55 @@ for comp_name, btype, slug, industry in COMPANY_BOARDS:
 
 print(f"\n--- Total Matched Jobs: {len(matched_jobs)} ---")
 
+base_dir = os.path.dirname(os.path.abspath(__file__))
+jobs_file_path = os.path.join(base_dir, 'jobs.json')
+
+# Intelligent Job Retention: Load previous active jobs so no opening is dropped until user takes action
+existing_jobs = []
+existing_ids = set()
+existing_urls = set()
+
+if os.path.exists(jobs_file_path):
+    try:
+        with open(jobs_file_path, 'r') as f:
+            old_data = json.load(f)
+            for w in old_data.get('weeks', []):
+                for j in w.get('jobs', []):
+                    jid = j.get('id')
+                    jurl = j.get('url')
+                    if jid and jid not in existing_ids:
+                        existing_jobs.append(j)
+                        existing_ids.add(jid)
+                        if jurl:
+                            existing_urls.add(jurl)
+        print(f"Loaded {len(existing_jobs)} existing active jobs from previous sweeps.")
+    except Exception as e:
+        print(f"Notice: Could not load previous jobs: {e}")
+
+# Combine new sweep with existing active jobs
+combined_jobs = []
+new_ids = set()
+
+# 1. Add freshly scraped jobs (newest first)
+for j in matched_jobs:
+    jid = j.get('id')
+    new_ids.add(jid)
+    combined_jobs.append(j)
+
+# 2. Retain all older active jobs that were not scraped today so they stay open on the board
+retained_count = 0
+for old_j in existing_jobs:
+    if old_j.get('id') not in new_ids and old_j.get('url') not in {j.get('url') for j in matched_jobs}:
+        combined_jobs.append(old_j)
+        retained_count += 1
+
+print(f"Active board total: {len(combined_jobs)} jobs ({len(matched_jobs)} new/refreshed, {retained_count} retained from previous sweeps).")
+
 # Save to jobs.json and docs/jobs.json
 output_data = {
     "lastUpdated": datetime.date.today().isoformat(),
     "lastChecked": datetime.date.today().isoformat(),
-    "seedVersion": 4,
+    "seedVersion": 5,
     "candidateProfile": {
         "name": "Ramya Bangaru",
         "targetRole": "Senior Full Stack & Software Engineer",
@@ -250,17 +294,15 @@ output_data = {
         {
             "weekId": f"{datetime.date.today().year}-W{datetime.date.today().isocalendar()[1]}",
             "label": f"Week of {datetime.date.today().isoformat()} (Active Sweep)",
-            "jobs": matched_jobs,
+            "jobs": combined_jobs,
             "removedCount": 0,
             "removedNotes": [
                 "Strict filter: US Citizenship required and TS/SCI clearance jobs automatically excluded.",
-                "Covers all commercial tech roles (H-1B sponsoring and open tech positions)."
+                "Job retention active: Open positions stay visible until you take action (Apply or Dismiss)."
             ]
         }
     ]
 }
-
-base_dir = os.path.dirname(os.path.abspath(__file__))
 
 with open(os.path.join(base_dir, 'jobs.json'), 'w') as f:
     json.dump(output_data, f, indent=2)

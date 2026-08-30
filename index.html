@@ -379,11 +379,11 @@
   .action-card .a-title { font-size: 16px; font-weight: 700; display: inline; }
   .action-card .a-company { color: var(--accent); font-size: 14px; margin-top: 2px; }
   .action-card .a-meta { color: var(--muted); font-size: 12px; margin: 6px 0; }
-  .fresh-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; margin-left: 6px; vertical-align: middle; }
+  .fresh-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; margin: 0 6px; vertical-align: middle; }
   .fresh-badge.hot { background: #ff4d4d; color: #fff; box-shadow: 0 0 6px rgba(255,77,77,0.55); }
   .fresh-badge.warm { background: #ffb020; color: #1a1a1a; }
   .fresh-badge.mild { background: #2d4a2d; color: #c8e6c9; }
-  .cb-score { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; background: #1a2a3a; color: #9ec5fe; margin-left: 4px; vertical-align: middle; }
+  .cb-score { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; background: #1a2a3a; color: #9ec5fe; margin: 0 6px; vertical-align: middle; }
   .action-card .a-section { margin-top: 14px; }
   .action-card .a-section h4 {
     margin: 0 0 6px 0; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px;
@@ -1769,7 +1769,7 @@ function render() {
     }
     card.innerHTML = `
       <div class="company">${job.company}</div>
-      <div class="title">${job.title}${freshBadge}${cbChip}</div>
+      <div class="title">${job.title} ${freshBadge} ${cbChip}</div>
       ${inCooldown ? `<div class="cooldown-badge">⏰ ${state.autoCooldown[job.company] ? 'Call received' : 'Interviewed'} ${state.interviewed[job.company]} · ${cdMonths} ${cdMonths === 1 ? 'month' : 'months'} until eligible — company re-apply policy</div>` : ''}
       <div class="meta">
         <span>📍 ${job.location}</span>
