@@ -60,12 +60,55 @@ TITLE_INCLUSIONS = [
     'distributed', 'applications', 'mts', 'technical staff'
 ]
 
-DENY_LOCATIONS = [
-    'india', 'london', 'uk', 'united kingdom', 'singapore', 'germany', 'berlin',
-    'france', 'paris', 'dublin', 'ireland', 'australia', 'sydney', 'melbourne',
-    'japan', 'tokyo', 'amsterdam', 'netherlands', 'poland', 'warsaw', 'toronto',
-    'canada', 'vancouver', 'brazil', 'mexico', 'bangalore', 'bengaluru'
+US_STATE_CODES = {
+    'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA',
+    'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
+    'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT',
+    'VA', 'WA', 'WV', 'WI', 'WY', 'DC'
+}
+
+US_CITIES_AND_KEYWORDS = [
+    'san francisco', 'seattle', 'bellevue', 'redmond', 'kirkland', 'new york', 'nyc',
+    'austin', 'boston', 'chicago', 'los angeles', 'san diego', 'san jose', 'sunnyvale',
+    'mountain view', 'palo alto', 'menlo park', 'cupertino', 'boulder', 'denver', 'portland',
+    'atlanta', 'dallas', 'houston', 'philadelphia', 'pittsburgh', 'remote - usa', 'remote - us',
+    'remote us', 'remote usa', 'remote (us)', 'remote, us', 'united states', 'usa', 'u.s.'
 ]
+
+DENY_INTERNATIONAL = [
+    'spain', 'madrid', 'barcelona', 'korea', 'seoul', 'sweden', 'stockholm', 'taiwan', 'taipei',
+    'israel', 'tel aviv', 'europe', 'emea', 'apac', 'latam', 'uk', 'united kingdom', 'london',
+    'india', 'bangalore', 'bengaluru', 'hyderabad', 'germany', 'berlin', 'munich', 'france', 'paris',
+    'dublin', 'ireland', 'australia', 'sydney', 'melbourne', 'japan', 'tokyo', 'amsterdam',
+    'netherlands', 'poland', 'warsaw', 'toronto', 'canada', 'vancouver', 'montreal', 'brazil',
+    'mexico', 'singapore', 'switzerland', 'zurich', 'china', 'beijing', 'shanghai', 'italy',
+    'portugal', 'austria', 'norway', 'finland', 'denmark', 'belgium', 'new zealand', 'philippines'
+]
+
+def is_strictly_us_location(loc_str):
+    if not loc_str:
+        return False
+    low = loc_str.lower()
+    
+    # 1. Any international keyword immediately rejects
+    for d in DENY_INTERNATIONAL:
+        if re.search(r'\b' + re.escape(d) + r'\b', low):
+            return False
+            
+    # 2. Check for explicit US keywords / cities
+    if any(k in low for k in US_CITIES_AND_KEYWORDS):
+        return True
+        
+    # 3. Check for 2-letter state code like ", CA" or "WA"
+    for state in US_STATE_CODES:
+        if re.search(r'[\s,•\-/]' + state + r'(\b|[\s,•\-/]|$)', loc_str):
+            return True
+            
+    # 4. If labeled exactly "Remote", verify it is not an international remote
+    if low.strip() in ['remote', 'remote (us)', 'us / remote', 'remote / us']:
+        return True
+        
+    return False
 
 matched_jobs = []
 company_counts = {}
@@ -97,9 +140,8 @@ for comp_name, btype, slug, industry in COMPANY_BOARDS:
                     if not any(good in t_low for good in TITLE_INCLUSIONS):
                         continue
 
-                    loc = j.get('location', {}).get('name', 'US / Remote')
-                    loc_low = loc.lower()
-                    if any(d in loc_low for d in DENY_LOCATIONS):
+                    loc = j.get('location', {}).get('name', '')
+                    if not is_strictly_us_location(loc):
                         continue
 
                     content = j.get('content', '')
@@ -162,9 +204,8 @@ for comp_name, btype, slug, industry in COMPANY_BOARDS:
                     if not any(good in t_low for good in TITLE_INCLUSIONS):
                         continue
 
-                    loc = j.get('location', 'San Francisco, CA / Remote')
-                    loc_low = str(loc).lower()
-                    if any(d in loc_low for d in DENY_LOCATIONS):
+                    loc = str(j.get('location', ''))
+                    if not is_strictly_us_location(loc):
                         continue
 
                     comp_info = j.get('compensation', {})
@@ -248,12 +289,13 @@ for j in matched_jobs:
     new_ids.add(jid)
     combined_jobs.append(j)
 
-# 2. Retain all older active jobs that were not scraped today so they stay open on the board
+# 2. Retain all older active jobs that were not scraped today so they stay open on the board (strictly US-only)
 retained_count = 0
 for old_j in existing_jobs:
     if old_j.get('id') not in new_ids and old_j.get('url') not in {j.get('url') for j in matched_jobs}:
-        combined_jobs.append(old_j)
-        retained_count += 1
+        if is_strictly_us_location(old_j.get('location', '')):
+            combined_jobs.append(old_j)
+            retained_count += 1
 
 print(f"Active board total: {len(combined_jobs)} jobs ({len(matched_jobs)} new/refreshed, {retained_count} retained from previous sweeps).")
 
