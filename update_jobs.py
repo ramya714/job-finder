@@ -112,6 +112,26 @@ def is_clearance_or_citizen_restricted(text):
     t = text.lower()
     return any(k in t for k in CLEARANCE_KEYWORDS)
 
+def is_job_live(url):
+    """Verifies that the job requisition is still open and not 404 or expired."""
+    if not url:
+        return False
+    try:
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'})
+        with urllib.request.urlopen(req, context=ctx, timeout=6) as resp:
+            if resp.status in (200, 301, 302):
+                content = resp.read(3000).decode('utf-8', errors='ignore').lower()
+                if "no longer available" in content or "job has been closed" in content or "position is closed" in content:
+                    return False
+                return True
+            return False
+    except urllib.error.HTTPError as e:
+        if e.code in (404, 410):
+            return False
+        return True
+    except Exception:
+        return True
+
 print(f"Starting daily sweep across {len(COMPANY_BOARDS)} tech companies...")
 
 for comp_name, btype, slug, industry in COMPANY_BOARDS:
@@ -285,13 +305,16 @@ for j in matched_jobs:
     new_ids.add(jid)
     combined_jobs.append(j)
 
-# 2. Retain all older active jobs that were not scraped today so they stay open on the board (strictly US-only)
+# 2. Retain all older active jobs that were not scraped today so they stay open on the board (strictly US-only and live link)
 retained_count = 0
 for old_j in existing_jobs:
     if old_j.get('id') not in new_ids and old_j.get('url') not in {j.get('url') for j in matched_jobs}:
         if is_strictly_us_location(old_j.get('location', '')):
-            combined_jobs.append(old_j)
-            retained_count += 1
+            if is_job_live(old_j.get('url', '')):
+                combined_jobs.append(old_j)
+                retained_count += 1
+            else:
+                print(f"Pruned closed or dead job: {old_j.get('company')} - {old_j.get('title')}")
 
 print(f"Active board total: {len(combined_jobs)} jobs ({len(matched_jobs)} new/refreshed, {retained_count} retained from previous sweeps).")
 
