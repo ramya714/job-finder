@@ -384,6 +384,18 @@
   .fresh-badge.warm { background: #ffb020; color: #1a1a1a; }
   .fresh-badge.mild { background: #2d4a2d; color: #c8e6c9; }
   .cb-score { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; background: #1a2a3a; color: #9ec5fe; margin: 0 6px; vertical-align: middle; }
+  .job-section-divider {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px; margin: 18px 0 10px 0; border-radius: 8px;
+    font-size: 13px; font-weight: 700; letter-spacing: 0.3px;
+  }
+  .job-section-divider.fresh-divider {
+    background: rgba(255, 77, 77, 0.12); border: 1px solid rgba(255, 77, 77, 0.35); color: #ff6b6b;
+  }
+  .job-section-divider.older-divider {
+    background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.35); color: #93c5fd;
+  }
+  .job-section-divider .sub { font-size: 11px; font-weight: 500; opacity: 0.85; }
   .action-card .a-section { margin-top: 14px; }
   .action-card .a-section h4 {
     margin: 0 0 6px 0; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px;
@@ -1663,13 +1675,23 @@ function render() {
   const flat = [...shown].sort((a, b) => {
     const ga = isAgency(a) ? 1 : 0, gb = isAgency(b) ? 1 : 0;
     if (ga !== gb) return ga - gb;
-    const ra = regionRank(a), rb = regionRank(b);
-    if (ra !== rb) return ra - rb;
+    // 1. Freshest timestamp ALWAYS on top
     const ta = a.postedAtUtc ? Date.parse(a.postedAtUtc) : 0;
     const tb = b.postedAtUtc ? Date.parse(b.postedAtUtc) : 0;
-    return tb - ta;
+    if (ta !== tb) return tb - ta;
+    // 2. High callback probability next
+    const sa = a.callbackScore || 0, sb = b.callbackScore || 0;
+    if (sa !== sb) return sb - sa;
+    // 3. Region fallback
+    const ra = regionRank(a), rb = regionRank(b);
+    return ra - rb;
   });
+  let freshHeaderAdded = false;
+  let olderHeaderAdded = false;
   let agencySepAdded = false;
+  const nowMs = Date.now();
+  const DAY_MS = 24 * 3600 * 1000;
+
   flat.forEach(job => {
     if (!agencySepAdded && isAgency(job)) {
       agencySepAdded = true;
@@ -1678,6 +1700,24 @@ function render() {
       sep.textContent = '⬇ Staffing / recruiting agencies — last resort';
       container.appendChild(sep);
     }
+
+    const jp = job.postedAtUtc ? Date.parse(job.postedAtUtc) : NaN;
+    const isFresh = !isNaN(jp) && (nowMs - jp) <= DAY_MS;
+
+    if (isFresh && !freshHeaderAdded) {
+      freshHeaderAdded = true;
+      const sec = document.createElement('div');
+      sec.className = 'job-section-divider fresh-divider';
+      sec.innerHTML = `<span>🔥 Fresh Openings (Today / Past 24h)</span><span class="sub">Apply within 24h for ~4x interview response</span>`;
+      container.appendChild(sec);
+    } else if (!isFresh && !olderHeaderAdded && !isAgency(job)) {
+      olderHeaderAdded = true;
+      const sec = document.createElement('div');
+      sec.className = 'job-section-divider older-divider';
+      sec.innerHTML = `<span>⏳ Active Open Roles Awaiting Action</span><span class="sub">Kept active until you apply or dismiss</span>`;
+      container.appendChild(sec);
+    }
+
     try { container.appendChild(buildJobCard(job)); }
     catch (e) { console.error('bad job card skipped:', job && job.id, e); }
   });
