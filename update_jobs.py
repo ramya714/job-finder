@@ -3,6 +3,7 @@ import ssl
 import json
 import datetime
 import os
+import re
 
 ctx = ssl._create_unverified_context()
 
@@ -21,10 +22,7 @@ COMPANY_BOARDS = [
     ('Robinhood', 'greenhouse', 'robinhood', 'Retail Investment & Trading Platform'),
     ('Hudson River Trading', 'greenhouse', 'wehrtyou', 'Quantitative Finance & Low-Latency Systems'),
     ('Airtable', 'greenhouse', 'airtable', 'Low-Code Cloud Database Platform'),
-    ('Notion', 'greenhouse', 'notion', 'Productivity & Knowledge Workspace'),
-    ('Rippling', 'greenhouse', 'rippling', 'Workforce & HR Cloud Software'),
     ('Gusto', 'greenhouse', 'gusto', 'Payroll & Cloud People Platform'),
-    ('Plaid', 'greenhouse', 'plaid', 'Financial Data & API Infrastructure'),
     ('Brex', 'greenhouse', 'brex', 'Corporate Financial OS & Cards'),
     ('Ramp', 'ashby', 'ramp', 'Corporate Finance & Spend Management'),
     ('Linear', 'ashby', 'linear', 'Developer Tools & Project Management'),
@@ -34,8 +32,6 @@ COMPANY_BOARDS = [
     ('Affirm', 'greenhouse', 'affirm', 'Fintech / BNPL Payments'),
     ('Pinterest', 'greenhouse', 'pinterest', 'Visual Discovery & Machine Learning'),
     ('Reddit', 'greenhouse', 'reddit', 'Community & Social Platform Infrastructure'),
-    ('Snap', 'greenhouse', 'snapchat', 'Augmented Reality & Social Messaging'),
-    ('DoorDash', 'greenhouse', 'doordash', 'Logistics & Real-time Delivery Platform'),
     ('Lyft', 'greenhouse', 'lyft', 'Mobility & Autonomous Systems')
 ]
 
