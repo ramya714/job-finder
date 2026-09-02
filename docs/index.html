@@ -1228,13 +1228,82 @@ function copyQaText(btn) {
   });
 }
 
+function getCustomQaForJob(jobId) {
+  try {
+    return JSON.parse(localStorage.getItem('jobfinder_custom_qa_' + jobId) || '[]');
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveCustomQaForJob(jobId, list) {
+  try {
+    localStorage.setItem('jobfinder_custom_qa_' + jobId, JSON.stringify(list));
+  } catch (e) {}
+}
+
 function hasApplicationEssayBoxes(job) {
   if (!job) return false;
   if (job.hasEssayQuestions === true) return true;
   if (Array.isArray(job.customQuestions) && job.customQuestions.length > 0) return true;
   const comp = (job.company || "").toLowerCase();
-  // Only ElevenLabs has these specific mandatory essay text boxes on its application form
-  return comp.includes("elevenlabs");
+  const title = (job.title || "").toLowerCase();
+
+  // 1. Companies with known mandatory application essay textboxes
+  if (comp.includes("elevenlabs") || comp.includes("figma")) return true;
+
+  // 2. All Forward Deployed Engineer (FDE), Solutions Engineer, and DevRel roles across any company
+  const normTitle = title.replace(/[-_]/g, ' ');
+  if (normTitle.includes("forward deployed") || normTitle.includes("fde") || normTitle.includes("solutions engineer") || normTitle.includes("customer engineer") || normTitle.includes("devrel") || normTitle.includes("developer relations")) return true;
+
+  // 3. Any custom questions dynamically added by user
+  const customSaved = getCustomQaForJob(job.id);
+  if (customSaved && customSaved.length > 0) return true;
+
+  return false;
+}
+
+function generateCustomAnswer(job, questionText) {
+  const comp = job.company || "the company";
+  const title = job.title || "Software Engineer";
+  const skills = (job.skills || []).slice(0, 3).join(", ") || "Java, Python, TypeScript, and AWS";
+  const qLow = questionText.toLowerCase();
+
+  let orig = "";
+  let concise = "";
+  let technical = "";
+  let metrics = "";
+
+  if (qLow.includes("why") && (qLow.includes(comp.toLowerCase()) || qLow.includes("join") || qLow.includes("company") || qLow.includes("role") || qLow.includes("work here"))) {
+    orig = `${comp}'s innovation in ${job.industry || "high-scale software platforms"} and mission-driven engineering culture strongly resonate with my career goals. In this ${title} role, I want to leverage my background architecting high-availability distributed systems in ${skills} to solve high-impact scalability challenges. I thrive in engineering teams that prioritize performance rigor, clean architecture, and rapid velocity, and I am excited to help expand ${comp}'s core platform capabilities.`;
+    concise = `I am eager to join ${comp} as a ${title} to scale your core platform, bringing proven expertise in high-concurrency microservices, ${skills}, and cloud infrastructure.`;
+    technical = `I am drawn to ${comp}'s distributed systems architecture and platform scale. Bringing extensive experience in ${skills}, asynchronous event pipelines, and cloud resilience, I want to contribute directly to building fault-tolerant, low-latency services.`;
+    metrics = `Track record scaling backend systems to process millions of daily events, cutting P99 latency by 42%, and maintaining 99.99% system availability. I want to bring this operational scale to ${comp}.`;
+  } else if (qLow.includes("project") || qLow.includes("built") || qLow.includes("proud") || qLow.includes("impact") || qLow.includes("challenge") || qLow.includes("problem")) {
+    orig = `The most impactful system I engineered was an end-to-end distributed event processing and workflow platform handling millions of daily events. Using Java/Spring Boot, Python microservices, and AWS (SQS, Lambda, PostgreSQL), I designed distributed message deduplication and idempotency keys to ensure zero message loss and sub-90ms response times under peak concurrency.`;
+    concise = `I led the architecture of a high-throughput event processing platform on AWS handling millions of daily events with Java, Python, and PostgreSQL, maintaining 99.99% SLA and zero message loss.`;
+    technical = `Designed an event-driven architecture utilizing distributed idempotency keys, optimistic locking in PostgreSQL, and automated dead-letter retries, sustaining 5,000+ peak RPS with zero data corruption.`;
+    metrics = `Key System Achievements: 10M+ daily events processed, P99 latency reduced by 42% (from 480ms to 85ms), 99.99% uptime across 4 consecutive quarters, and 30% lower AWS compute costs.`;
+  } else if (qLow.includes("customer") || qLow.includes("client") || qLow.includes("forward deployed") || qLow.includes("fde") || qLow.includes("stakeholder") || qLow.includes("cross-functional")) {
+    orig = `When collaborating directly with customers and partner teams, I approach technical delivery with deep empathy for customer constraints while protecting core platform integrity. I quickly learn customer toolchains, isolate integration blockers, deliver working code directly into their environment, and turn recurring challenges into reusable SDKs and platform capabilities for all future users.`;
+    concise = `I bridge customer-facing technical requirements with core engineering, delivering high-velocity solutions in customer codebases while feeding reusable abstractions back into the platform.`;
+    technical = `Extensive experience with enterprise integration constraints: SSO, data residency, API rate limits, custom toolchains, and CI/CD pipelines. I specialize in rapid root-cause diagnosis and building robust client SDKs.`;
+    metrics = `Achieved 100% customer onboarding success across strategic enterprise accounts, reduced customer integration cycle time by 45%, and converted 5 custom workflows into standard product features.`;
+  } else {
+    orig = `Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this ${title} position at ${comp}, my approach combines deep hands-on expertise in ${skills}, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability and business impact.`;
+    concise = `Applying deep expertise in ${skills} and cloud distributed systems to solve this challenge with high reliability and measurable results for ${comp}.`;
+    technical = `Leveraging ${skills}, distributed system design, relational and distributed data stores, and automated testing to build fault-tolerant, scalable architectures that satisfy strict production requirements.`;
+    metrics = `Delivered measurable results across systems handling millions of requests: 99.99% SLA compliance, 42% latency reduction, and zero data regression incidents.`;
+  }
+
+  return {
+    id: "custom_" + Date.now().toString(36),
+    question: questionText,
+    orig,
+    concise,
+    technical,
+    metrics
+  };
 }
 
 function generateApplicationQa(job) {
@@ -1244,15 +1313,45 @@ function generateApplicationQa(job) {
   const comp = job.company || "the company";
   const title = job.title || "Software Engineer";
   const compLow = comp.toLowerCase();
+  const titleLow = title.toLowerCase();
+  const normTitle = titleLow.replace(/[-_]/g, ' ');
+  const isFde = normTitle.includes("forward deployed") || normTitle.includes("fde") || normTitle.includes("solutions engineer") || normTitle.includes("customer engineer") || normTitle.includes("devrel") || normTitle.includes("developer relations");
+
+  let list = [];
 
   // If specific custom questions are provided in data:
   if (Array.isArray(job.customQuestions) && job.customQuestions.length > 0) {
-    return job.customQuestions;
+    list = [...job.customQuestions];
   }
-
-  // ELEVENLABS — Exact 4 Essay Boxes from ElevenLabs Application Form
-  if (compLow.includes("elevenlabs")) {
-    return [
+  // 1. FIGMA — Exact Greenhouse Application Question: "Why do you want to join Figma?" (3-4 sentences)
+  else if (compLow.includes("figma")) {
+    if (isFde) {
+      list = [
+        {
+          id: "q1",
+          question: "Why do you want to join Figma? (Please share 3-4 sentences on why you want to join Figma)",
+          orig: "Figma has transformed collaborative design, and the Forward Deployed Engineering team sits at the most exciting frontier: connecting enterprise design systems directly to production code and agentic AI workflows. With my hands-on background in full-stack engineering, TypeScript/Python, and developer tool integrations, I want to embed with strategic customers to make tools like Code Connect and MCP seamless in their environments. I thrive in ambiguous, customer-facing technical challenges where I can solve immediate adoption hurdles and turn those lessons into durable platform features.",
+          concise: "I want to join Figma's Forward Deployed Engineering team to bridge design systems, production code, and agentic AI tools like MCP. Bringing strong experience in TypeScript, Python, and customer-facing developer platforms, I am excited to embed with strategic enterprise teams to unlock adoption and feed field insights back into Figma's core product.",
+          technical: "Figma is pioneering the design-to-code runtime with Code Connect, design token architectures, and agentic workflows via MCP. Bringing deep experience with TypeScript/Python microservices, component libraries, CI/CD toolchains, and enterprise security requirements (SSO, access controls), I want to debug complex integration constraints directly in customer environments and build reusable integration playbooks.",
+          metrics: "Proven track record accelerating developer velocity: architected enterprise platforms that reduced time-to-production by 42% and sustained 99.99% availability. I am eager to bring this engineering rigor to Figma's strategic enterprise customers, driving 100% adoption success on design-to-code and AI workflows."
+        }
+      ];
+    } else {
+      list = [
+        {
+          id: "q1",
+          question: "Why do you want to join Figma? (Please share 3-4 sentences on why you want to join Figma)",
+          orig: "Figma's mission of making design accessible and bridging design with engineering has fundamentally redefined modern software development. With my experience building high-throughput, real-time web applications and scalable microservices in TypeScript, Python, and cloud infrastructure, I want to contribute to the robust platform systems that empower millions of creators worldwide. I am inspired by Figma's culture of craft, performance rigor, and community-driven product innovation.",
+          concise: "I want to join Figma to build the high-scale infrastructure and developer tools that make collaborative design seamless. With my background in TypeScript, Python, and distributed systems, I am excited to contribute to Figma's high-performance web runtime.",
+          technical: "I admire Figma's engineering excellence across browser runtimes, WebAssembly, and real-time multiplayer synchronization. Bringing deep experience in TypeScript, Python microservices, and distributed AWS architectures, I want to build resilient platform capabilities that support Figma's rapid enterprise scale.",
+          metrics: "Track record scaling backend systems to support 10M+ daily events, cutting P99 latency by 42%, and maintaining 99.99% system availability. I want to bring this reliability and performance focus to Figma."
+        }
+      ];
+    }
+  }
+  // 2. ELEVENLABS — Exact 4 Essay Boxes from ElevenLabs Application Form
+  else if (compLow.includes("elevenlabs")) {
+    list = [
       {
         id: "q1",
         question: "Why ElevenLabs, and why now?",
@@ -1287,8 +1386,146 @@ function generateApplicationQa(job) {
       }
     ];
   }
+  // 3. FORWARD DEPLOYED ENGINEER / SOLUTIONS ENGINEER (Databricks, Scale AI, Coinbase, Vercel, Postman, etc.)
+  else if (isFde) {
+    list = [
+      {
+        id: "q1",
+        question: `Why Forward Deployed Engineering at ${comp}, and how do you approach bridging enterprise customer constraints with core platform architecture?`,
+        orig: `Forward Deployed Engineering represents the critical bridge between cutting-edge technology and real-world enterprise adoption. What excites me about joining ${comp}'s FDE team is embedding directly with strategic customers, navigating their unique infrastructure constraints, and implementing high-reliability solutions in their codebases. Rather than treating customer engagements as one-off professional services, I focus on identifying systemic adoption bottlenecks and turning those learnings into reusable SDKs, automation tooling, and durable platform features.`,
+        concise: `I want to join ${comp}'s FDE team to solve high-stakes enterprise integration challenges, bringing deep full-stack engineering skills in Java, Python, and AWS to embed with customers and translate field lessons into core product features.`,
+        technical: `I have extensive experience working in complex enterprise environments navigating SSO, VPC peering, data residency, and custom CI/CD pipelines. I excel at diving into unfamiliar customer codebases, building resilient integration layers, and architecting robust API connectors that adhere to strict enterprise security standards.`,
+        metrics: `Achieved 100% onboarding delivery across enterprise customer accounts, reduced integration lead time by 45%, and converted recurring enterprise customer requirements into 5 reusable platform modules.`
+      },
+      {
+        id: "q2",
+        question: `Describe an ambiguous technical integration problem you solved directly in an enterprise customer environment.`,
+        orig: `While integrating a distributed event-processing platform into a customer's legacy financial backend, we encountered unexpected database lock contention and connection timeouts during their month-end batch runs. I embedded directly with their engineering team, instrumented distributed tracing to locate the bottleneck, redesigned the ingestion flow into asynchronous SQS/Lambda workers with connection pooling, and eliminated all deadlocks while cutting P99 latency by 42%.`,
+        concise: `Embedded with a strategic customer to resolve severe database connection exhaustion during high-concurrency batch jobs. Redesigned the ingestion pipeline into asynchronous event-driven workers, eliminating deadlocks and cutting P99 latency by 42%.`,
+        technical: `Diagnosed high-concurrency database lock contention in a customer environment using APM tracing. Implemented distributed idempotency keys, row-level optimistic locking in PostgreSQL, and automated dead-letter retries, scaling throughput to 5,000+ peak RPS with zero data loss.`,
+        metrics: `Resolved critical blocker within 72 hours, improved customer system throughput by 3.5x, sustained 99.99% availability, and delivered a reusable integration pattern adopted across subsequent customer deployments.`
+      }
+    ];
+  }
 
-  return [];
+  // Append any dynamically added questions saved by user
+  const customSaved = getCustomQaForJob(job.id);
+  if (customSaved && customSaved.length > 0) {
+    list = list.concat(customSaved);
+  }
+
+  return list;
+}
+
+function cycleRefineAnswer(btn, event) {
+  if (event) event.stopPropagation();
+  const card = btn.closest(".qa-card");
+  if (!card) return;
+  const ansEl = card.querySelector(".qa-ans");
+  if (!ansEl) return;
+
+  const dataset = card.dataset;
+  const qType = dataset.qtype || "q1";
+  const jobId = dataset.jobid || "";
+
+  let mode = card.dataset.mode || "orig";
+  const modes = ["orig", "concise", "technical", "metrics"];
+  const nextIdx = (modes.indexOf(mode) + 1) % modes.length;
+  const nextMode = modes[nextIdx];
+  card.dataset.mode = nextMode;
+
+  const allJobs = (state.data && state.data.weeks) ? state.data.weeks.flatMap(w => w.jobs) : [];
+  const job = allJobs.find(j => j.id === jobId) || { company: "the company", title: "Software Engineer", skills: [] };
+  const qaList = generateApplicationQa(job);
+
+  const modeLabels = {
+    orig: "🎯 Base Draft",
+    concise: "⚡ Concise",
+    technical: "🚀 Technical",
+    metrics: "📊 Metrics"
+  };
+
+  const item = qaList.find(q => q.id === qType);
+  const newText = item ? (item[nextMode] || item.orig) : "";
+  if (newText) {
+    ansEl.innerText = newText;
+    ansEl.classList.remove("flash-refine");
+    void ansEl.offsetWidth;
+    ansEl.classList.add("flash-refine");
+  }
+
+  let modeBadge = card.querySelector(".qa-mode-tag");
+  if (!modeBadge) {
+    const qEl = card.querySelector(".qa-q");
+    modeBadge = document.createElement("span");
+    modeBadge.className = "qa-mode-tag";
+    if (qEl) qEl.appendChild(modeBadge);
+  }
+  if (modeBadge) {
+    modeBadge.innerText = modeLabels[nextMode];
+    modeBadge.style.display = nextMode === "orig" ? "none" : "inline-block";
+  }
+
+  btn.innerText = "✨ " + modeLabels[nextMode];
+}
+
+function toggleCustomQInput(btn, event) {
+  if (event) event.stopPropagation();
+  const wrapper = btn.closest('.custom-q-wrapper');
+  if (!wrapper) return;
+  const form = wrapper.querySelector('.custom-q-form');
+  if (!form) return;
+  const isHidden = form.style.display === 'none' || !form.style.display;
+  form.style.display = isHidden ? 'block' : 'none';
+  if (isHidden) {
+    const inp = form.querySelector('.custom-q-input');
+    if (inp) inp.focus();
+  }
+}
+
+function submitCustomQuestion(btn, jobId) {
+  const form = btn.closest('.custom-q-form') || btn.closest('.custom-q-box');
+  if (!form) return;
+  const input = form.querySelector('.custom-q-input');
+  const qText = (input ? input.value : '').trim();
+  if (!qText) return;
+
+  const allJobs = (state.data && state.data.weeks) ? state.data.weeks.flatMap(w => w.jobs) : [];
+  const job = allJobs.find(j => j.id === jobId);
+  if (!job) return;
+
+  const newQa = generateCustomAnswer(job, qText);
+  const existing = getCustomQaForJob(jobId);
+  existing.push(newQa);
+  saveCustomQaForJob(jobId, existing);
+
+  // Refresh the card
+  const card = btn.closest('.job');
+  if (card && card.parentElement) {
+    const newCard = buildJobCard(job);
+    card.parentElement.replaceChild(newCard, card);
+    const drawer = newCard.querySelector('.app-qa-drawer');
+    if (drawer) drawer.open = true;
+  }
+}
+
+function deleteCustomQuestion(btn, jobId, qId, event) {
+  if (event) event.stopPropagation();
+  const existing = getCustomQaForJob(jobId);
+  const updated = existing.filter(q => q.id !== qId);
+  saveCustomQaForJob(jobId, updated);
+
+  const allJobs = (state.data && state.data.weeks) ? state.data.weeks.flatMap(w => w.jobs) : [];
+  const job = allJobs.find(j => j.id === jobId);
+  if (!job) return;
+
+  const card = btn.closest('.job');
+  if (card && card.parentElement) {
+    const newCard = buildJobCard(job);
+    card.parentElement.replaceChild(newCard, card);
+    const drawer = newCard.querySelector('.app-qa-drawer');
+    if (drawer && (hasApplicationEssayBoxes(job) || updated.length > 0)) drawer.open = true;
+  }
 }
 
 const STORAGE_KEY = "raviCppJobsApplied";
@@ -1664,13 +1901,36 @@ function render() {
                 <div class="qa-actions-group">
                   <button type="button" class="qa-refine-btn" onclick="cycleRefineAnswer(this, event)" title="Click to instantly rephrase: Concise / Technical / Metrics">✨ Refine Text ▾</button>
                   <button type="button" class="qa-copy-btn" onclick="copyQaText(this)">📋 Copy</button>
+                  ${item.id && String(item.id).startsWith('custom_') ? `<button type="button" class="qa-del-btn" onclick="deleteCustomQuestion(this, '${job.id}', '${item.id}', event)" title="Remove question" style="background: none; border: none; color: #ef4444; font-size: 11px; cursor: pointer; padding: 2px 4px;">✕</button>` : ''}
                 </div>
               </div>
               <div class="qa-ans">${htmlEscape(item.orig)}</div>
             </div>
           `).join('')}
+          <div class="custom-q-box" style="margin-top: 10px; padding: 8px 10px; background: rgba(99, 102, 241, 0.05); border: 1px dashed rgba(99, 102, 241, 0.3); border-radius: 6px;">
+            <div style="font-size: 11px; font-weight: 600; color: var(--accent, #818cf8); margin-bottom: 4px;">➕ Application asks another tailored question? Paste it here:</div>
+            <div style="display: flex; gap: 6px;">
+              <input type="text" class="custom-q-input" placeholder="Paste the question text here..." style="flex: 1; padding: 5px 8px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border, #475569); background: var(--bg, #0f172a); color: var(--text, #f8fafc);">
+              <button type="button" onclick="submitCustomQuestion(this, '${job.id}')" style="padding: 5px 12px; font-size: 11px; font-weight: 600; background: #6366f1; color: #fff; border: none; border-radius: 4px; cursor: pointer; white-space: nowrap;">Draft Answer ✨</button>
+            </div>
+          </div>
         </div>
       </details>
+      `;
+    } else {
+      qaHtml = `
+      <div class="custom-q-wrapper" style="margin-top: 6px; padding: 2px 0;">
+        <button type="button" class="btn-toggle-custom-q" onclick="toggleCustomQInput(this, event)" style="background: none; border: none; color: var(--muted, #94a3b8); font-size: 11px; cursor: pointer; padding: 2px 0; display: inline-flex; align-items: center; gap: 4px; opacity: 0.85;">
+          <span>✨ Application asks a tailored question? Click to draft an answer</span>
+        </button>
+        <div class="custom-q-form" style="display: none; margin-top: 6px; padding: 8px 10px; background: rgba(99, 102, 241, 0.05); border: 1px dashed rgba(99, 102, 241, 0.3); border-radius: 6px;">
+          <div style="font-size: 11px; font-weight: 600; color: var(--accent, #818cf8); margin-bottom: 4px;">Paste the exact question from ${htmlEscape(job.company)}'s application form:</div>
+          <div style="display: flex; gap: 6px;">
+            <input type="text" class="custom-q-input" placeholder="e.g. Why this role? / Tell us about a complex project..." style="flex: 1; padding: 5px 8px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border, #475569); background: var(--bg, #0f172a); color: var(--text, #f8fafc);">
+            <button type="button" onclick="submitCustomQuestion(this, '${job.id}')" style="padding: 5px 12px; font-size: 11px; font-weight: 600; background: #6366f1; color: #fff; border: none; border-radius: 4px; cursor: pointer; white-space: nowrap;">Draft Answer ✨</button>
+          </div>
+        </div>
+      </div>
       `;
     }
     card.innerHTML = `

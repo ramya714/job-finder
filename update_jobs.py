@@ -103,6 +103,61 @@ def is_strictly_us_location(loc_str):
         
     return False
 
+STANDARD_LABEL_KEYWORDS = [
+    'first name', 'last name', 'email', 'phone', 'location', 'city', 'state',
+    'resume', 'cv', 'linkedin', 'website', 'github', 'portfolio', 'pronoun',
+    'preferred first name', 'are you authorized', 'sponsorship', 'citizenship',
+    'clearance', 'veteran', 'disability', 'race', 'gender', 'eeoc', 'worked for',
+    'former employee', 'non-compete', 'notice period', 'salary expectation',
+    'how did you hear', 'source', 'demographic', 'postal', 'address'
+]
+
+def is_tailored_application_question(label, ftype, desc=''):
+    lbl_low = (label or '').strip().lower()
+    if not lbl_low:
+        return False
+    if any(std in lbl_low for std in STANDARD_LABEL_KEYWORDS):
+        return False
+    if ftype == 'textarea':
+        return True
+    if any(k in lbl_low for k in ['why', 'project', 'describe', 'tell us', 'share', 'experience', 'built', 'impact', 'proud']):
+        return True
+    return False
+
+def generate_tailored_answer(comp_name, title, skills, question_text, industry):
+    q_low = question_text.lower()
+    skills_str = ", ".join(skills[:3]) if skills else "Java, Python, and AWS"
+    
+    if any(k in q_low for k in ['why', 'join', 'interest', 'work here']):
+        orig = f"{comp_name}'s innovation in {industry} and engineering-first culture strongly align with my background. In this {title} role, I want to leverage my experience building high-availability distributed systems in {skills_str} to solve complex scalability challenges. I value engineering rigor, clean system boundaries, and rapid iteration, and I am excited to help expand {comp_name}'s platform."
+        concise = f"I want to join {comp_name} as a {title} to scale your core platform, bringing deep experience in high-concurrency microservices, {skills_str}, and cloud infrastructure."
+        technical = f"I admire {comp_name}'s technical architecture in {industry}. With extensive experience in {skills_str}, asynchronous event pipelines, and cloud resiliency (AWS), I am eager to contribute directly to building fault-tolerant, low-latency services."
+        metrics = f"Proven track record scaling backend systems to support millions of daily requests, cutting P99 latency by 42%, and maintaining 99.99% system availability. I want to bring this operational scale to {comp_name}."
+    elif any(k in q_low for k in ['project', 'built', 'proud', 'impact', 'challenge', 'achievement']):
+        orig = f"The most impactful system I engineered was an end-to-end distributed event processing and workflow platform handling millions of daily events. Using Java/Spring Boot, Python microservices, and AWS (SQS, Lambda, PostgreSQL), I designed distributed message deduplication and idempotency keys to ensure zero message loss and sub-90ms response times under peak concurrency."
+        concise = f"I led the architecture of a high-throughput event processing platform on AWS handling millions of daily events with Java, Python, and PostgreSQL, maintaining 99.99% SLA and zero message loss."
+        technical = f"Designed an event-driven architecture utilizing distributed idempotency keys, optimistic locking in PostgreSQL, and automated dead-letter retries, sustaining 5,000+ peak RPS with zero data corruption."
+        metrics = f"Key Achievements: 10M+ daily events processed, P99 latency reduced by 42% (from 480ms to 85ms), 99.99% uptime across 4 consecutive quarters, and 30% lower AWS compute costs."
+    elif any(k in q_low for k in ['customer', 'client', 'partner', 'stakeholder', 'cross-functional', 'forward deployed']):
+        orig = f"When collaborating directly with customer teams, I approach technical delivery with deep empathy for customer constraints while protecting core platform integrity. I quickly navigate unfamiliar codebases, isolate integration blockers, deliver working code directly into their environment, and turn recurring challenges into reusable SDKs and platform capabilities."
+        concise = f"I bridge customer-facing technical requirements with core engineering, delivering high-velocity solutions in customer codebases while feeding reusable abstractions back into the platform."
+        technical = f"Extensive experience with enterprise integration constraints: SSO, data residency, API rate limits, custom toolchains, and CI/CD pipelines. I specialize in rapid root-cause diagnosis and building robust client SDKs."
+        metrics = f"Achieved 100% customer onboarding success across strategic enterprise accounts, reduced customer integration cycle time by 45%, and converted 5 custom workflows into standard product features."
+    else:
+        orig = f"Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this {title} position at {comp_name}, my approach combines deep hands-on expertise in {skills_str}, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability."
+        concise = f"Applying deep expertise in {skills_str} and cloud distributed systems to solve this challenge with high reliability and measurable results for {comp_name}."
+        technical = f"Leveraging {skills_str}, distributed system design, relational and distributed data stores, and automated testing to build fault-tolerant, scalable architectures that satisfy strict production requirements."
+        metrics = f"Delivered measurable results across systems handling millions of requests: 99.99% SLA compliance, 42% latency reduction, and zero data regression incidents."
+
+    return {
+        'id': f'q_{abs(hash(question_text)) % 1000000}',
+        'question': question_text,
+        'orig': orig,
+        'concise': concise,
+        'technical': technical,
+        'metrics': metrics
+    }
+
 matched_jobs = []
 company_counts = {}
 
@@ -180,6 +235,33 @@ for comp_name, btype, slug, industry in COMPANY_BOARDS:
 
                     h1b_fit = 'Yes (H1B Friendly / Sponsoring)' if any(k in comp_name.lower() for k in ['stripe', 'databricks', 'figma', 'openai', 'anthropic', 'snowflake', 'airbnb', 'doordash', 'pinterest', 'reddit']) else 'Open / Check Application'
 
+                    custom_questions = []
+                    try:
+                        detail_url = f"https://boards-api.greenhouse.io/v1/boards/{slug}/jobs/{ats_id}?questions=true"
+                        d_req = urllib.request.Request(detail_url, headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'})
+                        with urllib.request.urlopen(d_req, context=ctx, timeout=4) as d_resp:
+                            d_json = json.loads(d_resp.read().decode('utf-8'))
+                            raw_qs = d_json.get('questions', [])
+                            for q in raw_qs:
+                                q_lbl = q.get('label', '').strip()
+                                q_fields = q.get('fields', [])
+                                q_type = q_fields[0].get('type', '') if q_fields else ''
+                                q_desc = q.get('description', '') or ''
+                                if is_tailored_application_question(q_lbl, q_type, q_desc):
+                                    full_q_text = q_lbl
+                                    if q_desc and len(q_desc) < 150:
+                                        clean_desc = re.sub(r'<[^>]+>', '', q_desc).strip()
+                                        if clean_desc and clean_desc not in full_q_text:
+                                            full_q_text = f"{full_q_text} ({clean_desc})"
+                                    q_obj = generate_tailored_answer(comp_name, title, skills, full_q_text, industry)
+                                    custom_questions.append(q_obj)
+                    except Exception:
+                        pass
+
+                    if comp_name.lower() == 'figma' and not custom_questions:
+                        q_obj = generate_tailored_answer(comp_name, title, skills, "Why do you want to join Figma? (Please share 3-4 sentences on why you want to join Figma)", industry)
+                        custom_questions.append(q_obj)
+
                     matched_jobs.append({
                         'id': f'{slug}-{j.get("id")}',
                         'company': comp_name,
@@ -200,7 +282,9 @@ for comp_name, btype, slug, industry in COMPANY_BOARDS:
                         'postedAtUtc': datetime.datetime.now().isoformat(),
                         'atsJobId': str(j.get('id')),
                         'region': 'Remote' if 'remote' in loc_low else ('East' if any(e in loc_low for e in ['new york', 'nyc', 'boston']) else 'West'),
-                        'regionRank': 1 if 'remote' in loc_low else 2
+                        'regionRank': 1 if 'remote' in loc_low else 2,
+                        'customQuestions': custom_questions,
+                        'hasEssayQuestions': len(custom_questions) > 0
                     })
 
         elif btype == 'ashby':
@@ -242,6 +326,43 @@ for comp_name, btype, slug, industry in COMPANY_BOARDS:
                     elif 'voice' in t_low or 'audio' in t_low:
                         skills = ['Python', 'C++', 'AWS', 'WebSockets', 'Distributed Systems']
 
+                    custom_questions = []
+                    if comp_name.lower() == 'elevenlabs':
+                        custom_questions = [
+                            {
+                                'id': 'q1',
+                                'question': 'Why ElevenLabs, and why now?',
+                                'orig': "I have followed ElevenLabs' rapid leadership in generative audio, real-time voice streaming, and conversational AI agents. What excites me most is the engineering challenge of delivering sub-100ms low-latency audio pipelines at enterprise scale. With my background in backend systems, Python/TypeScript microservices, and AWS distributed infrastructure, I want to join now to help scale ElevenLabs' core developer APIs and multimodal voice infrastructure.",
+                                'concise': "I am eager to join ElevenLabs to solve the engineering challenge of scaling sub-100ms real-time audio streaming. My background in high-throughput Python/TypeScript microservices and AWS distributed systems enables me to immediately help scale your core developer APIs.",
+                                'technical': "I have closely studied ElevenLabs' real-time WebSocket streaming protocols and voice synthesis models. With extensive experience architecting async Python pipelines, Java/Spring Boot microservices, and event-driven AWS cloud architectures (SQS, Lambda, DynamoDB, PostgreSQL), I am eager to optimize your low-latency streaming infrastructure and API availability.",
+                                'metrics': "ElevenLabs' explosive enterprise adoption requires world-class platform reliability. In my previous backend roles, I scaled microservices to handle millions of daily requests while reducing P99 latency by 42% and sustaining 99.99% uptime. I want to bring this operational scale to ElevenLabs."
+                            },
+                            {
+                                'id': 'q2',
+                                'question': "What's the most impactful thing you've built? (Specific contribution)",
+                                'orig': "The most impactful system I built was an end-to-end distributed event processing and workflow platform handling millions of events daily. My specific contribution was leading the backend architecture using Java/Spring Boot and Python microservices on AWS (SQS, Lambda, DynamoDB, PostgreSQL) with a reactive TypeScript/React UI. I designed the asynchronous ingestion pipelines, implemented idempotency mechanisms, and optimized database query patterns to eliminate bottlenecks during peak traffic surges.",
+                                'concise': "I led the architecture of a high-throughput event processing platform on AWS handling millions of daily events. Using Java/Spring Boot, Python, and PostgreSQL, I designed asynchronous message pipelines, eliminated database bottlenecks, and sustained 99.99% availability during traffic spikes.",
+                                'technical': "I architected and built an asynchronous, event-driven workflow engine using Java/Spring Boot and Python microservices on AWS (SQS, Lambda, DynamoDB, Aurora PostgreSQL) paired with a reactive TypeScript/React dashboard. I designed distributed locking, idempotent message deduplication, and database connection pooling to sustain 5,000+ peak RPS with zero data loss.",
+                                'metrics': "Key System Achievements:\n• Engineered distributed event ingestion pipeline processing 10M+ daily events.\n• Reduced P99 API latency by 42% (from 480ms to 85ms).\n• Maintained 99.99% system SLA with zero critical incidents.\n• Optimized AWS cloud resource utilization to lower operating costs by 30%."
+                            },
+                            {
+                                'id': 'q3',
+                                'question': "How did you know it worked? What did success actually look like?",
+                                'orig': "Success was measured through concrete operational and business metrics:\n1. P99 API response latency decreased by 42% (from 480ms down to 85ms under high concurrency).\n2. Achieved zero message loss with 99.99% system availability across consecutive quarters.\n3. Reduced cloud infrastructure operating costs by 30% through auto-scaling and serverless optimization.\n4. Accelerated engineering cycle time, enabling cross-functional teams to deploy new workflows in minutes rather than weeks.",
+                                'concise': "We verified success through APM telemetry: P99 response latency dropped by 42% (down to 85ms), system uptime reached 99.99% across consecutive quarters, zero message loss occurred during traffic spikes, and AWS operational spend dropped by 30%.",
+                                'technical': "We validated success through distributed tracing and production APM telemetry:\n• Real-time Datadog & AWS CloudWatch metrics showed P99 latencies stabilized below 90ms.\n• Distributed tracing confirmed sub-second end-to-end event completion across microservices.\n• Automated chaos tests verified zero unhandled dead-letter queue failures during simulated node outages.",
+                                'metrics': "Measurable Outcomes:\n1. Latency: P99 response time reduced from 480ms to 85ms (-42%).\n2. Availability: 99.99% uptime achieved across 12 consecutive months.\n3. Cost: 30% reduction in monthly AWS infrastructure expenses.\n4. Scalability: Handled a 4x holiday traffic surge with zero degradation."
+                            },
+                            {
+                                'id': 'q4',
+                                'question': "Have you used ElevenLabs' product / explored it in a project?",
+                                'orig': "While I haven't deployed ElevenLabs in production yet, I have thoroughly explored your API architecture, documentation, and real-time streaming WebSocket endpoints. My core strength is architecting high-throughput, low-latency backend microservices and event pipelines in Java, Python, and AWS. I am deeply interested in audio synthesis and real-time streaming, and I am eager to apply my distributed systems background to optimize ElevenLabs' low-latency audio delivery at scale.",
+                                'concise': "I have explored ElevenLabs' API documentation and real-time streaming WebSocket protocols. With my background building low-latency backend microservices in Java, Python, and AWS, I am excited to apply my distributed systems experience to scale ElevenLabs' audio pipelines.",
+                                'technical': "I have studied ElevenLabs' developer endpoints, chunked audio transfer protocols, and WebSocket latency characteristics. In my backend work, I specialize in building asynchronous event streams, socket connection management, and low-latency microservices with Python, Java, and AWS.",
+                                'metrics': "I bring a proven track record in high-scale infrastructure: architecting backend pipelines that achieved 99.99% uptime and 42% latency reduction. I am eager to bring this performance rigor to ElevenLabs' growing developer ecosystem."
+                            }
+                        ]
+
                     matched_jobs.append({
                         'id': f'{slug}-{j.get("id")}',
                         'company': comp_name,
@@ -262,7 +383,9 @@ for comp_name, btype, slug, industry in COMPANY_BOARDS:
                         'postedAtUtc': datetime.datetime.now().isoformat(),
                         'atsJobId': str(j.get('id')),
                         'region': 'Remote' if 'remote' in loc_low else 'West',
-                        'regionRank': 1
+                        'regionRank': 1,
+                        'customQuestions': custom_questions,
+                        'hasEssayQuestions': len(custom_questions) > 0
                     })
 
     except Exception as e:
@@ -311,6 +434,13 @@ for old_j in existing_jobs:
     if old_j.get('id') not in new_ids and old_j.get('url') not in {j.get('url') for j in matched_jobs}:
         if is_strictly_us_location(old_j.get('location', '')):
             if is_job_live(old_j.get('url', '')):
+                if 'customQuestions' not in old_j:
+                    old_j['customQuestions'] = []
+                    old_j['hasEssayQuestions'] = False
+                    if old_j.get('company', '').lower() == 'figma':
+                        q_obj = generate_tailored_answer('Figma', old_j.get('title', ''), old_j.get('skills', []), "Why do you want to join Figma? (Please share 3-4 sentences on why you want to join Figma)", old_j.get('industry', 'Design Platform'))
+                        old_j['customQuestions'] = [q_obj]
+                        old_j['hasEssayQuestions'] = True
                 combined_jobs.append(old_j)
                 retained_count += 1
             else:
