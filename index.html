@@ -1228,51 +1228,29 @@ function copyQaText(btn) {
   });
 }
 
+function hasApplicationEssayBoxes(job) {
+  if (!job) return false;
+  if (job.hasEssayQuestions === true) return true;
+  if (Array.isArray(job.customQuestions) && job.customQuestions.length > 0) return true;
+  const comp = (job.company || "").toLowerCase();
+  // Only ElevenLabs has these specific mandatory essay text boxes on its application form
+  return comp.includes("elevenlabs");
+}
+
 function generateApplicationQa(job) {
+  if (!hasApplicationEssayBoxes(job)) {
+    return [];
+  }
   const comp = job.company || "the company";
   const title = job.title || "Software Engineer";
-  const skills = (job.skills || []).slice(0, 3).join(", ") || "Java, Python, TypeScript, and AWS";
   const compLow = comp.toLowerCase();
 
-  // 1. PERPLEXITY AI — Tailored to Monetization, Search, and AI Infrastructure
-  if (compLow.includes("perplexity")) {
-    return [
-      {
-        id: "q1",
-        question: `Why Perplexity, and why this ${title} role?`,
-        orig: `Perplexity is revolutionizing how humanity accesses knowledge through citation-backed, agentic AI. What excites me most about this role is building the high-reliability platform abstractions that power Perplexity's core products—from real-time action metering and credit settlement to scalable search indexing. With my background architecting high-throughput microservices in Python, Java, and AWS, I want to help build the foundational monetization and distributed systems that convert users into long-term customers.`,
-        concise: `I want to join Perplexity to engineer reliable backend systems for agentic AI and search discovery, bringing strong distributed microservices, Python, and AWS experience.`,
-        technical: `I specialize in high-concurrency distributed backends: building Python async pipelines, relational PostgreSQL schemas with strict ACID isolation, and AWS cloud architectures. I am excited to contribute to Perplexity's billing abstractions, Stripe integrations, and high-scale indexing backends.`,
-        metrics: `In previous backend roles, I engineered distributed event platforms handling millions of daily transactions, sustained 99.99% availability, and cut P99 latency by 42%. I look forward to bringing this operational scale to Perplexity.`
-      },
-      {
-        id: "q2",
-        question: "Describe your experience building or scaling billing, payment processors (Stripe), subscriptions, or monetization systems.",
-        orig: `I have direct hands-on experience integrating payment processors (Stripe APIs, webhooks, idempotency keys) and building subscription and invoicing workflows. I designed idempotent webhook listeners to eliminate double-charges during network timeouts, implemented prorated subscription tier adjustments, and engineered resilient database transaction rollbacks in PostgreSQL to keep financial ledgers strictly consistent.`,
-        concise: `I have designed and scaled Stripe payment integrations, idempotent webhook handling, subscription lifecycle management, and transactional PostgreSQL ledgers with zero double-charge errors.`,
-        technical: `My payment systems background includes Stripe API integration with distributed idempotency headers, asynchronous webhook consumption via AWS SQS/Lambda, dead-letter retry queues, and row-level locking in PostgreSQL to guarantee strict balance integrity.`,
-        metrics: `Maintained 100% financial settlement accuracy across millions of payment events, achieved zero unhandled webhook dropped events, and reduced billing API processing time by 35%.`
-      },
-      {
-        id: "q3",
-        question: "How do you hill-climb on reliability (SLOs, real-time observability, alerting) to catch revenue-affecting bugs before customers?",
-        orig: `I treat reliability as a core product feature. I establish tiered SLOs organized by user impact (e.g. 99.99% for payment checkout/settlement vs. 99.9% for dashboard analytics), instrument distributed tracing (Datadog/CloudWatch), and configure automated synthetic probes that simulate complete transaction flows every 60 seconds to detect regressions before any customer is impacted.`,
-        concise: `I establish tiered SLOs, instrument end-to-end distributed tracing, and deploy automated synthetic checkout probes to catch revenue-affecting regressions in real time before users encounter them.`,
-        technical: `I implement OpenTelemetry distributed tracing across microservices, configure real-time error budget burn alerts in Datadog/CloudWatch, and build automated circuit breakers that degrade gracefully rather than hard-failing during external processor rate-limits.`,
-        metrics: `Maintained a 99.99% uptime SLA across 4 consecutive quarters, detected and resolved 100% of payment provider degradation incidents before SLA breaches, and reduced MTTR to under 8 minutes.`
-      },
-      {
-        id: "q4",
-        question: "Are you able to work from San Francisco or New York City, and what is your US work authorization?",
-        orig: `I have valid US work authorization and am fully authorized to work in the United States. I am excited and ready to collaborate in person with the engineering team from the San Francisco or New York City office.`,
-        concise: `Authorized to work in the US; fully ready to collaborate in-office in San Francisco or New York City.`,
-        technical: `Authorized to work in the United States; available for full-time in-office collaboration in San Francisco or New York City.`,
-        metrics: `US Work Authorization: Valid & active. Location: Flexible for SF or NYC onsite collaboration.`
-      }
-    ];
+  // If specific custom questions are provided in data:
+  if (Array.isArray(job.customQuestions) && job.customQuestions.length > 0) {
+    return job.customQuestions;
   }
 
-  // 2. ELEVENLABS — Exact 4 Essay Boxes from ElevenLabs Application Form
+  // ELEVENLABS — Exact 4 Essay Boxes from ElevenLabs Application Form
   if (compLow.includes("elevenlabs")) {
     return [
       {
@@ -1310,207 +1288,7 @@ function generateApplicationQa(job) {
     ];
   }
 
-  // 3. AFFIRM — Exact Greenhouse Form Questions
-  if (compLow.includes("affirm")) {
-    return [
-      {
-        id: "q1",
-        question: "Do you require immigration sponsorship to work for Affirm in the United States, now or in the future?",
-        orig: "I hold active, valid US work authorization (H-1B status). I will require standard employer transfer sponsorship to join Affirm and continue authorization in the United States.",
-        concise: "Hold active US work authorization; require standard H-1B transfer sponsorship.",
-        technical: "Active US work authorization with full eligibility for standard H-1B transfer sponsorship.",
-        metrics: "Work Authorization: Valid US Work Authorization / Standard H-1B Transfer Eligible."
-      },
-      {
-        id: "q2",
-        question: `Why Affirm, and what is your experience with full-stack analytics, financial systems, and payment infrastructure?`,
-        orig: `Affirm's mission of honest, transparent financial products without hidden fees represents the gold standard in fintech. I bring extensive experience architecting high-integrity data pipelines and full-stack services with Python, Java/Spring Boot, and PostgreSQL/AWS, ensuring underwriting metrics and revenue analytics are real-time, auditable, and reliable.`,
-        concise: `I am inspired by Affirm's transparent credit products, bringing deep experience in Python, Java, and PostgreSQL building auditable financial data pipelines and analytical platforms.`,
-        technical: `I architect scalable financial data ingestion pipelines, optimized SQL analytical queries, and reactive dashboards with Python, PostgreSQL, and React, emphasizing strict data lineage, idempotency, and audit compliance.`,
-        metrics: `Built backend analytics pipelines processing 10M+ daily events with 99.99% uptime, reduced query latency by 42%, and automated financial reporting reconciliation.`
-      },
-      {
-        id: "q3",
-        question: "How did you first learn about Affirm as an employer?",
-        orig: "I have closely followed Affirm's leadership in consumer fintech, transparent credit underwriting, and engineering publications on high-availability distributed systems.",
-        concise: "Through Affirm's engineering blog and tech industry reputation for pioneering honest, transparent financial software.",
-        technical: "Through Affirm's engineering architecture whitepapers and technical reputation in distributed financial systems.",
-        metrics: "Through Affirm's high-profile fintech tech leadership and open engineering publications."
-      }
-    ];
-  }
-
-  // 4. STRIPE — Exact Questions for Stripe Engineering Applications
-  if (compLow.includes("stripe")) {
-    return [
-      {
-        id: "q1",
-        question: "Why Stripe, and why now?",
-        orig: "Stripe's mission to increase the GDP of the internet has set the global benchmark for developer-first financial infrastructure. I want to contribute to the robust APIs and distributed backend platforms that power millions of global businesses with uncompromising reliability.",
-        concise: "I want to join Stripe to scale the world's most developer-centric financial infrastructure, bringing deep backend microservices and API reliability experience.",
-        technical: "I admire Stripe's architectural rigor around idempotency, API versioning, and zero-downtime database migrations. I bring extensive experience in Java, Python, AWS, and distributed consensus.",
-        metrics: "Proven experience building systems that sustained 99.99% availability, reduced P99 latency by 42%, and processed millions of daily transactions."
-      },
-      {
-        id: "q2",
-        question: "Describe a technical project you are proud of (API design, distributed systems, or payment infrastructure).",
-        orig: "I architected an asynchronous, distributed event-processing pipeline handling millions of daily events. Using Java/Spring Boot, Python microservices, and AWS (SQS, Lambda, PostgreSQL), I designed distributed deduplication and idempotency keys to ensure zero message loss and sub-90ms response times under high concurrency.",
-        concise: "Engineered a high-throughput event processing platform on AWS handling 10M+ daily events with Java, Python, and PostgreSQL, maintaining 99.99% SLA and zero message loss.",
-        technical: "Designed an event-driven architecture utilizing distributed idempotency keys, optimistic locking in PostgreSQL, and automated dead-letter retries, sustaining 5,000+ peak RPS with zero data corruption.",
-        metrics: "Key Achievements: 10M+ daily events, P99 latency reduced from 480ms to 85ms (-42%), 99.99% SLA across 4 quarters, and 30% lower AWS compute costs."
-      }
-    ];
-  }
-
-  // 5. OPENAI — OpenAI Application Questions
-  if (compLow.includes("openai")) {
-    return [
-      {
-        id: "q1",
-        question: "Why OpenAI, and what drives your interest in our mission and AI systems?",
-        orig: "OpenAI is building the foundation of artificial general intelligence to benefit all of humanity. I am deeply motivated to build the high-availability backend infrastructure, scalable API gateways, and distributed serving platforms required to make frontier AI reliable and accessible globally.",
-        concise: "I want to join OpenAI to engineer the high-scale backend infrastructure and API platforms that make frontier AI reliably available to millions of developers worldwide.",
-        technical: "I am drawn to OpenAI's distributed systems challenges across high-concurrency model inference, request scheduling, and fault-tolerant cloud backends, bringing deep experience in Java, Python, and AWS.",
-        metrics: "Track record of scaling cloud infrastructure to sustain 99.99% uptime, handle millions of daily requests, and reduce response latency by 42%."
-      },
-      {
-        id: "q2",
-        question: "Describe a complex infrastructure or systems engineering problem you solved.",
-        orig: "I led the backend architecture of a distributed event processing platform on AWS. When rapid user growth created database connection exhaustion and latency spikes, I re-architected the ingestion pipeline into asynchronous SQS/Lambda workers with connection pooling and query optimization, dropping P99 latency from 480ms to 85ms and eliminating all downtime.",
-        concise: "Resolved severe database bottlenecks during traffic surges by redesigning a monolithic ingestion flow into asynchronous event-driven workers, reducing P99 latency by 42% and eliminating downtime.",
-        technical: "Engineered asynchronous event pipelines with AWS SQS/Lambda, partitioned PostgreSQL indexing, and distributed deduplication, resolving high-concurrency lock contention and scaling throughput to 5,000+ RPS.",
-        metrics: "Reduced P99 latency by 42%, sustained 99.99% availability, and cut cloud compute expenses by 30% through serverless auto-scaling."
-      }
-    ];
-  }
-
-  // 6. DATABRICKS — Databricks Application Questions
-  if (compLow.includes("databricks")) {
-    return [
-      {
-        id: "q1",
-        question: "Why Databricks, and how does your background align with large-scale data and AI platforms?",
-        orig: "Databricks has unified data engineering and AI with lakehouse technology. With my background building high-throughput microservices in Java, Python, and AWS, and optimizing complex database operations, I am excited to help build the resilient platforms that power enterprise AI workloads.",
-        concise: "Excited to join Databricks to scale the lakehouse platform, bringing strong backend microservices, Java, Python, and distributed data systems experience.",
-        technical: "Deep experience with Java/Spring Boot, Python async pipelines, relational database optimization (PostgreSQL), and cloud infrastructure (AWS), passionate about runtime performance and high-scale platform engineering.",
-        metrics: "Engineered data platforms processing 10M+ daily events, sustained 99.99% SLA, and reduced end-to-end data processing latency by 42%."
-      },
-      {
-        id: "q2",
-        question: "Describe your experience building scalable web platforms, traffic routing, or enterprise systems.",
-        orig: "I have designed and scaled enterprise cloud platforms handling millions of user interactions. I built resilient API gateways, implemented automated circuit breakers and rate limiting, and maintained 99.99% availability across high-concurrency enterprise applications.",
-        concise: "Architected enterprise API gateways and backend microservices with automated rate-limiting, connection pooling, and 99.99% uptime.",
-        technical: "Built fault-tolerant platform microservices with Java/Spring Boot and AWS, designing ingress routing, horizontal auto-scaling, and health check monitoring with zero single points of failure.",
-        metrics: "Maintained 99.99% uptime, reduced API error rates to under 0.01%, and scaled capacity by 4x without infrastructure degradation."
-      }
-    ];
-  }
-
-  // 7. COINBASE — Coinbase Application Questions
-  if (compLow.includes("coinbase")) {
-    return [
-      {
-        id: "q1",
-        question: "Why Coinbase, and why crypto/fintech infrastructure?",
-        orig: "Coinbase is the trusted bridge to the open financial system. I am inspired by Coinbase's commitment to security, compliance, and developer velocity, and I want to bring my backend engineering experience in Java, Python, and AWS to scale mission-critical financial systems.",
-        concise: "I want to join Coinbase to build secure, high-availability financial infrastructure that enables economic freedom, bringing strong distributed systems and transactional backend expertise.",
-        technical: "Passionate about building tamper-proof, auditable financial ledgers and high-concurrency microservices with strict transactional consistency (ACID), zero data loss, and AWS cloud security.",
-        metrics: "Built backend services processing millions of transactions with 99.99% uptime and zero ledger reconciliation discrepancies."
-      },
-      {
-        id: "q2",
-        question: "Describe a high-throughput, mission-critical backend service you designed and maintained.",
-        orig: "I architected an asynchronous event ingestion and settlement engine handling millions of daily events. Using Java/Spring Boot, Python microservices, and AWS (SQS, Lambda, PostgreSQL), I designed distributed locking and idempotent message deduplication to sustain 5,000+ peak RPS with zero data loss.",
-        concise: "Architected high-throughput event processing platform handling millions of daily events on AWS with zero data loss and 99.99% availability.",
-        technical: "Designed distributed transaction pipelines using idempotency tokens, partitioned PostgreSQL storage, and dead-letter queues, sustaining high-concurrency spikes with sub-90ms P99 latency.",
-        metrics: "10M+ events/day, 99.99% uptime, 42% latency reduction, and zero data loss under simulated stress testing."
-      }
-    ];
-  }
-
-  // 8. GENERAL TECH FALLBACK (Scale AI, Robinhood, Hudson River Trading, Gusto, Brex, Ramp, Linear, Vercel, Supabase, Postman, Pinterest, Reddit, Lyft)
-  return [
-    {
-      id: "q1",
-      question: `Why ${comp}, and why this ${title} role?`,
-      orig: `I have been following ${comp}'s engineering innovations in ${job.industry || "the tech sector"}. Given my track record in building high-availability backend microservices with ${skills} and scalable AWS architectures, I want to join now to help scale ${comp}'s core engineering platform and product experiences.`,
-      concise: `I am eager to join ${comp} to scale your core engineering platform, bringing proven expertise in high-availability backend microservices, ${skills}, and AWS cloud architectures.`,
-      technical: `I am drawn to ${comp}'s architectural challenges in ${job.industry || "software systems"}. Bringing strong experience in Java/Spring Boot microservices, Python async pipelines, and AWS distributed infrastructure, I want to contribute to building resilient, low-latency platform services.`,
-      metrics: `In previous roles, I scaled backend platforms to handle millions of daily events with 99.99% availability and 42% faster response times. I am excited to bring this performance and reliability focus to ${comp}.`
-    },
-    {
-      id: "q2",
-      question: `Describe your technical experience with ${skills} and architecting scalable cloud systems.`,
-      orig: `I specialize in building distributed backend microservices and event-driven data pipelines using ${skills}. I design systems with high fault tolerance, clean API boundaries, database query optimization (PostgreSQL/SQL), and cloud infrastructure in AWS (Lambda, SQS, DynamoDB), sustaining high-concurrency loads with zero downtime.`,
-      concise: `Experienced in architecting distributed backend microservices in ${skills} and AWS, focusing on high concurrency, asynchronous event pipelines, and database optimization.`,
-      technical: `My core technical stack centers on ${skills} and AWS cloud primitives. I implement asynchronous message queues, connection pooling, distributed locking, and automated CI/CD pipelines to ensure enterprise-grade resilience.`,
-      metrics: `Scaled cloud microservices to support 5,000+ peak RPS, reduced P99 latency from 480ms to 85ms (-42%), and sustained 99.99% system availability.`
-    },
-    {
-      id: "q3",
-      question: "What is the most impactful technical project you have delivered end-to-end?",
-      orig: `I led the architecture of an asynchronous event processing and workflow platform handling millions of daily events. Using Java/Spring Boot, Python microservices, and AWS (SQS, Lambda, PostgreSQL), I designed distributed deduplication and idempotency keys to ensure zero message loss and sub-90ms response times under high concurrency.`,
-      concise: `Architected a high-throughput event processing platform on AWS handling millions of daily events with Java, Python, and PostgreSQL, maintaining 99.99% SLA and zero message loss.`,
-      technical: `Engineered an event-driven architecture utilizing distributed idempotency keys, optimistic locking in PostgreSQL, and automated dead-letter retries, sustaining 5,000+ peak RPS with zero data corruption.`,
-      metrics: `Processed 10M+ daily events, cut P99 latency by 42%, achieved 99.99% uptime across 4 consecutive quarters, and decreased AWS cloud compute costs by 30%.`
-    }
-  ];
-}
-
-function cycleRefineAnswer(btn, event) {
-  if (event) event.stopPropagation();
-  const card = btn.closest(".qa-card");
-  if (!card) return;
-  const ansEl = card.querySelector(".qa-ans");
-  if (!ansEl) return;
-
-  const dataset = card.dataset;
-  const qType = dataset.qtype || "q1";
-  const jobId = dataset.jobid || "";
-
-  let mode = card.dataset.mode || "orig";
-  const modes = ["orig", "concise", "technical", "metrics"];
-  const nextIdx = (modes.indexOf(mode) + 1) % modes.length;
-  const nextMode = modes[nextIdx];
-  card.dataset.mode = nextMode;
-
-  const allJobs = (state.data && state.data.weeks) ? state.data.weeks.flatMap(w => w.jobs) : [];
-  const job = allJobs.find(j => j.id === jobId) || { company: "the company", title: "Software Engineer", skills: [] };
-  const qaList = generateApplicationQa(job);
-
-  const modeLabels = {
-    orig: "🎯 Base Draft",
-    concise: "⚡ Concise",
-    technical: "🚀 Technical",
-    metrics: "📊 Metrics"
-  };
-
-  const item = qaList.find(q => q.id === qType);
-  const newText = item ? (item[nextMode] || item.orig) : "";
-  if (newText) {
-    ansEl.innerText = newText;
-    ansEl.classList.remove("flash-refine");
-    void ansEl.offsetWidth;
-    ansEl.classList.add("flash-refine");
-  }
-
-  let modeBadge = card.querySelector(".qa-mode-tag");
-  if (!modeBadge) {
-    const qEl = card.querySelector(".qa-q");
-    modeBadge = document.createElement("span");
-    modeBadge.className = "qa-mode-tag";
-    if (qEl) qEl.appendChild(modeBadge);
-  }
-  if (modeBadge) {
-    modeBadge.innerText = modeLabels[nextMode];
-    modeBadge.style.display = nextMode === "orig" ? "none" : "inline-block";
-  }
-
-  btn.innerText = "✨ " + modeLabels[nextMode];
-}
-
-function hasApplicationEssayBoxes(job) {
-  return true;
+  return [];
 }
 
 const STORAGE_KEY = "raviCppJobsApplied";

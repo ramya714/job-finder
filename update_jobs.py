@@ -10,11 +10,9 @@ ctx = ssl._create_unverified_context()
 COMPANY_BOARDS = [
     # Company Name, ATS Type, Slug, Industry
     ('OpenAI', 'ashby', 'openai', 'AI Frontier & LLM Platforms'),
-    ('Anthropic', 'ashby', 'anthropic', 'AI Safety & Research'),
     ('Perplexity AI', 'ashby', 'perplexity', 'AI Search & Conversational Engines'),
     ('ElevenLabs', 'ashby', 'elevenlabs', 'Generative Voice & Audio AI'),
     ('Databricks', 'greenhouse', 'databricks', 'Data & AI Cloud Platform'),
-    ('Snowflake', 'greenhouse', 'snowflake', 'Cloud Data Warehousing'),
     ('Stripe', 'greenhouse', 'stripe', 'Fintech & Global Payments Infrastructure'),
     ('Figma', 'greenhouse', 'figma', 'Collaborative Design Platform'),
     ('Scale AI', 'greenhouse', 'scaleai', 'AI Data Infrastructure & Evaluation'),
@@ -156,6 +154,7 @@ for comp_name, btype, slug, industry in COMPANY_BOARDS:
                         continue
 
                     loc = j.get('location', {}).get('name', '')
+                    loc_low = loc.lower()
                     if not is_strictly_us_location(loc):
                         continue
 
@@ -221,6 +220,7 @@ for comp_name, btype, slug, industry in COMPANY_BOARDS:
                         continue
 
                     loc = str(j.get('location', ''))
+                    loc_low = loc.lower()
                     if not is_strictly_us_location(loc):
                         continue
 
