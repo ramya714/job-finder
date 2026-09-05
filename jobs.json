@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-09-04",
-  "lastChecked": "2026-09-04",
+  "lastUpdated": "2026-09-05",
+  "lastChecked": "2026-09-05",
   "seedVersion": 5,
   "candidateProfile": {
     "name": "Ramya Bangaru",
@@ -33,7 +33,7 @@
   "weeks": [
     {
       "weekId": "2026-W36",
-      "label": "Week of 2026-09-04 (Active Sweep)",
+      "label": "Week of 2026-09-05 (Active Sweep)",
       "jobs": [
         {
           "id": "openai-240d459b-696d-43eb-8497-fab3e56ecd9b",
@@ -59,7 +59,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live verified opening",
           "callbackScore": 93.0,
-          "postedAtUtc": "2026-09-04T18:55:36.026140",
+          "postedAtUtc": "2026-09-05T18:03:04.535385",
           "atsJobId": "240d459b-696d-43eb-8497-fab3e56ecd9b",
           "region": "West",
           "regionRank": 1,
@@ -90,7 +90,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live verified opening",
           "callbackScore": 93.0,
-          "postedAtUtc": "2026-09-04T18:55:36.026219",
+          "postedAtUtc": "2026-09-05T18:03:04.535509",
           "atsJobId": "13995549-e8cc-498f-9eaa-1869067ac35b",
           "region": "West",
           "regionRank": 1,
@@ -121,7 +121,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live verified opening",
           "callbackScore": 93.0,
-          "postedAtUtc": "2026-09-04T18:55:36.160886",
+          "postedAtUtc": "2026-09-05T18:03:04.619716",
           "atsJobId": "043d6a58-87a1-4e3c-bf47-4dc351b94cf4",
           "region": "West",
           "regionRank": 1,
@@ -152,7 +152,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live verified opening",
           "callbackScore": 93.0,
-          "postedAtUtc": "2026-09-04T18:55:36.160972",
+          "postedAtUtc": "2026-09-05T18:03:04.619839",
           "atsJobId": "8a976851-9bef-4b07-8d36-567fa9540aef",
           "region": "West",
           "regionRank": 1,
@@ -183,7 +183,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live verified opening",
           "callbackScore": 93.0,
-          "postedAtUtc": "2026-09-04T18:55:36.373521",
+          "postedAtUtc": "2026-09-05T18:03:04.730459",
           "atsJobId": "275f43d0-b62d-401d-830c-7c1ac0e688aa",
           "region": "West",
           "regionRank": 1,
@@ -247,7 +247,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live verified opening",
           "callbackScore": 93.0,
-          "postedAtUtc": "2026-09-04T18:55:36.373852",
+          "postedAtUtc": "2026-09-05T18:03:04.730908",
           "atsJobId": "9aca205e-b2bc-405b-85d6-3d2aadbe49b1",
           "region": "West",
           "regionRank": 1,
@@ -308,13 +308,13 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-04T18:55:40.799920",
+          "postedAtUtc": "2026-09-05T18:03:05.311133",
           "atsJobId": "8546367002",
           "region": "West",
           "regionRank": 2,
           "customQuestions": [
             {
-              "id": "q_796136",
+              "id": "q_161135",
               "question": "Describe a production ML or GenAI system where you did model-level work (training, fine-tuning, optimization, or evaluation) on a transformer-based model (GPT, Llama, Claude, Mistral, Gemma, or similar).",
               "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this AI Engineer - FDE (Forward Deployed Engineer) position at Databricks, my approach combines deep hands-on expertise in AWS, SQL, Go, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
               "concise": "Applying deep expertise in AWS, SQL, Go and cloud distributed systems to solve this challenge with high reliability and measurable results for Databricks.",
@@ -322,7 +322,7 @@
               "metrics": "Delivered measurable results across systems handling millions of requests: 99.99% SLA compliance, 42% latency reduction, and zero data regression incidents."
             },
             {
-              "id": "q_135044",
+              "id": "q_801109",
               "question": "Over the past 18 months, what percentage of your work has involved:",
               "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this AI Engineer - FDE (Forward Deployed Engineer) position at Databricks, my approach combines deep hands-on expertise in AWS, SQL, Go, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
               "concise": "Applying deep expertise in AWS, SQL, Go and cloud distributed systems to solve this challenge with high reliability and measurable results for Databricks.",
@@ -330,7 +330,7 @@
               "metrics": "Delivered measurable results across systems handling millions of requests: 99.99% SLA compliance, 42% latency reduction, and zero data regression incidents."
             },
             {
-              "id": "q_846105",
+              "id": "q_375953",
               "question": "Describe your experience working directly with enterprise customers on ML/AI solutions:",
               "orig": "When collaborating directly with customer teams, I approach technical delivery with deep empathy for customer constraints while protecting core platform integrity. I quickly navigate unfamiliar codebases, isolate integration blockers, deliver working code directly into their environment, and turn recurring challenges into reusable SDKs and platform capabilities.",
               "concise": "I bridge customer-facing technical requirements with core engineering, delivering high-velocity solutions in customer codebases while feeding reusable abstractions back into the platform.",
@@ -364,13 +364,13 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-04T18:55:41.058808",
+          "postedAtUtc": "2026-09-05T18:03:05.553559",
           "atsJobId": "8638847002",
           "region": "West",
           "regionRank": 2,
           "customQuestions": [
             {
-              "id": "q_622486",
+              "id": "q_596024",
               "question": "Hands-on experience with Databricks (AI Gateway, Unity Catalog, Delta, Jobs, Databricks Apps, Lakebase, Genie)",
               "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this AI Engineer \u2014 GTM Analytics position at Databricks, my approach combines deep hands-on expertise in Python, TypeScript, React, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
               "concise": "Applying deep expertise in Python, TypeScript, React and cloud distributed systems to solve this challenge with high reliability and measurable results for Databricks.",
@@ -402,7 +402,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-04T18:55:41.721655",
+          "postedAtUtc": "2026-09-05T18:03:06.063385",
           "atsJobId": "8044460",
           "region": "West",
           "regionRank": 2,
@@ -428,7 +428,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-04T18:55:41.948036",
+          "postedAtUtc": "2026-09-05T18:03:06.343387",
           "atsJobId": "7557403",
           "region": "West",
           "regionRank": 2,
@@ -458,13 +458,13 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-04T18:55:42.262079",
+          "postedAtUtc": "2026-09-05T18:03:06.605609",
           "atsJobId": "6158162004",
           "region": "East",
           "regionRank": 2,
           "customQuestions": [
             {
-              "id": "q_59913",
+              "id": "q_182244",
               "question": "Why do you want to join Figma? (Please share 3-4 sentences on why you want to join Figma)",
               "orig": "Figma's innovation in Collaborative Design Platform and engineering-first culture strongly align with my background. In this Forward Deployed Engineer role, I want to leverage my experience building high-availability distributed systems in Java, Python, TypeScript to solve complex scalability challenges. I value engineering rigor, clean system boundaries, and rapid iteration, and I am excited to help expand Figma's platform.",
               "concise": "I want to join Figma as a Forward Deployed Engineer to scale your core platform, bringing deep experience in high-concurrency microservices, Java, Python, TypeScript, and cloud infrastructure.",
@@ -472,7 +472,7 @@
               "metrics": "Proven track record scaling backend systems to support millions of daily requests, cutting P99 latency by 42%, and maintaining 99.99% system availability. I want to bring this operational scale to Figma."
             },
             {
-              "id": "q_15648",
+              "id": "q_31675",
               "question": "Additional Information (Add a cover letter or anything else you'd like to share)",
               "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Forward Deployed Engineer position at Figma, my approach combines deep hands-on expertise in Java, Python, TypeScript, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
               "concise": "Applying deep expertise in Java, Python, TypeScript and cloud distributed systems to solve this challenge with high reliability and measurable results for Figma.",
@@ -503,13 +503,13 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-04T18:55:42.451483",
+          "postedAtUtc": "2026-09-05T18:03:06.669539",
           "atsJobId": "6167305004",
           "region": "East",
           "regionRank": 2,
           "customQuestions": [
             {
-              "id": "q_59913",
+              "id": "q_182244",
               "question": "Why do you want to join Figma? (Please share 3-4 sentences on why you want to join Figma)",
               "orig": "Figma's innovation in Collaborative Design Platform and engineering-first culture strongly align with my background. In this GTM Systems Architect role, I want to leverage my experience building high-availability distributed systems in AWS, SQL, Go to solve complex scalability challenges. I value engineering rigor, clean system boundaries, and rapid iteration, and I am excited to help expand Figma's platform.",
               "concise": "I want to join Figma as a GTM Systems Architect to scale your core platform, bringing deep experience in high-concurrency microservices, AWS, SQL, Go, and cloud infrastructure.",
@@ -517,7 +517,7 @@
               "metrics": "Proven track record scaling backend systems to support millions of daily requests, cutting P99 latency by 42%, and maintaining 99.99% system availability. I want to bring this operational scale to Figma."
             },
             {
-              "id": "q_15648",
+              "id": "q_31675",
               "question": "Additional Information (Add a cover letter or anything else you'd like to share)",
               "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this GTM Systems Architect position at Figma, my approach combines deep hands-on expertise in AWS, SQL, Go, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
               "concise": "Applying deep expertise in AWS, SQL, Go and cloud distributed systems to solve this challenge with high reliability and measurable results for Figma.",
@@ -551,7 +551,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-04T18:55:43.916228",
+          "postedAtUtc": "2026-09-05T18:03:06.930423",
           "atsJobId": "4716453005",
           "region": "East",
           "regionRank": 2,
@@ -579,7 +579,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-04T18:55:44.119190",
+          "postedAtUtc": "2026-09-05T18:03:07.050590",
           "atsJobId": "4593571005",
           "region": "East",
           "regionRank": 2,
@@ -606,13 +606,13 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 95.0,
-          "postedAtUtc": "2026-09-04T18:55:44.492625",
+          "postedAtUtc": "2026-09-05T18:03:07.279937",
           "atsJobId": "8099099",
           "region": "Remote",
           "regionRank": 1,
           "customQuestions": [
             {
-              "id": "q_154847",
+              "id": "q_268452",
               "question": "Which of the following best describes how you use AI tools today?",
               "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Forward Deployed Engineer, Compliance [Office of the CTO] position at Coinbase, my approach combines deep hands-on expertise in AWS, Go, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
               "concise": "Applying deep expertise in AWS, Go and cloud distributed systems to solve this challenge with high reliability and measurable results for Coinbase.",
@@ -642,13 +642,13 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 95.0,
-          "postedAtUtc": "2026-09-04T18:55:44.605875",
+          "postedAtUtc": "2026-09-05T18:03:07.343236",
           "atsJobId": "8072932",
           "region": "Remote",
           "regionRank": 1,
           "customQuestions": [
             {
-              "id": "q_154847",
+              "id": "q_268452",
               "question": "Which of the following best describes how you use AI tools today?",
               "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Forward Deployed Engineer, Finance [Office of the CTO] position at Coinbase, my approach combines deep hands-on expertise in AWS, Go, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
               "concise": "Applying deep expertise in AWS, Go and cloud distributed systems to solve this challenge with high reliability and measurable results for Coinbase.",
@@ -679,13 +679,13 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-04T18:55:45.047336",
+          "postedAtUtc": "2026-09-05T18:03:07.506697",
           "atsJobId": "6669758",
           "region": "East",
           "regionRank": 2,
           "customQuestions": [
             {
-              "id": "q_524844",
+              "id": "q_468777",
               "question": "Do you have:\na) any Personal/Familial Relationships (current Robinhood employees or employees of Robinhood\u2019s vendors); \nb) any Outside Business Activities that you wish to continue; \nc) any investment that is greater than 5% of the outstanding shares of a publicly-traded company;\nd) any investment in a private company that has a business relationship or that is a current competitor of Robinhood; or \ne) any Intellectual Property Ownership (patents, trademarks, copyrights) that you wish to retain and/or create/develop while at Robinhood?",
               "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Android Engineer, Government Products position at Robinhood, my approach combines deep hands-on expertise in Java, AWS, Go, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
               "concise": "Applying deep expertise in Java, AWS, Go and cloud distributed systems to solve this challenge with high reliability and measurable results for Robinhood.",
@@ -716,13 +716,13 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-04T18:55:45.368253",
+          "postedAtUtc": "2026-09-05T18:03:07.625929",
           "atsJobId": "7350823",
           "region": "West",
           "regionRank": 2,
           "customQuestions": [
             {
-              "id": "q_524844",
+              "id": "q_468777",
               "question": "Do you have:\na) any Personal/Familial Relationships (current Robinhood employees or employees of Robinhood\u2019s vendors); \nb) any Outside Business Activities that you wish to continue; \nc) any investment that is greater than 5% of the outstanding shares of a publicly-traded company;\nd) any investment in a private company that has a business relationship or that is a current competitor of Robinhood; or \ne) any Intellectual Property Ownership (patents, trademarks, copyrights) that you wish to retain and/or create/develop while at Robinhood?",
               "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Android Engineer, Money Experience position at Robinhood, my approach combines deep hands-on expertise in Java, AWS, Go, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
               "concise": "Applying deep expertise in Java, AWS, Go and cloud distributed systems to solve this challenge with high reliability and measurable results for Robinhood.",
@@ -753,7 +753,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-04T18:55:45.819787",
+          "postedAtUtc": "2026-09-05T18:03:07.920410",
           "atsJobId": "8167806",
           "region": "East",
           "regionRank": 2,
@@ -780,7 +780,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-04T18:55:46.077278",
+          "postedAtUtc": "2026-09-05T18:03:08.166531",
           "atsJobId": "8097335",
           "region": "East",
           "regionRank": 2,
@@ -808,13 +808,13 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-04T18:55:46.310649",
+          "postedAtUtc": "2026-09-05T18:03:08.289182",
           "atsJobId": "8124953002",
           "region": "East",
           "regionRank": 2,
           "customQuestions": [
             {
-              "id": "q_788112",
+              "id": "q_567016",
               "question": "Please share a few reasons why you\u2019re excited to apply for this role at Airtable.",
               "orig": "Airtable's innovation in Low-Code Cloud Database Platform and engineering-first culture strongly align with my background. In this Software Engineer, Data role, I want to leverage my experience building high-availability distributed systems in Python, SQL, Go to solve complex scalability challenges. I value engineering rigor, clean system boundaries, and rapid iteration, and I am excited to help expand Airtable's platform.",
               "concise": "I want to join Airtable as a Software Engineer, Data to scale your core platform, bringing deep experience in high-concurrency microservices, Python, SQL, Go, and cloud infrastructure.",
@@ -822,7 +822,7 @@
               "metrics": "Proven track record scaling backend systems to support millions of daily requests, cutting P99 latency by 42%, and maintaining 99.99% system availability. I want to bring this operational scale to Airtable."
             },
             {
-              "id": "q_846671",
+              "id": "q_31019",
               "question": "Please let us know if you've used Airtable before and what your experience is with it.",
               "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Software Engineer, Data position at Airtable, my approach combines deep hands-on expertise in Python, SQL, Go, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
               "concise": "Applying deep expertise in Python, SQL, Go and cloud distributed systems to solve this challenge with high reliability and measurable results for Airtable.",
@@ -830,7 +830,7 @@
               "metrics": "Delivered measurable results across systems handling millions of requests: 99.99% SLA compliance, 42% latency reduction, and zero data regression incidents."
             },
             {
-              "id": "q_539866",
+              "id": "q_411018",
               "question": "How are you using AI today in your current role? If applicable, show us your last AI experiment.",
               "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Software Engineer, Data position at Airtable, my approach combines deep hands-on expertise in Python, SQL, Go, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
               "concise": "Applying deep expertise in Python, SQL, Go and cloud distributed systems to solve this challenge with high reliability and measurable results for Airtable.",
@@ -838,7 +838,7 @@
               "metrics": "Delivered measurable results across systems handling millions of requests: 99.99% SLA compliance, 42% latency reduction, and zero data regression incidents."
             },
             {
-              "id": "q_405182",
+              "id": "q_44163",
               "question": "How many years of full-time work experience do you have after graduation? (0-1 years\n3-5 years\n5+ years)",
               "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Software Engineer, Data position at Airtable, my approach combines deep hands-on expertise in Python, SQL, Go, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
               "concise": "Applying deep expertise in Python, SQL, Go and cloud distributed systems to solve this challenge with high reliability and measurable results for Airtable.",
@@ -870,13 +870,13 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-04T18:55:46.399473",
+          "postedAtUtc": "2026-09-05T18:03:08.342059",
           "atsJobId": "8400373002",
           "region": "East",
           "regionRank": 2,
           "customQuestions": [
             {
-              "id": "q_237628",
+              "id": "q_459286",
               "question": "At a high level (3-5 sentences), please describe the most recent infrastructure or platform project you've worked on.",
               "orig": "The most impactful system I engineered was an end-to-end distributed event processing and workflow platform handling millions of daily events. Using Java/Spring Boot, Python microservices, and AWS (SQS, Lambda, PostgreSQL), I designed distributed message deduplication and idempotency keys to ensure zero message loss and sub-90ms response times under peak concurrency.",
               "concise": "I led the architecture of a high-throughput event processing platform on AWS handling millions of daily events with Java, Python, and PostgreSQL, maintaining 99.99% SLA and zero message loss.",
@@ -884,7 +884,7 @@
               "metrics": "Key Achievements: 10M+ daily events processed, P99 latency reduced by 42% (from 480ms to 85ms), 99.99% uptime across 4 consecutive quarters, and 30% lower AWS compute costs."
             },
             {
-              "id": "q_531811",
+              "id": "q_943127",
               "question": "How many years of full-time industry experience do you have?",
               "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Software Engineer, Infrastructure (4-8 YOE) position at Airtable, my approach combines deep hands-on expertise in AWS, Kubernetes, Distributed Systems, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
               "concise": "Applying deep expertise in AWS, Kubernetes, Distributed Systems and cloud distributed systems to solve this challenge with high reliability and measurable results for Airtable.",
@@ -892,7 +892,7 @@
               "metrics": "Delivered measurable results across systems handling millions of requests: 99.99% SLA compliance, 42% latency reduction, and zero data regression incidents."
             },
             {
-              "id": "q_539866",
+              "id": "q_411018",
               "question": "How are you using AI today in your current role? If applicable, show us your last AI experiment.",
               "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Software Engineer, Infrastructure (4-8 YOE) position at Airtable, my approach combines deep hands-on expertise in AWS, Kubernetes, Distributed Systems, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
               "concise": "Applying deep expertise in AWS, Kubernetes, Distributed Systems and cloud distributed systems to solve this challenge with high reliability and measurable results for Airtable.",
@@ -924,13 +924,13 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-04T18:55:46.907058",
+          "postedAtUtc": "2026-09-05T18:03:08.677285",
           "atsJobId": "7369003",
           "region": "West",
           "regionRank": 2,
           "customQuestions": [
             {
-              "id": "q_132459",
+              "id": "q_937884",
               "question": "How many years have you spent in roles focusing Enterprise Apps, Business Systems, or Automation?",
               "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Enterprise Application AI Engineer position at Gusto, my approach combines deep hands-on expertise in Java, Python, React, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
               "concise": "Applying deep expertise in Java, Python, React and cloud distributed systems to solve this challenge with high reliability and measurable results for Gusto.",
@@ -938,7 +938,7 @@
               "metrics": "Delivered measurable results across systems handling millions of requests: 99.99% SLA compliance, 42% latency reduction, and zero data regression incidents."
             },
             {
-              "id": "q_888955",
+              "id": "q_361396",
               "question": "What are the most impactful systems or workflows you\u2019ve been responsible for, and what made them high impact?",
               "orig": "The most impactful system I engineered was an end-to-end distributed event processing and workflow platform handling millions of daily events. Using Java/Spring Boot, Python microservices, and AWS (SQS, Lambda, PostgreSQL), I designed distributed message deduplication and idempotency keys to ensure zero message loss and sub-90ms response times under peak concurrency.",
               "concise": "I led the architecture of a high-throughput event processing platform on AWS handling millions of daily events with Java, Python, and PostgreSQL, maintaining 99.99% SLA and zero message loss.",
@@ -967,7 +967,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-04T18:55:47.130326",
+          "postedAtUtc": "2026-09-05T18:03:09.061595",
           "atsJobId": "7905578",
           "region": "West",
           "regionRank": 2,
@@ -997,7 +997,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-04T18:55:47.592444",
+          "postedAtUtc": "2026-09-05T18:03:09.311505",
           "atsJobId": "8606890002",
           "region": "West",
           "regionRank": 2,
@@ -1027,7 +1027,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-04T18:55:47.792214",
+          "postedAtUtc": "2026-09-05T18:03:09.465057",
           "atsJobId": "8606885002",
           "region": "West",
           "regionRank": 2,
@@ -1058,7 +1058,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live verified opening",
           "callbackScore": 93.0,
-          "postedAtUtc": "2026-09-04T18:55:48.001743",
+          "postedAtUtc": "2026-09-05T18:03:09.556634",
           "atsJobId": "34413f8d-26bf-4bbc-8ade-eb309a0e2245",
           "region": "West",
           "regionRank": 1,
@@ -1089,7 +1089,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live verified opening",
           "callbackScore": 93.0,
-          "postedAtUtc": "2026-09-04T18:55:48.001818",
+          "postedAtUtc": "2026-09-05T18:03:09.556757",
           "atsJobId": "f564dcf9-9390-4a3f-896f-8047a5086040",
           "region": "West",
           "regionRank": 1,
@@ -1115,13 +1115,13 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-04T18:55:48.416792",
+          "postedAtUtc": "2026-09-05T18:03:09.876319",
           "atsJobId": "6122437004",
           "region": "East",
           "regionRank": 2,
           "customQuestions": [
             {
-              "id": "q_149857",
+              "id": "q_542423",
               "question": "Your authorization to work in the country where you live. Please choose the option that describes your work authorization.",
               "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this DevRel Engineer, Agentic Infrastructure position at Vercel, my approach combines deep hands-on expertise in TypeScript, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
               "concise": "Applying deep expertise in TypeScript and cloud distributed systems to solve this challenge with high reliability and measurable results for Vercel.",
@@ -1129,7 +1129,7 @@
               "metrics": "Delivered measurable results across systems handling millions of requests: 99.99% SLA compliance, 42% latency reduction, and zero data regression incidents."
             },
             {
-              "id": "q_339529",
+              "id": "q_40066",
               "question": "Please double-check all the information provided above. Ensuring accuracy is crucial, as any errors or omissions may impact the review of your application.",
               "orig": "The most impactful system I engineered was an end-to-end distributed event processing and workflow platform handling millions of daily events. Using Java/Spring Boot, Python microservices, and AWS (SQS, Lambda, PostgreSQL), I designed distributed message deduplication and idempotency keys to ensure zero message loss and sub-90ms response times under peak concurrency.",
               "concise": "I led the architecture of a high-throughput event processing platform on AWS handling millions of daily events with Java, Python, and PostgreSQL, maintaining 99.99% SLA and zero message loss.",
@@ -1160,13 +1160,13 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-04T18:55:50.117548",
+          "postedAtUtc": "2026-09-05T18:03:09.924805",
           "atsJobId": "5752684004",
           "region": "East",
           "regionRank": 2,
           "customQuestions": [
             {
-              "id": "q_149857",
+              "id": "q_542423",
               "question": "Your authorization to work in the country where you live. Please choose the option that describes your work authorization.",
               "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Forward-Deployed Engineer\u00a0 position at Vercel, my approach combines deep hands-on expertise in TypeScript, React, Go, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
               "concise": "Applying deep expertise in TypeScript, React, Go and cloud distributed systems to solve this challenge with high reliability and measurable results for Vercel.",
@@ -1174,7 +1174,7 @@
               "metrics": "Delivered measurable results across systems handling millions of requests: 99.99% SLA compliance, 42% latency reduction, and zero data regression incidents."
             },
             {
-              "id": "q_339529",
+              "id": "q_40066",
               "question": "Please double-check all the information provided above. Ensuring accuracy is crucial, as any errors or omissions may impact the review of your application.",
               "orig": "The most impactful system I engineered was an end-to-end distributed event processing and workflow platform handling millions of daily events. Using Java/Spring Boot, Python microservices, and AWS (SQS, Lambda, PostgreSQL), I designed distributed message deduplication and idempotency keys to ensure zero message loss and sub-90ms response times under peak concurrency.",
               "concise": "I led the architecture of a high-throughput event processing platform on AWS handling millions of daily events with Java, Python, and PostgreSQL, maintaining 99.99% SLA and zero message loss.",
@@ -1208,7 +1208,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live verified opening",
           "callbackScore": 93.0,
-          "postedAtUtc": "2026-09-04T18:55:50.265003",
+          "postedAtUtc": "2026-09-05T18:03:09.992150",
           "atsJobId": "a1320bbf-bfae-49a8-a1b7-12eeccaf39ca",
           "region": "Remote",
           "regionRank": 1,
@@ -1239,7 +1239,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live verified opening",
           "callbackScore": 93.0,
-          "postedAtUtc": "2026-09-04T18:55:50.266244",
+          "postedAtUtc": "2026-09-05T18:03:09.994180",
           "atsJobId": "577bdf6d-f34b-4b9e-8d6b-b96776675c94",
           "region": "Remote",
           "regionRank": 1,
@@ -1269,7 +1269,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-04T18:55:50.651841",
+          "postedAtUtc": "2026-09-05T18:03:10.180699",
           "atsJobId": "7485114003",
           "region": "East",
           "regionRank": 2,
@@ -1296,49 +1296,12 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-04T18:55:50.846742",
+          "postedAtUtc": "2026-09-05T18:03:10.312706",
           "atsJobId": "7789144003",
           "region": "West",
           "regionRank": 2,
           "customQuestions": [],
           "hasEssayQuestions": false
-        },
-        {
-          "id": "affirm-7793242003",
-          "company": "Affirm",
-          "title": "Analytics Lead, Full Stack",
-          "location": "Remote US",
-          "remote": "Remote",
-          "industry": "Fintech / BNPL Payments",
-          "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at Affirm focused on scalable engineering with Python and cloud infrastructure.",
-          "skills": [
-            "Python",
-            "SQL",
-            "Go"
-          ],
-          "url": "https://job-boards.greenhouse.io/affirm/jobs/7793242003",
-          "source": "Greenhouse API (Live)",
-          "postedApprox": "Active Now",
-          "h1bFit": "Open / Check Application",
-          "yoeFit": "Good (3\u20138 yrs)",
-          "yoeNote": "Live active verified opening",
-          "callbackScore": 95.0,
-          "postedAtUtc": "2026-09-04T18:55:51.154591",
-          "atsJobId": "7793242003",
-          "region": "Remote",
-          "regionRank": 1,
-          "customQuestions": [
-            {
-              "id": "q_117491",
-              "question": "Other Links",
-              "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Analytics Lead, Full Stack position at Affirm, my approach combines deep hands-on expertise in Python, SQL, Go, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
-              "concise": "Applying deep expertise in Python, SQL, Go and cloud distributed systems to solve this challenge with high reliability and measurable results for Affirm.",
-              "technical": "Leveraging Python, SQL, Go, distributed system design, relational and distributed data stores, and automated testing to build fault-tolerant, scalable architectures that satisfy strict production requirements.",
-              "metrics": "Delivered measurable results across systems handling millions of requests: 99.99% SLA compliance, 42% latency reduction, and zero data regression incidents."
-            }
-          ],
-          "hasEssayQuestions": true
         },
         {
           "id": "affirm-7872398003",
@@ -1361,13 +1324,50 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 95.0,
-          "postedAtUtc": "2026-09-04T18:55:51.412941",
+          "postedAtUtc": "2026-09-05T18:03:10.505391",
           "atsJobId": "7872398003",
           "region": "Remote",
           "regionRank": 1,
           "customQuestions": [
             {
-              "id": "q_117491",
+              "id": "q_919315",
+              "question": "Other Links",
+              "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Analytics Lead, Full Stack position at Affirm, my approach combines deep hands-on expertise in Python, SQL, Go, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
+              "concise": "Applying deep expertise in Python, SQL, Go and cloud distributed systems to solve this challenge with high reliability and measurable results for Affirm.",
+              "technical": "Leveraging Python, SQL, Go, distributed system design, relational and distributed data stores, and automated testing to build fault-tolerant, scalable architectures that satisfy strict production requirements.",
+              "metrics": "Delivered measurable results across systems handling millions of requests: 99.99% SLA compliance, 42% latency reduction, and zero data regression incidents."
+            }
+          ],
+          "hasEssayQuestions": true
+        },
+        {
+          "id": "affirm-7793242003",
+          "company": "Affirm",
+          "title": "Analytics Lead, Full Stack",
+          "location": "Remote US",
+          "remote": "Remote",
+          "industry": "Fintech / BNPL Payments",
+          "salary": "$170,000 \u2013 $260,000 + Equity",
+          "summary": "Live opening at Affirm focused on scalable engineering with Python and cloud infrastructure.",
+          "skills": [
+            "Python",
+            "SQL",
+            "Go"
+          ],
+          "url": "https://job-boards.greenhouse.io/affirm/jobs/7793242003",
+          "source": "Greenhouse API (Live)",
+          "postedApprox": "Active Now",
+          "h1bFit": "Open / Check Application",
+          "yoeFit": "Good (3\u20138 yrs)",
+          "yoeNote": "Live active verified opening",
+          "callbackScore": 95.0,
+          "postedAtUtc": "2026-09-05T18:03:10.755397",
+          "atsJobId": "7793242003",
+          "region": "Remote",
+          "regionRank": 1,
+          "customQuestions": [
+            {
+              "id": "q_919315",
               "question": "Other Links",
               "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Analytics Lead, Full Stack position at Affirm, my approach combines deep hands-on expertise in Python, SQL, Go, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
               "concise": "Applying deep expertise in Python, SQL, Go and cloud distributed systems to solve this challenge with high reliability and measurable results for Affirm.",
@@ -1397,13 +1397,13 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-04T18:55:51.785918",
+          "postedAtUtc": "2026-09-05T18:03:11.007164",
           "atsJobId": "8103612",
           "region": "West",
           "regionRank": 2,
           "customQuestions": [
             {
-              "id": "q_927702",
+              "id": "q_387403",
               "question": "Work Experience: Current/Previous Employer",
               "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Administrative Business Partner I - Engineering, Product and Design position at Pinterest, my approach combines deep hands-on expertise in AWS, Go, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
               "concise": "Applying deep expertise in AWS, Go and cloud distributed systems to solve this challenge with high reliability and measurable results for Pinterest.",
@@ -1434,13 +1434,13 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 95.0,
-          "postedAtUtc": "2026-09-04T18:55:51.890416",
+          "postedAtUtc": "2026-09-05T18:03:11.168160",
           "atsJobId": "7816424",
           "region": "Remote",
           "regionRank": 1,
           "customQuestions": [
             {
-              "id": "q_927702",
+              "id": "q_387403",
               "question": "Work Experience: Current/Previous Employer",
               "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Data Scientist II, Infrastructure position at Pinterest, my approach combines deep hands-on expertise in AWS, SQL, Go, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
               "concise": "Applying deep expertise in AWS, SQL, Go and cloud distributed systems to solve this challenge with high reliability and measurable results for Pinterest.",
@@ -1471,7 +1471,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 95.0,
-          "postedAtUtc": "2026-09-04T18:55:52.378831",
+          "postedAtUtc": "2026-09-05T18:03:11.343619",
           "atsJobId": "8148431",
           "region": "Remote",
           "regionRank": 1,
@@ -1502,7 +1502,7 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 95.0,
-          "postedAtUtc": "2026-09-04T18:55:52.673789",
+          "postedAtUtc": "2026-09-05T18:03:11.571489",
           "atsJobId": "7895468",
           "region": "Remote",
           "regionRank": 1,
@@ -1528,17 +1528,53 @@
           "yoeFit": "Good (3\u20138 yrs)",
           "yoeNote": "Live active verified opening",
           "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-04T18:55:52.989765",
+          "postedAtUtc": "2026-09-05T18:03:11.885543",
           "atsJobId": "8772602002",
           "region": "West",
           "regionRank": 2,
           "customQuestions": [
             {
-              "id": "q_528894",
+              "id": "q_999223",
               "question": "Please describe any need for a reasonable accommodation for this hiring process (no documentation required).",
               "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Business Systems Engineer position at Lyft, my approach combines deep hands-on expertise in Python, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
               "concise": "Applying deep expertise in Python and cloud distributed systems to solve this challenge with high reliability and measurable results for Lyft.",
               "technical": "Leveraging Python, distributed system design, relational and distributed data stores, and automated testing to build fault-tolerant, scalable architectures that satisfy strict production requirements.",
+              "metrics": "Delivered measurable results across systems handling millions of requests: 99.99% SLA compliance, 42% latency reduction, and zero data regression incidents."
+            }
+          ],
+          "hasEssayQuestions": true
+        },
+        {
+          "id": "lyft-8688633002",
+          "company": "Lyft",
+          "title": "Machine Learning Engineer",
+          "location": "San Francisco, CA",
+          "remote": "US / Onsite",
+          "industry": "Mobility & Autonomous Systems",
+          "salary": "$170,000 \u2013 $260,000 + Equity",
+          "summary": "Live opening at Lyft focused on scalable engineering with Python and cloud infrastructure.",
+          "skills": [
+            "Python",
+            "Go"
+          ],
+          "url": "https://job-boards.greenhouse.io/lyft/jobs/8688633002",
+          "source": "Greenhouse API (Live)",
+          "postedApprox": "Active Now",
+          "h1bFit": "Open / Check Application",
+          "yoeFit": "Good (3\u20138 yrs)",
+          "yoeNote": "Live active verified opening",
+          "callbackScore": 90.0,
+          "postedAtUtc": "2026-09-05T18:03:11.944247",
+          "atsJobId": "8688633002",
+          "region": "West",
+          "regionRank": 2,
+          "customQuestions": [
+            {
+              "id": "q_999223",
+              "question": "Please describe any need for a reasonable accommodation for this hiring process (no documentation required).",
+              "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Machine Learning Engineer position at Lyft, my approach combines deep hands-on expertise in Python, Go, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
+              "concise": "Applying deep expertise in Python, Go and cloud distributed systems to solve this challenge with high reliability and measurable results for Lyft.",
+              "technical": "Leveraging Python, Go, distributed system design, relational and distributed data stores, and automated testing to build fault-tolerant, scalable architectures that satisfy strict production requirements.",
               "metrics": "Delivered measurable results across systems handling millions of requests: 99.99% SLA compliance, 42% latency reduction, and zero data regression incidents."
             }
           ],
