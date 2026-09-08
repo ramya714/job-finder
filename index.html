@@ -1578,6 +1578,8 @@ const state = {
   // IDs flagged "wrong recommendation" — the tracker surfaced a job that
   // doesn't fit the profile at all. Teaches the improver what NOT to fetch.
   badRecs: new Set(JSON.parse(localStorage.getItem('raviCppJobsBadRecs') || '[]')),
+  // Learned negative title phrases / keywords from user "Wrong match" feedback
+  negativeTitles: new Set(JSON.parse(localStorage.getItem('raviCppJobsNegativeTitles') || '[]')),
 };
 
 const NOELIG_REASONS = {
@@ -1619,9 +1621,70 @@ function saveBadRecs() {
   localStorage.setItem('raviCppJobsBadRecs', JSON.stringify([...state.badRecs]));
 }
 
+function saveNegativeTitles() {
+  localStorage.setItem('raviCppJobsNegativeTitles', JSON.stringify([...state.negativeTitles]));
+}
+
+function cleanTitleForLearning(title) {
+  if (!title) return '';
+  return title.toLowerCase()
+    .replace(/[\u00a0\r\n\t]/g, ' ')
+    .replace(/\b(senior|lead|staff|principal|junior|entry|level|ii|iii|iv|v|1|2|3|4|5|team|group|division|dept|remote|hybrid|onsite|us|usa|na|emea|apac)\b/gi, '')
+    .replace(/\s*\(.*?\)/g, '')
+    .replace(/\s*\[.*?\]/g, '')
+    .replace(/[-–—/•:,]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function isSimilarToRejectedTitle(title) {
+  if (!state.negativeTitles || state.negativeTitles.size === 0) return false;
+  const tClean = cleanTitleForLearning(title);
+  if (!tClean) return false;
+  const tTokens = new Set((tClean.match(/[a-z0-9]+/g) || []).filter(w => w.length > 2));
+  
+  for (const neg of state.negativeTitles) {
+    const nClean = cleanTitleForLearning(neg);
+    if (!nClean) continue;
+    // Exact or substring match
+    if (tClean.includes(nClean) || nClean.includes(tClean)) return true;
+    
+    // High token overlap comparison
+    const nTokens = new Set((nClean.match(/[a-z0-9]+/g) || []).filter(w => w.length > 2));
+    if (nTokens.size > 0 && tTokens.size > 0) {
+      let common = 0;
+      for (const tok of nTokens) {
+        if (tTokens.has(tok)) common++;
+      }
+      const overlap = common / Math.min(nTokens.size, tTokens.size);
+      if (overlap >= 0.75) return true;
+    }
+  }
+  return false;
+}
+
 async function setBadRec(id) {
   state.badRecs.add(id);
   saveBadRecs();
+
+  // Extract negative pattern from job title to suppress similar roles across board
+  const all = (state.data && state.data.weeks) ? state.data.weeks.flatMap(w => w.jobs) : [];
+  const targetJob = all.find(j => j.id === id);
+  if (targetJob && targetJob.title) {
+    const pattern = cleanTitleForLearning(targetJob.title);
+    if (pattern && pattern.length >= 3) {
+      state.negativeTitles.add(pattern);
+      saveNegativeTitles();
+    }
+    // Auto-prune any other open jobs matching this negative title pattern
+    for (const other of all) {
+      if (other.id !== id && isSimilarToRejectedTitle(other.title)) {
+        state.badRecs.add(other.id);
+      }
+    }
+    saveBadRecs();
+  }
+
   try {
     // Record FIRST (snapshots the job for the improver), THEN remove it.
     await fetch('/api/outcome', {
@@ -1731,6 +1794,12 @@ function renderTabs() {
 function matches(job) {
   // Applied jobs always hidden from the Jobs view — they live in the Applied tab.
   if (state.applied.has(job.id)) return false;
+  // Wrong match / rejected recommendations immediately removed from board
+  if (state.badRecs.has(job.id)) return false;
+  // Learned negative title patterns from user feedback — don't show similar roles
+  if (isSimilarToRejectedTitle(job.title)) return false;
+  // Not eligible / cannot apply jobs removed from open feed
+  if (state.notEligible && state.notEligible[job.id]) return false;
   if (settings.hideUnavailable && isStale(job.id)) return false;
   if (settings.hideCooldown && isInCooldown(job.company)) return false;
   if (settings.past24hOnly) {
@@ -1805,10 +1874,12 @@ function resetAllBoardMarks() {
     state.unavailable.clear();
     state.notEligible = {};
     state.badRecs.clear();
+    state.negativeTitles.clear();
     saveApplied();
     saveUnavailable();
     saveNotEligible();
     saveBadRecs();
+    saveNegativeTitles();
     render();
     updateBadges();
   }
@@ -1829,7 +1900,7 @@ function render() {
   const appliedCount = all.filter(j => state.applied.has(j.id)).length;
   const staleCount = all.filter(j => isStale(j.id)).length;
   const cooldownCount = all.filter(j => isInCooldown(j.company)).length;
-  const openCount = all.filter(j => !state.applied.has(j.id) && !isStale(j.id) && !isInCooldown(j.company)).length;
+  const openCount = all.filter(j => !state.applied.has(j.id) && !state.badRecs.has(j.id) && !(state.notEligible && state.notEligible[j.id]) && !isStale(j.id) && !isInCooldown(j.company)).length;
   document.getElementById('stat-applied').textContent = appliedCount;
   document.getElementById('stat-stale').textContent = staleCount;
   document.getElementById('stat-cooldown').textContent = cooldownCount;
@@ -2063,10 +2134,15 @@ function render() {
   container.querySelectorAll('.noelig-select').forEach(sel => {
     sel.onchange = async () => {
       if (!sel.value) return;
+      const id = sel.dataset.id;
       const card = sel.closest('.job');
-      if (card) { card.style.transition = 'opacity 0.25s ease'; card.style.opacity = '0.3'; }
-      await setNotEligible(sel.dataset.id, sel.value);
-      await load();  // re-fetch jobs.json so the removed entry is gone everywhere
+      if (card) {
+        card.style.transition = 'all 0.25s ease';
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.95)';
+      }
+      await setNotEligible(id, sel.value);
+      render();
       updateBadges();
     };
   });
@@ -2078,10 +2154,15 @@ function render() {
   });
   container.querySelectorAll('.badrec-btn').forEach(btn => {
     btn.onclick = async () => {
+      const id = btn.dataset.id;
       const card = btn.closest('.job');
-      if (card) { card.style.transition = 'opacity 0.25s ease'; card.style.opacity = '0.3'; }
-      await setBadRec(btn.dataset.id);
-      await load();  // re-fetch jobs.json so the removed entry is gone everywhere
+      if (card) {
+        card.style.transition = 'all 0.25s ease';
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.95)';
+      }
+      await setBadRec(id);
+      render();
       updateBadges();
     };
   });
