@@ -481,7 +481,7 @@ print(f"Active board total: {len(combined_jobs)} jobs ({len(matched_jobs)} new/r
 output_data = {
     "lastUpdated": datetime.date.today().isoformat(),
     "lastChecked": datetime.date.today().isoformat(),
-    "seedVersion": 5,
+    "seedVersion": 6,
     "candidateProfile": {
         "name": "Ramya Bangaru",
         "targetRole": "Senior Full Stack & Software Engineer",
