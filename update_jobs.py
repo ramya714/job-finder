@@ -248,7 +248,10 @@ for comp_name, btype, slug, industry in COMPANY_BOARDS:
                     ats_id = str(j.get('id', ''))
                     if not ats_id:
                         continue
-                    job_url = f"https://boards.greenhouse.io/{slug}/jobs/{ats_id}#app"
+                    if comp_name.lower() == 'databricks':
+                        job_url = f"https://www.databricks.com/company/careers/open-positions?gh_jid={ats_id}"
+                    else:
+                        job_url = f"https://boards.greenhouse.io/{slug}/jobs/{ats_id}#app"
 
                     company_counts[comp_name] += 1
 
