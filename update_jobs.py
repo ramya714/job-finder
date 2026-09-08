@@ -248,7 +248,7 @@ for comp_name, btype, slug, industry in COMPANY_BOARDS:
                     ats_id = str(j.get('id', ''))
                     if not ats_id:
                         continue
-                    job_url = f"https://job-boards.greenhouse.io/{slug}/jobs/{ats_id}"
+                    job_url = f"https://boards.greenhouse.io/{slug}/jobs/{ats_id}#app"
 
                     company_counts[comp_name] += 1
 
@@ -341,7 +341,8 @@ for comp_name, btype, slug, industry in COMPANY_BOARDS:
                     if is_clearance_or_citizen_restricted(desc_text):
                         continue
 
-                    job_url = j.get('jobUrl') or f'https://jobs.ashbyhq.com/{slug}/{j.get("id")}'
+                    raw_url = j.get('jobUrl') or f'https://jobs.ashbyhq.com/{slug}/{j.get("id")}'
+                    job_url = raw_url if raw_url.endswith('/application') else f"{raw_url.rstrip('/')}/application"
                     company_counts[comp_name] += 1
 
                     skills = ['Python', 'TypeScript', 'React', 'AWS', 'PostgreSQL', 'Distributed Systems']
