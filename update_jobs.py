@@ -42,15 +42,45 @@ CLEARANCE_KEYWORDS = [
 ]
 
 TITLE_EXCLUSIONS = [
-    'manager', 'director', 'vp', 'vice president', 'head of', 'intern', 'internship',
-    'recruiter', 'counsel', 'account executive', 'legal', 'sales representative',
-    'marketing manager', 'product manager', 'designer', 'copywriter', 'general counsel'
+    'manager', 'director', 'vp', 'vice president', 'head of', 'lead of', 'principal director',
+    'intern', 'internship', 'recruiter', 'counsel', 'account executive', 'legal',
+    'sales', 'marketing', 'product manager', 'designer', 'copywriter', 'general counsel',
+    'business partner', 'administrative', 'data scientist', 'analytics lead', 'business analyst',
+    'hardware', 'dv engineer', 'verification', 'endpoint', 'it controls', 'compliance engineer',
+    'android', 'ios', 'mobile', 'devrel', 'developer relations', 'solutions engineer',
+    'cloud security', 'security engineer', 'devops engineer, infrastructure & security'
 ]
+
+def is_resume_role_matched(title):
+    if not title:
+        return False
+    t = title.lower().replace('\u00a0', ' ').replace('-', ' ')
+    
+    # 1. Immediate match for Forward Deployed Engineer roles
+    if 'forward deployed' in t or 'fde' in t:
+        return True
+        
+    # 2. Immediate reject for excluded roles
+    for ex in TITLE_EXCLUSIONS:
+        if ex in t:
+            return False
+            
+    # 3. Match Full Stack, Backend, Frontend, and Core Software Engineer roles
+    is_fullstack = 'full stack' in t or 'fullstack' in t
+    is_backend = 'backend' in t or 'back end' in t
+    is_frontend = 'frontend' in t or 'front end' in t or 'web platform' in t or 'web engineer' in t
+    is_swe = ('software engineer' in t or 'software developer' in t or 
+              'member of technical staff' in t or 'ai engineer' in t or 
+              'ai infrastructure' in t or 'infrastructure engineer' in t or 
+              'systems engineer' in t or 'data engineer' in t or 
+              'platform engineer' in t or 'applications engineer' in t)
+              
+    return is_fullstack or is_backend or is_frontend or is_swe
 
 TITLE_INCLUSIONS = [
     'software', 'engineer', 'developer', 'backend', 'full stack', 'fullstack',
     'platform', 'infrastructure', 'systems', 'cloud', 'data engineer',
-    'distributed', 'applications', 'mts', 'technical staff'
+    'distributed', 'applications', 'mts', 'technical staff', 'forward deployed', 'fde'
 ]
 
 US_STATE_CODES = {
@@ -201,11 +231,7 @@ for comp_name, btype, slug, industry in COMPANY_BOARDS:
                     if company_counts[comp_name] >= max_per_co:
                         break
                     title = j.get('title', '')
-                    t_low = title.lower()
-
-                    if any(bad in t_low for bad in TITLE_EXCLUSIONS):
-                        continue
-                    if not any(good in t_low for good in TITLE_INCLUSIONS):
+                    if not is_resume_role_matched(title):
                         continue
 
                     loc = j.get('location', {}).get('name', '')
@@ -298,9 +324,7 @@ for comp_name, btype, slug, industry in COMPANY_BOARDS:
                     title = j.get('title', '')
                     t_low = title.lower()
 
-                    if any(bad in t_low for bad in TITLE_EXCLUSIONS):
-                        continue
-                    if not any(good in t_low for good in TITLE_INCLUSIONS):
+                    if not is_resume_role_matched(title):
                         continue
 
                     loc = str(j.get('location', ''))
@@ -428,23 +452,28 @@ for j in matched_jobs:
     new_ids.add(jid)
     combined_jobs.append(j)
 
-# 2. Retain all older active jobs that were not scraped today so they stay open on the board (strictly US-only and live link)
+# 2. Retain all older active jobs that match target resume roles (strictly US-only and live link)
 retained_count = 0
 for old_j in existing_jobs:
     if old_j.get('id') not in new_ids and old_j.get('url') not in {j.get('url') for j in matched_jobs}:
-        if is_strictly_us_location(old_j.get('location', '')):
-            if is_job_live(old_j.get('url', '')):
-                if 'customQuestions' not in old_j:
-                    old_j['customQuestions'] = []
-                    old_j['hasEssayQuestions'] = False
-                    if old_j.get('company', '').lower() == 'figma':
-                        q_obj = generate_tailored_answer('Figma', old_j.get('title', ''), old_j.get('skills', []), "Why do you want to join Figma? (Please share 3-4 sentences on why you want to join Figma)", old_j.get('industry', 'Design Platform'))
-                        old_j['customQuestions'] = [q_obj]
-                        old_j['hasEssayQuestions'] = True
-                combined_jobs.append(old_j)
-                retained_count += 1
+        if is_resume_role_matched(old_j.get('title', '')):
+            if is_strictly_us_location(old_j.get('location', '')):
+                if is_job_live(old_j.get('url', '')):
+                    if 'customQuestions' not in old_j:
+                        old_j['customQuestions'] = []
+                        old_j['hasEssayQuestions'] = False
+                        if old_j.get('company', '').lower() == 'figma':
+                            q_obj = generate_tailored_answer('Figma', old_j.get('title', ''), old_j.get('skills', []), "Why do you want to join Figma? (Please share 3-4 sentences on why you want to join Figma)", old_j.get('industry', 'Design Platform'))
+                            old_j['customQuestions'] = [q_obj]
+                            old_j['hasEssayQuestions'] = True
+                    combined_jobs.append(old_j)
+                    retained_count += 1
+                else:
+                    print(f"Pruned closed or dead job: {old_j.get('company')} - {old_j.get('title')}")
             else:
-                print(f"Pruned closed or dead job: {old_j.get('company')} - {old_j.get('title')}")
+                print(f"Pruned non-US job: {old_j.get('company')} - {old_j.get('title')}")
+        else:
+            print(f"Pruned non-matching role: {old_j.get('company')} - {old_j.get('title')}")
 
 print(f"Active board total: {len(combined_jobs)} jobs ({len(matched_jobs)} new/refreshed, {retained_count} retained from previous sweeps).")
 
