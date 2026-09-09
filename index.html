@@ -2222,14 +2222,17 @@ function render() {
     };
   });
 
-  // Removed-jobs block (week-specific)
+  // Removed-jobs block
   const rem = document.getElementById('removed-block');
-  rem.innerHTML = '';
-  if (week && week.removedNotes && week.removedNotes.length) {
-    const div = document.createElement('div');
-    div.className = 'removed';
-    div.innerHTML = `<h3>Filtered out for H1B / ≤6 yrs YOE</h3><ul>${week.removedNotes.map(n => `<li>${n}</li>`).join('')}</ul>`;
-    rem.appendChild(div);
+  if (rem) {
+    rem.innerHTML = '';
+    const allNotes = (state.data && state.data.weeks) ? state.data.weeks.flatMap(w => w.removedNotes || []) : [];
+    if (allNotes.length) {
+      const div = document.createElement('div');
+      div.className = 'removed';
+      div.innerHTML = `<h3>Filtered out for Citizenship / TS-SCI / Compliance</h3><ul>${allNotes.map(n => `<li>${htmlEscape(n)}</li>`).join('')}</ul>`;
+      rem.appendChild(div);
+    }
   }
 
   renderTabs();
