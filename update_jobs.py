@@ -48,7 +48,7 @@ TITLE_EXCLUSIONS = [
     'business partner', 'administrative', 'data scientist', 'analytics lead', 'business analyst',
     'hardware', 'dv engineer', 'verification', 'endpoint', 'it controls', 'compliance engineer',
     'android', 'ios', 'mobile', 'devrel', 'developer relations', 'solutions engineer',
-    'cloud security', 'security engineer', 'devops engineer, infrastructure & security'
+    'cloud security', 'security engineer', 'devops engineer, infrastructure & security', 'creative'
 ]
 
 def is_resume_role_matched(title):
@@ -56,8 +56,13 @@ def is_resume_role_matched(title):
         return False
     t = title.lower().replace('\u00a0', ' ').replace('-', ' ')
     
-    # 1. Immediate match for Forward Deployed Engineer roles
-    if 'forward deployed' in t or 'fde' in t:
+    # 1. Immediate reject for excluded roles
+    for ex in TITLE_EXCLUSIONS:
+        if ex in t:
+            return False
+            
+    # 2. Match Forward Deployed Engineer roles
+    if ('forward deployed' in t or 'fde' in t) and any(e in t for e in ['engineer', 'swe', 'software', 'developer', 'ai']):
         return True
         
     # 2. Immediate reject for excluded roles
