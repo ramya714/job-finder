@@ -317,7 +317,7 @@ for comp_name, btype, slug, industry in COMPANY_BOARDS:
                     if not ats_id:
                         continue
                     if comp_name.lower() == 'databricks':
-                        job_url = f"https://www.databricks.com/company/careers/open-positions?gh_jid={ats_id}"
+                        job_url = f"https://www.databricks.com/company/careers/open-positions/job?gh_jid={ats_id}"
                     elif comp_name.lower() == 'instacart':
                         job_url = f"https://www.instacart.careers/job?gh_jid={ats_id}"
                     else:
@@ -555,7 +555,7 @@ print(f"Active board total: {len(combined_jobs)} jobs ({len(matched_jobs)} new/r
 output_data = {
     "lastUpdated": datetime.date.today().isoformat(),
     "lastChecked": datetime.date.today().isoformat(),
-    "seedVersion": 11,
+    "seedVersion": 12,
     "candidateProfile": {
         "name": "Ramya Bangaru",
         "targetRole": "Senior Full Stack & Software Engineer",

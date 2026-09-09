@@ -1,7 +1,7 @@
 {
   "lastUpdated": "2026-09-09",
   "lastChecked": "2026-09-09",
-  "seedVersion": 11,
+  "seedVersion": 12,
   "candidateProfile": {
     "name": "Ramya Bangaru",
     "targetRole": "Senior Full Stack & Software Engineer",
@@ -304,7 +304,7 @@
             "SQL",
             "Distributed Systems"
           ],
-          "url": "https://www.databricks.com/company/careers/open-positions?gh_jid=6779084002",
+          "url": "https://www.databricks.com/company/careers/open-positions/job?gh_jid=6779084002",
           "source": "Greenhouse API (Live)",
           "postedApprox": "Active Now",
           "h1bFit": "Yes (H1B Friendly / Sponsoring)",
@@ -335,7 +335,7 @@
             "C++",
             "Docker"
           ],
-          "url": "https://www.databricks.com/company/careers/open-positions?gh_jid=6544403002",
+          "url": "https://www.databricks.com/company/careers/open-positions/job?gh_jid=6544403002",
           "source": "Greenhouse API (Live)",
           "postedApprox": "Active Now",
           "h1bFit": "Yes (H1B Friendly / Sponsoring)",
@@ -2314,7 +2314,7 @@
             "Distributed Systems",
             "Node.js"
           ],
-          "url": "https://www.databricks.com/company/careers/open-positions?gh_jid=8715639002",
+          "url": "https://www.databricks.com/company/careers/open-positions/job?gh_jid=8715639002",
           "source": "Greenhouse API (Live)",
           "postedApprox": "Active Now",
           "h1bFit": "Yes (H1B Friendly / Sponsoring)",
@@ -2345,7 +2345,7 @@
             "Kubernetes",
             "Distributed Systems"
           ],
-          "url": "https://www.databricks.com/company/careers/open-positions?gh_jid=8183195002",
+          "url": "https://www.databricks.com/company/careers/open-positions/job?gh_jid=8183195002",
           "source": "Greenhouse API (Live)",
           "postedApprox": "Active Now",
           "h1bFit": "Yes (H1B Friendly / Sponsoring)",
