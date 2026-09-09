@@ -234,35 +234,61 @@ def is_clearance_or_citizen_restricted(text):
     t = text.lower()
     return any(k in t for k in CLEARANCE_KEYWORDS)
 
-def is_job_live(url):
-    """Verifies that the job requisition is still open and not 404, expired, or redirected to error/current-openings."""
+def is_job_live(url, slug=None, ats_id=None):
+    """Universal live-availability verifier that tests all job applications before adding or keeping them.
+    Checks ATS status APIs and follows web redirects to confirm active HTTP 200 without closed notices."""
     if not url:
         return False
     try:
-        m = re.search(r'gh_jid=(\d+)|/jobs/(\d+)', url)
-        if m:
-            jid = m.group(1) or m.group(2)
-            if 'instacart' in url.lower():
-                try:
-                    c_req = urllib.request.Request(f'https://boards-api.greenhouse.io/v1/boards/instacart/jobs/{jid}', headers={'User-Agent': 'Mozilla/5.0'})
-                    with urllib.request.urlopen(c_req, context=ctx, timeout=5) as c_resp:
-                        if c_resp.status == 200:
-                            return True
-                        return False
-                except urllib.error.HTTPError as he:
-                    if he.code in (404, 410):
-                        return False
+        # 1. Universal ATS API check for Greenhouse when requisition ID and board slug are resolvable
+        jid = ats_id
+        if not jid:
+            m = re.search(r'gh_jid=(\d+)|/jobs/(\d+)', url)
+            if m:
+                jid = m.group(1) or m.group(2)
+        
+        gh_slug = slug
+        if not gh_slug:
+            sm = re.search(r'greenhouse\.io/(?:v1/boards/)?([^/]+)', url)
+            if sm:
+                gh_slug = sm.group(1)
 
-        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'})
+        if jid and gh_slug:
+            try:
+                c_req = urllib.request.Request(
+                    f'https://boards-api.greenhouse.io/v1/boards/{gh_slug}/jobs/{jid}',
+                    headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'}
+                )
+                with urllib.request.urlopen(c_req, context=ctx, timeout=5) as c_resp:
+                    if c_resp.status in (404, 410):
+                        return False
+                    if c_resp.status == 200:
+                        return True
+            except urllib.error.HTTPError as he:
+                if he.code in (404, 410):
+                    return False
+            except Exception:
+                pass
+
+        # 2. Universal Web URL Verification: Follow redirects & check page status / content
+        req = urllib.request.Request(
+            url,
+            headers={
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.9'
+            }
+        )
         with urllib.request.urlopen(req, context=ctx, timeout=6) as resp:
             final_url = resp.geturl().lower()
-            if any(k in final_url for k in ['error=true', 'current-openings', 'not-found']):
+            if any(k in final_url for k in ['error=true', 'current-openings', 'not-found', '/404', 'status=404']):
                 return False
             if resp.status in (200, 301, 302):
-                content = resp.read(3000).decode('utf-8', errors='ignore').lower()
+                content = resp.read(5000).decode('utf-8', errors='ignore').lower()
                 if any(k in content for k in [
                     "no longer available", "job has been closed", "position is closed",
-                    "this job is no longer accepting applications", "job was not found"
+                    "this job is no longer accepting applications", "job was not found",
+                    "position has been filled", "posting has expired", "job is closed"
                 ]):
                     return False
                 return True
@@ -318,14 +344,17 @@ for comp_name, btype, slug, industry in COMPANY_BOARDS:
                     ats_id = str(j.get('id', ''))
                     if not ats_id:
                         continue
-                    if comp_name.lower() == 'databricks':
-                        job_url = f"https://www.databricks.com/company/careers/open-positions/job?gh_jid={ats_id}"
-                    elif comp_name.lower() == 'instacart':
-                        job_url = f"https://www.instacart.careers/job?gh_jid={ats_id}"
-                    elif comp_name.lower() == 'hudson river trading':
-                        job_url = f"https://www.hudsonrivertrading.com/careers/job/?gh_jid={ats_id}"
+                    # Universal direct canonical application URL from ATS without hardcoding company exceptions
+                    raw_ats_url = j.get('absolute_url') or f"https://boards.greenhouse.io/{slug}/jobs/{ats_id}"
+                    if 'boards.greenhouse.io' in raw_ats_url and '#app' not in raw_ats_url:
+                        job_url = f"{raw_ats_url}#app"
                     else:
-                        job_url = f"https://boards.greenhouse.io/{slug}/jobs/{ats_id}#app"
+                        job_url = raw_ats_url
+
+                    # Universal check BEFORE adding: verify requisition is live and accepting applications
+                    if not is_job_live(job_url, slug=slug, ats_id=ats_id):
+                        print(f"Skipping closed or dead requisition: {comp_name} - {title}")
+                        continue
 
                     company_counts[comp_name] += 1
 
@@ -420,6 +449,12 @@ for comp_name, btype, slug, industry in COMPANY_BOARDS:
 
                     raw_url = j.get('jobUrl') or f'https://jobs.ashbyhq.com/{slug}/{j.get("id")}'
                     job_url = raw_url if raw_url.endswith('/application') else f"{raw_url.rstrip('/')}/application"
+
+                    # Universal check BEFORE adding: verify requisition is live and accepting applications
+                    if not is_job_live(job_url):
+                        print(f"Skipping closed or dead requisition: {comp_name} - {title}")
+                        continue
+
                     company_counts[comp_name] += 1
 
                     skills = ['Python', 'TypeScript', 'React', 'AWS', 'PostgreSQL', 'Distributed Systems']
@@ -536,14 +571,10 @@ for old_j in existing_jobs:
     if old_j.get('id') not in new_ids and old_j.get('url') not in {j.get('url') for j in matched_jobs}:
         if is_resume_role_matched(old_j.get('title', '')):
             if is_strictly_us_location(old_j.get('location', '')):
-                if is_job_live(old_j.get('url', '')):
+                if is_job_live(old_j.get('url', ''), ats_id=old_j.get('atsJobId')):
                     if 'customQuestions' not in old_j:
                         old_j['customQuestions'] = []
                         old_j['hasEssayQuestions'] = False
-                        if old_j.get('company', '').lower() == 'figma':
-                            q_obj = generate_tailored_answer('Figma', old_j.get('title', ''), old_j.get('skills', []), "Why do you want to join Figma? (Please share 3-4 sentences on why you want to join Figma)", old_j.get('industry', 'Design Platform'))
-                            old_j['customQuestions'] = [q_obj]
-                            old_j['hasEssayQuestions'] = True
                     combined_jobs.append(old_j)
                     retained_count += 1
                 else:
