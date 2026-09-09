@@ -89,9 +89,9 @@ def is_resume_role_matched(title):
         if re.search(r'\b(staff|sr\.?\s*staff|senior\s*staff)\b', t):
             return False
 
-    # 1. Immediate reject for excluded roles
+    # 1. Immediate reject for excluded roles (using word boundaries to prevent substring bugs like 'llm' in 'fulfillment')
     for ex in TITLE_EXCLUSIONS:
-        if ex in t:
+        if re.search(r'\b' + re.escape(ex) + r'\b', t):
             return False
             
     # Reject "software engineer, data" or "data engineer" / "data platform"
@@ -233,15 +233,35 @@ def is_clearance_or_citizen_restricted(text):
     return any(k in t for k in CLEARANCE_KEYWORDS)
 
 def is_job_live(url):
-    """Verifies that the job requisition is still open and not 404 or expired."""
+    """Verifies that the job requisition is still open and not 404, expired, or redirected to error/current-openings."""
     if not url:
         return False
     try:
+        m = re.search(r'gh_jid=(\d+)|/jobs/(\d+)', url)
+        if m:
+            jid = m.group(1) or m.group(2)
+            if 'instacart' in url.lower():
+                try:
+                    c_req = urllib.request.Request(f'https://boards-api.greenhouse.io/v1/boards/instacart/jobs/{jid}', headers={'User-Agent': 'Mozilla/5.0'})
+                    with urllib.request.urlopen(c_req, context=ctx, timeout=5) as c_resp:
+                        if c_resp.status == 200:
+                            return True
+                        return False
+                except urllib.error.HTTPError as he:
+                    if he.code in (404, 410):
+                        return False
+
         req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'})
         with urllib.request.urlopen(req, context=ctx, timeout=6) as resp:
+            final_url = resp.geturl().lower()
+            if any(k in final_url for k in ['error=true', 'current-openings', 'not-found']):
+                return False
             if resp.status in (200, 301, 302):
                 content = resp.read(3000).decode('utf-8', errors='ignore').lower()
-                if "no longer available" in content or "job has been closed" in content or "position is closed" in content:
+                if any(k in content for k in [
+                    "no longer available", "job has been closed", "position is closed",
+                    "this job is no longer accepting applications", "job was not found"
+                ]):
                     return False
                 return True
             return False
@@ -298,6 +318,8 @@ for comp_name, btype, slug, industry in COMPANY_BOARDS:
                         continue
                     if comp_name.lower() == 'databricks':
                         job_url = f"https://www.databricks.com/company/careers/open-positions?gh_jid={ats_id}"
+                    elif comp_name.lower() == 'instacart':
+                        job_url = f"https://www.instacart.careers/job?gh_jid={ats_id}"
                     else:
                         job_url = f"https://boards.greenhouse.io/{slug}/jobs/{ats_id}#app"
 
@@ -533,7 +555,7 @@ print(f"Active board total: {len(combined_jobs)} jobs ({len(matched_jobs)} new/r
 output_data = {
     "lastUpdated": datetime.date.today().isoformat(),
     "lastChecked": datetime.date.today().isoformat(),
-    "seedVersion": 9,
+    "seedVersion": 11,
     "candidateProfile": {
         "name": "Ramya Bangaru",
         "targetRole": "Senior Full Stack & Software Engineer",
