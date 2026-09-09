@@ -46,7 +46,9 @@ COMPANY_BOARDS = [
     ('Affirm', 'greenhouse', 'affirm', 'Fintech / BNPL Payments'),
     ('Pinterest', 'greenhouse', 'pinterest', 'Visual Discovery & Machine Learning'),
     ('Reddit', 'greenhouse', 'reddit', 'Community & Social Platform Infrastructure'),
-    ('Lyft', 'greenhouse', 'lyft', 'Mobility & Autonomous Systems')
+    ('Lyft', 'greenhouse', 'lyft', 'Mobility & Autonomous Systems'),
+    ('Coupang', 'greenhouse', 'coupang', 'High-Scale E-Commerce & Cloud Logistics'),
+    ('Smartsheet', 'greenhouse', 'smartsheet', 'Enterprise Collaboration & Work Management Platform')
 ]
 
 CLEARANCE_KEYWORDS = [
@@ -257,7 +259,18 @@ for comp_name, btype, slug, industry in COMPANY_BOARDS:
             req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'})
             with urllib.request.urlopen(req, context=ctx, timeout=8) as resp:
                 data = json.loads(resp.read().decode('utf-8'))
-                for j in data.get('jobs', []):
+                raw_jobs = data.get('jobs', [])
+                # Prioritize Seattle/WA local hub openings and Remote roles first
+                def seattle_loc_priority(j):
+                    l = (j.get('location', {}).get('name', '') or '').lower()
+                    if any(k in l for k in ['seattle', 'bellevue', 'redmond', 'kirkland', 'washington', ', wa', 'wa,', 'wa -']) and 'dc' not in l:
+                        return 0
+                    if 'remote' in l:
+                        return 1
+                    return 2
+                
+                sorted_jobs = sorted(raw_jobs, key=seattle_loc_priority)
+                for j in sorted_jobs:
                     if company_counts[comp_name] >= max_per_co:
                         break
                     title = j.get('title', '')
