@@ -3110,21 +3110,26 @@ async function load() {
 
   if (!state.data) { console.error('No jobs data available'); return; }
 
-  // Apply clean unapplied state if the seedVersion in data is newer than what we've stored
+  // Apply clean state if the seedVersion in data is newer than what we've stored
   const storedSeed = parseInt(localStorage.getItem(SEED_KEY) || '0', 10);
   const dataSeed = state.data.seedVersion || 0;
   if (dataSeed > storedSeed) {
-    state.applied.clear();
+    // Note: state.applied is NEVER cleared on seed bumps — preserves application history
     state.unavailable.clear();
     state.notEligible = {};
     state.badRecs.clear();
     state.negativeTitles.clear();
     localStorage.setItem(SEED_KEY, String(dataSeed));
-    saveApplied();
     saveUnavailable();
     saveNotEligible();
     saveBadRecs();
     saveNegativeTitles();
+  }
+
+  // Ensure user's applied role "Reddit - Fullstack Software Engineer, Notifications Lifecycle" is tracked
+  if (!state.applied.has('reddit-7895468')) {
+    state.applied.add('reddit-7895468');
+    saveApplied();
   }
 
   // Try to fetch the auto-stale list (written by verify_urls.py). Missing is OK.
