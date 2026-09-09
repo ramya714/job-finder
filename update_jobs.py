@@ -80,10 +80,15 @@ def is_resume_role_matched(title):
         return False
     t = title.lower().replace('\u00a0', ' ').replace('-', ' ').replace(',', ' ')
     
-    # 0. Strict exclusion of Principal / Executive level and ML / AI / RL / Data Engineering keywords
+    # 0. Strict exclusion of Principal / Executive level, ML / AI / RL, and Data Engineering keywords
     if re.search(r'\b(principal|distinguished|fellow|ml|ai|genai|llm|rl|deep learning|machine learning|reinforcement learning|big data)\b', t):
         return False
         
+    # 0b. Strict exclusion of Staff-level roles (while preserving Member of Technical Staff)
+    if 'member of technical staff' not in t and 'technical staff' not in t:
+        if re.search(r'\b(staff|sr\.?\s*staff|senior\s*staff)\b', t):
+            return False
+
     # 1. Immediate reject for excluded roles
     for ex in TITLE_EXCLUSIONS:
         if ex in t:
@@ -528,7 +533,7 @@ print(f"Active board total: {len(combined_jobs)} jobs ({len(matched_jobs)} new/r
 output_data = {
     "lastUpdated": datetime.date.today().isoformat(),
     "lastChecked": datetime.date.today().isoformat(),
-    "seedVersion": 8,
+    "seedVersion": 9,
     "candidateProfile": {
         "name": "Ramya Bangaru",
         "targetRole": "Senior Full Stack & Software Engineer",

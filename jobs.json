@@ -1,7 +1,7 @@
 {
   "lastUpdated": "2026-09-09",
   "lastChecked": "2026-09-09",
-  "seedVersion": 8,
+  "seedVersion": 9,
   "candidateProfile": {
     "name": "Ramya Bangaru",
     "targetRole": "Senior Full Stack & Software Engineer",
@@ -918,37 +918,6 @@
           "hasEssayQuestions": false
         },
         {
-          "id": "mongodb-7727896",
-          "company": "MongoDB",
-          "title": "Security Software Engineer, Infrastructure Security (Staff or Senior)",
-          "location": "Austin; New York City; San Francisco; Seattle; United States",
-          "remote": "US / Onsite",
-          "industry": "Distributed Cloud Database Platform",
-          "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at MongoDB focused on scalable engineering with Java and cloud infrastructure.",
-          "skills": [
-            "Java",
-            "Python",
-            "AWS",
-            "C++",
-            "Kubernetes",
-            "Go"
-          ],
-          "url": "https://boards.greenhouse.io/mongodb/jobs/7727896#app",
-          "source": "Greenhouse API (Live)",
-          "postedApprox": "Active Now",
-          "h1bFit": "Open / Check Application",
-          "yoeFit": "Good (3\u20138 yrs)",
-          "yoeNote": "Live active verified opening",
-          "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-09T11:10:05.064547",
-          "atsJobId": "7727896",
-          "region": "East",
-          "regionRank": 2,
-          "customQuestions": [],
-          "hasEssayQuestions": false
-        },
-        {
           "id": "mongodb-8065401",
           "company": "MongoDB",
           "title": "Lead Forward Deployed Engineer",
@@ -1036,113 +1005,6 @@
           "regionRank": 1,
           "customQuestions": [],
           "hasEssayQuestions": false
-        },
-        {
-          "id": "okta-8053199",
-          "company": "Okta",
-          "title": "Staff Backend Engineer, Identity Threat Protection ",
-          "location": "San Francisco, California",
-          "remote": "US / Onsite",
-          "industry": "Enterprise Cloud Identity & Security",
-          "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at Okta focused on scalable engineering with Java and cloud infrastructure.",
-          "skills": [
-            "Java",
-            "React",
-            "AWS",
-            "Go"
-          ],
-          "url": "https://boards.greenhouse.io/okta/jobs/8053199#app",
-          "source": "Greenhouse API (Live)",
-          "postedApprox": "Active Now",
-          "h1bFit": "Open / Check Application",
-          "yoeFit": "Good (3\u20138 yrs)",
-          "yoeNote": "Live active verified opening",
-          "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-09T11:10:06.824395",
-          "atsJobId": "8053199",
-          "region": "West",
-          "regionRank": 2,
-          "customQuestions": [
-            {
-              "id": "q_320815",
-              "question": "To the best of your knowledge, do you have any family members / relatives or personal relationships at Okta or at any suppliers, partners, or vendors that have a business relationship with Okta?\n\n(For purposes of this question, a \u201cfamily member / relative or personal relationship\u201d is defined as close personal friends (including sexual and/or romantic relationships), close relatives (spouse, partner, children, cousins, aunts, uncles, nieces, nephews, grandparents or grandchildren), someone who lives in your household, or anyone else with whom you have a close enough personal relationship or connection that it could improperly bias your conduct or decision making or be perceived to be capable of impacting your conduct or decision making.",
-              "orig": "The most impactful system I engineered was an end-to-end distributed event processing and workflow platform handling millions of daily events. Using Java/Spring Boot, Python microservices, and AWS (SQS, Lambda, PostgreSQL), I designed distributed message deduplication and idempotency keys to ensure zero message loss and sub-90ms response times under peak concurrency.",
-              "concise": "I led the architecture of a high-throughput event processing platform on AWS handling millions of daily events with Java, Python, and PostgreSQL, maintaining 99.99% SLA and zero message loss.",
-              "technical": "Designed an event-driven architecture utilizing distributed idempotency keys, optimistic locking in PostgreSQL, and automated dead-letter retries, sustaining 5,000+ peak RPS with zero data corruption.",
-              "metrics": "Key Achievements: 10M+ daily events processed, P99 latency reduced by 42% (from 480ms to 85ms), 99.99% uptime across 4 consecutive quarters, and 30% lower AWS compute costs."
-            },
-            {
-              "id": "q_568955",
-              "question": "If yes, please identify name of person / vendor and describe relationship / association:",
-              "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Staff Backend Engineer, Identity Threat Protection  position at Okta, my approach combines deep hands-on expertise in Java, React, AWS, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
-              "concise": "Applying deep expertise in Java, React, AWS and cloud distributed systems to solve this challenge with high reliability and measurable results for Okta.",
-              "technical": "Leveraging Java, React, AWS, distributed system design, relational and distributed data stores, and automated testing to build fault-tolerant, scalable architectures that satisfy strict production requirements.",
-              "metrics": "Delivered measurable results across systems handling millions of requests: 99.99% SLA compliance, 42% latency reduction, and zero data regression incidents."
-            },
-            {
-              "id": "q_873068",
-              "question": "If yes, please describe:",
-              "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Staff Backend Engineer, Identity Threat Protection  position at Okta, my approach combines deep hands-on expertise in Java, React, AWS, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
-              "concise": "Applying deep expertise in Java, React, AWS and cloud distributed systems to solve this challenge with high reliability and measurable results for Okta.",
-              "technical": "Leveraging Java, React, AWS, distributed system design, relational and distributed data stores, and automated testing to build fault-tolerant, scalable architectures that satisfy strict production requirements.",
-              "metrics": "Delivered measurable results across systems handling millions of requests: 99.99% SLA compliance, 42% latency reduction, and zero data regression incidents."
-            }
-          ],
-          "hasEssayQuestions": true
-        },
-        {
-          "id": "okta-8108855",
-          "company": "Okta",
-          "title": "Staff Software Engineer, Agent Gateway",
-          "location": "San Francisco, California",
-          "remote": "US / Onsite",
-          "industry": "Enterprise Cloud Identity & Security",
-          "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at Okta focused on scalable engineering with Java and cloud infrastructure.",
-          "skills": [
-            "Java",
-            "AWS",
-            "Go"
-          ],
-          "url": "https://boards.greenhouse.io/okta/jobs/8108855#app",
-          "source": "Greenhouse API (Live)",
-          "postedApprox": "Active Now",
-          "h1bFit": "Open / Check Application",
-          "yoeFit": "Good (3\u20138 yrs)",
-          "yoeNote": "Live active verified opening",
-          "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-09T11:10:07.103939",
-          "atsJobId": "8108855",
-          "region": "West",
-          "regionRank": 2,
-          "customQuestions": [
-            {
-              "id": "q_320815",
-              "question": "To the best of your knowledge, do you have any family members / relatives or personal relationships at Okta or at any suppliers, partners, or vendors that have a business relationship with Okta?\n\n(For purposes of this question, a \u201cfamily member / relative or personal relationship\u201d is defined as close personal friends (including sexual and/or romantic relationships), close relatives (spouse, partner, children, cousins, aunts, uncles, nieces, nephews, grandparents or grandchildren), someone who lives in your household, or anyone else with whom you have a close enough personal relationship or connection that it could improperly bias your conduct or decision making or be perceived to be capable of impacting your conduct or decision making.",
-              "orig": "The most impactful system I engineered was an end-to-end distributed event processing and workflow platform handling millions of daily events. Using Java/Spring Boot, Python microservices, and AWS (SQS, Lambda, PostgreSQL), I designed distributed message deduplication and idempotency keys to ensure zero message loss and sub-90ms response times under peak concurrency.",
-              "concise": "I led the architecture of a high-throughput event processing platform on AWS handling millions of daily events with Java, Python, and PostgreSQL, maintaining 99.99% SLA and zero message loss.",
-              "technical": "Designed an event-driven architecture utilizing distributed idempotency keys, optimistic locking in PostgreSQL, and automated dead-letter retries, sustaining 5,000+ peak RPS with zero data corruption.",
-              "metrics": "Key Achievements: 10M+ daily events processed, P99 latency reduced by 42% (from 480ms to 85ms), 99.99% uptime across 4 consecutive quarters, and 30% lower AWS compute costs."
-            },
-            {
-              "id": "q_568955",
-              "question": "If yes, please identify name of person / vendor and describe relationship / association:",
-              "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Staff Software Engineer, Agent Gateway position at Okta, my approach combines deep hands-on expertise in Java, AWS, Go, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
-              "concise": "Applying deep expertise in Java, AWS, Go and cloud distributed systems to solve this challenge with high reliability and measurable results for Okta.",
-              "technical": "Leveraging Java, AWS, Go, distributed system design, relational and distributed data stores, and automated testing to build fault-tolerant, scalable architectures that satisfy strict production requirements.",
-              "metrics": "Delivered measurable results across systems handling millions of requests: 99.99% SLA compliance, 42% latency reduction, and zero data regression incidents."
-            },
-            {
-              "id": "q_873068",
-              "question": "If yes, please describe:",
-              "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Staff Software Engineer, Agent Gateway position at Okta, my approach combines deep hands-on expertise in Java, AWS, Go, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
-              "concise": "Applying deep expertise in Java, AWS, Go and cloud distributed systems to solve this challenge with high reliability and measurable results for Okta.",
-              "technical": "Leveraging Java, AWS, Go, distributed system design, relational and distributed data stores, and automated testing to build fault-tolerant, scalable architectures that satisfy strict production requirements.",
-              "metrics": "Delivered measurable results across systems handling millions of requests: 99.99% SLA compliance, 42% latency reduction, and zero data regression incidents."
-            }
-          ],
-          "hasEssayQuestions": true
         },
         {
           "id": "twilio-8065028",
@@ -1306,34 +1168,6 @@
           "hasEssayQuestions": false
         },
         {
-          "id": "waymo-8012271",
-          "company": "Waymo",
-          "title": "Sr. Staff Software Engineer, DUE Experience",
-          "location": "Mountain View, CA; Seattle, WA; New York City, NY; Los Angeles, CA;  United States ",
-          "remote": "US / Onsite",
-          "industry": "Autonomous Mobility & Distributed Robotics",
-          "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at Waymo focused on scalable engineering with C++ and cloud infrastructure.",
-          "skills": [
-            "C++",
-            "Distributed Systems",
-            "Go"
-          ],
-          "url": "https://boards.greenhouse.io/waymo/jobs/8012271#app",
-          "source": "Greenhouse API (Live)",
-          "postedApprox": "Active Now",
-          "h1bFit": "Open / Check Application",
-          "yoeFit": "Good (3\u20138 yrs)",
-          "yoeNote": "Live active verified opening",
-          "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-09T11:10:09.297261",
-          "atsJobId": "8012271",
-          "region": "East",
-          "regionRank": 2,
-          "customQuestions": [],
-          "hasEssayQuestions": false
-        },
-        {
           "id": "block-5381210008",
           "company": "Block / Cash App",
           "title": "Enterprise People Platform Engineer",
@@ -1486,36 +1320,6 @@
           "hasEssayQuestions": false
         },
         {
-          "id": "sofi-7819801003",
-          "company": "SoFi",
-          "title": "Staff Backend Engineer, Custody Core (Crypto Security)",
-          "location": "CA - San Francisco; WA - Seattle; NY - New York City; TX - Frisco; UT - Cottonwood Heights; MT - Helena; FL - Jacksonville",
-          "remote": "US / Onsite",
-          "industry": "Digital Banking & Lending Platform",
-          "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at SoFi focused on scalable engineering with AWS and cloud infrastructure.",
-          "skills": [
-            "AWS",
-            "PostgreSQL",
-            "SQL",
-            "Distributed Systems",
-            "Go"
-          ],
-          "url": "https://boards.greenhouse.io/sofi/jobs/7819801003#app",
-          "source": "Greenhouse API (Live)",
-          "postedApprox": "Active Now",
-          "h1bFit": "Open / Check Application",
-          "yoeFit": "Good (3\u20138 yrs)",
-          "yoeNote": "Live active verified opening",
-          "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-09T11:10:11.355616",
-          "atsJobId": "7819801003",
-          "region": "East",
-          "regionRank": 2,
-          "customQuestions": [],
-          "hasEssayQuestions": false
-        },
-        {
           "id": "carta-7713882003",
           "company": "Carta",
           "title": "Senior Software Engineer II, Developer Experience",
@@ -1542,36 +1346,6 @@
           "postedAtUtc": "2026-09-09T11:10:11.714801",
           "atsJobId": "7713882003",
           "region": "East",
-          "regionRank": 2,
-          "customQuestions": [],
-          "hasEssayQuestions": false
-        },
-        {
-          "id": "carta-7866977003",
-          "company": "Carta",
-          "title": "Staff Software Engineer, Middle Office",
-          "location": "San Francisco, California, United States",
-          "remote": "US / Onsite",
-          "industry": "Equity Management & Financial Software",
-          "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at Carta focused on scalable engineering with Python and cloud infrastructure.",
-          "skills": [
-            "Python",
-            "React",
-            "AWS",
-            "Distributed Systems",
-            "Go"
-          ],
-          "url": "https://boards.greenhouse.io/carta/jobs/7866977003#app",
-          "source": "Greenhouse API (Live)",
-          "postedApprox": "Active Now",
-          "h1bFit": "Open / Check Application",
-          "yoeFit": "Good (3\u20138 yrs)",
-          "yoeNote": "Live active verified opening",
-          "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-09T11:10:11.813541",
-          "atsJobId": "7866977003",
-          "region": "West",
           "regionRank": 2,
           "customQuestions": [],
           "hasEssayQuestions": false
@@ -1773,61 +1547,6 @@
             }
           ],
           "hasEssayQuestions": true
-        },
-        {
-          "id": "gusto-8013480",
-          "company": "Gusto",
-          "title": "Senior Staff Engineer - Tax Platform Engineering",
-          "location": "Denver, CO;San Francisco, CA;New York, NY;Chicago, IL",
-          "remote": "US / Onsite",
-          "industry": "Payroll & Cloud People Platform",
-          "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at Gusto focused on scalable engineering with TypeScript and cloud infrastructure.",
-          "skills": [
-            "TypeScript",
-            "React",
-            "Distributed Systems",
-            "Go"
-          ],
-          "url": "https://boards.greenhouse.io/gusto/jobs/8013480#app",
-          "source": "Greenhouse API (Live)",
-          "postedApprox": "Active Now",
-          "h1bFit": "Open / Check Application",
-          "yoeFit": "Good (3\u20138 yrs)",
-          "yoeNote": "Live active verified opening",
-          "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-09T11:10:13.263853",
-          "atsJobId": "8013480",
-          "region": "East",
-          "regionRank": 2,
-          "customQuestions": [],
-          "hasEssayQuestions": false
-        },
-        {
-          "id": "gusto-7654934",
-          "company": "Gusto",
-          "title": "Senior Staff Software Engineer, Money Group ",
-          "location": "Denver, CO;San Francisco, CA;New York, NY",
-          "remote": "US / Onsite",
-          "industry": "Payroll & Cloud People Platform",
-          "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at Gusto focused on scalable engineering with Go and cloud infrastructure.",
-          "skills": [
-            "Go"
-          ],
-          "url": "https://boards.greenhouse.io/gusto/jobs/7654934#app",
-          "source": "Greenhouse API (Live)",
-          "postedApprox": "Active Now",
-          "h1bFit": "Open / Check Application",
-          "yoeFit": "Good (3\u20138 yrs)",
-          "yoeNote": "Live active verified opening",
-          "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-09T11:10:13.368734",
-          "atsJobId": "7654934",
-          "region": "East",
-          "regionRank": 2,
-          "customQuestions": [],
-          "hasEssayQuestions": false
         },
         {
           "id": "brex-8461333002",
@@ -2181,43 +1900,6 @@
           "hasEssayQuestions": true
         },
         {
-          "id": "pinterest-7494904",
-          "company": "Pinterest",
-          "title": "Staff Software Engineer, Ads Measurement Signal ",
-          "location": "Seattle, WA, US; Remote, US",
-          "remote": "Remote",
-          "industry": "Visual Discovery & Machine Learning",
-          "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at Pinterest focused on scalable engineering with AWS and cloud infrastructure.",
-          "skills": [
-            "AWS",
-            "SQL",
-            "Distributed Systems"
-          ],
-          "url": "https://boards.greenhouse.io/pinterest/jobs/7494904#app",
-          "source": "Greenhouse API (Live)",
-          "postedApprox": "Active Now",
-          "h1bFit": "Yes (H1B Friendly / Sponsoring)",
-          "yoeFit": "Good (3\u20138 yrs)",
-          "yoeNote": "Live active verified opening",
-          "callbackScore": 95.0,
-          "postedAtUtc": "2026-09-09T11:10:16.642720",
-          "atsJobId": "7494904",
-          "region": "Remote",
-          "regionRank": 1,
-          "customQuestions": [
-            {
-              "id": "q_884288",
-              "question": "Work Experience: Current/Previous Employer",
-              "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Staff Software Engineer, Ads Measurement Signal  position at Pinterest, my approach combines deep hands-on expertise in AWS, SQL, Distributed Systems, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
-              "concise": "Applying deep expertise in AWS, SQL, Distributed Systems and cloud distributed systems to solve this challenge with high reliability and measurable results for Pinterest.",
-              "technical": "Leveraging AWS, SQL, Distributed Systems, distributed system design, relational and distributed data stores, and automated testing to build fault-tolerant, scalable architectures that satisfy strict production requirements.",
-              "metrics": "Delivered measurable results across systems handling millions of requests: 99.99% SLA compliance, 42% latency reduction, and zero data regression incidents."
-            }
-          ],
-          "hasEssayQuestions": true
-        },
-        {
           "id": "pinterest-8015490",
           "company": "Pinterest",
           "title": "Security Software Engineer II, Detection and Response",
@@ -2352,42 +2034,6 @@
           "hasEssayQuestions": true
         },
         {
-          "id": "lyft-8761940002",
-          "company": "Lyft",
-          "title": "Staff Software Engineer",
-          "location": "San Francisco, CA",
-          "remote": "US / Onsite",
-          "industry": "Mobility & Autonomous Systems",
-          "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at Lyft focused on scalable engineering with Python and cloud infrastructure.",
-          "skills": [
-            "Python",
-            "Go"
-          ],
-          "url": "https://boards.greenhouse.io/lyft/jobs/8761940002#app",
-          "source": "Greenhouse API (Live)",
-          "postedApprox": "Active Now",
-          "h1bFit": "Open / Check Application",
-          "yoeFit": "Good (3\u20138 yrs)",
-          "yoeNote": "Live active verified opening",
-          "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-09T11:10:18.227025",
-          "atsJobId": "8761940002",
-          "region": "West",
-          "regionRank": 2,
-          "customQuestions": [
-            {
-              "id": "q_551791",
-              "question": "Please describe any need for a reasonable accommodation for this hiring process (no documentation required).",
-              "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Staff Software Engineer position at Lyft, my approach combines deep hands-on expertise in Python, Go, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
-              "concise": "Applying deep expertise in Python, Go and cloud distributed systems to solve this challenge with high reliability and measurable results for Lyft.",
-              "technical": "Leveraging Python, Go, distributed system design, relational and distributed data stores, and automated testing to build fault-tolerant, scalable architectures that satisfy strict production requirements.",
-              "metrics": "Delivered measurable results across systems handling millions of requests: 99.99% SLA compliance, 42% latency reduction, and zero data regression incidents."
-            }
-          ],
-          "hasEssayQuestions": true
-        },
-        {
           "id": "coupang-7919896",
           "company": "Coupang",
           "title": "Senior Software Engineer",
@@ -2411,37 +2057,6 @@
           "callbackScore": 90.0,
           "postedAtUtc": "2026-09-09T11:10:19.119333",
           "atsJobId": "7919896",
-          "region": "West",
-          "regionRank": 2,
-          "customQuestions": [],
-          "hasEssayQuestions": false
-        },
-        {
-          "id": "coupang-7849003",
-          "company": "Coupang",
-          "title": "Senior Staff Backend Engineer",
-          "location": "Mountain View, USA; Seattle, USA",
-          "remote": "US / Onsite",
-          "industry": "High-Scale E-Commerce & Cloud Logistics",
-          "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at Coupang focused on scalable engineering with Java and cloud infrastructure.",
-          "skills": [
-            "Java",
-            "Python",
-            "AWS",
-            "Kubernetes",
-            "Distributed Systems",
-            "Go"
-          ],
-          "url": "https://boards.greenhouse.io/coupang/jobs/7849003#app",
-          "source": "Greenhouse API (Live)",
-          "postedApprox": "Active Now",
-          "h1bFit": "Open / Check Application",
-          "yoeFit": "Good (3\u20138 yrs)",
-          "yoeNote": "Live active verified opening",
-          "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-09T11:10:19.228949",
-          "atsJobId": "7849003",
           "region": "West",
           "regionRank": 2,
           "customQuestions": [],

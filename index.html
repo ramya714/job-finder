@@ -1809,10 +1809,15 @@ function renderTabs() {
 function matches(job) {
   // Applied jobs always hidden from the Jobs view — they live in the Applied tab.
   if (state.applied.has(job.id)) return false;
-  // Ignore Principal/Executive, ML/AI, Data Engineering, and non-target titles
+  // Ignore Principal/Executive, Staff, ML/AI, Data Engineering, and non-target titles
   const tLow = (job.title || '').toLowerCase().replace(/[-–—/,]/g, ' ');
   if (/\b(principal|distinguished|fellow|ml|machine learning|ai|rl|deep learning|nlp|computer vision|llm|genai|generative ai|data scientist|research scientist|applied scientist|reinforcement learning|big data)\b/i.test(tLow)) {
     return false;
+  }
+  if (!tLow.includes('member of technical staff') && !tLow.includes('technical staff')) {
+    if (/\b(staff|sr\.?\s*staff|senior\s*staff)\b/i.test(tLow)) {
+      return false;
+    }
   }
   if (/\bdata\b/.test(tLow) && (tLow.includes('engineer') || tLow.includes('platform') || tLow.includes('infra') || tLow.includes('pipeline'))) {
     return false;
