@@ -322,6 +322,8 @@ for comp_name, btype, slug, industry in COMPANY_BOARDS:
                         job_url = f"https://www.databricks.com/company/careers/open-positions/job?gh_jid={ats_id}"
                     elif comp_name.lower() == 'instacart':
                         job_url = f"https://www.instacart.careers/job?gh_jid={ats_id}"
+                    elif comp_name.lower() == 'hudson river trading':
+                        job_url = f"https://www.hudsonrivertrading.com/careers/job/?gh_jid={ats_id}"
                     else:
                         job_url = f"https://boards.greenhouse.io/{slug}/jobs/{ats_id}#app"
 
