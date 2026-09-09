@@ -48,7 +48,17 @@ COMPANY_BOARDS = [
     ('Reddit', 'greenhouse', 'reddit', 'Community & Social Platform Infrastructure'),
     ('Lyft', 'greenhouse', 'lyft', 'Mobility & Autonomous Systems'),
     ('Coupang', 'greenhouse', 'coupang', 'High-Scale E-Commerce & Cloud Logistics'),
-    ('Smartsheet', 'greenhouse', 'smartsheet', 'Enterprise Collaboration & Work Management Platform')
+    ('Smartsheet', 'greenhouse', 'smartsheet', 'Enterprise Collaboration & Work Management Platform'),
+    ('GitLab', 'greenhouse', 'gitlab', 'DevSecOps & Remote-First Cloud Platform'),
+    ('Automattic', 'greenhouse', 'automattic', 'Open Web & WordPress Distributed Platform'),
+    ('Mozilla', 'greenhouse', 'mozilla', 'Open Web & Firefox Privacy Technologies'),
+    ('Docker', 'greenhouse', 'docker', 'Cloud Container & Developer Platform'),
+    ('Tailscale', 'greenhouse', 'tailscale', 'Zero Trust Mesh Networking'),
+    ('Sentry', 'greenhouse', 'sentry', 'Application Performance & Error Monitoring'),
+    ('Retool', 'greenhouse', 'retool', 'Internal Developer Tools & Workflows'),
+    ('Grafana Labs', 'greenhouse', 'grafanalabs', 'Open Source Observability & Metrics'),
+    ('1Password', 'greenhouse', '1password', 'Enterprise Identity & Password Security'),
+    ('dbt Labs', 'greenhouse', 'dbtlabs', 'Analytics Engineering & Data Transformation')
 ]
 
 CLEARANCE_KEYWORDS = [
@@ -613,10 +623,16 @@ output_data = {
             "note": "Seattle & Eastside local hub jobs (Amazon, Microsoft, Databricks, Snowflake)."
         },
         {
-            "label": "🌐 Remote Full Stack / Backend Engineer — USA — Past 7 days",
-            "url": "https://www.linkedin.com/jobs/search/?keywords=Full%20Stack%20Engineer%20OR%20Backend%20Engineer&location=United%20States&f_TPR=r604800&f_WT=2&f_E=4&sortBy=DD",
+            "label": "🌐 Remote Software & Full Stack Engineer — USA — Past 7 days (All Seniority)",
+            "url": "https://www.linkedin.com/jobs/search/?keywords=%28%22Software%20Engineer%22%20OR%20%22Full%20Stack%22%20OR%20%22Backend%22%29%20AND%20%28Python%20OR%20Java%20OR%20TypeScript%20OR%20React%20OR%20AWS%29&location=United%20States&f_TPR=r604800&f_WT=2&sortBy=DD",
             "source": "LinkedIn",
-            "note": "100% Remote USA roles."
+            "note": "100% Remote USA roles covering Software Engineer, Full Stack, and Backend without restrictive seniority tags."
+        },
+        {
+            "label": "🚀 Remote Software Engineer (Startups & Tech) — USA — Past 7 days",
+            "url": "https://www.linkedin.com/jobs/search/?keywords=%22Software%20Engineer%22&location=United%20States&f_TPR=r604800&f_WT=2&sortBy=DD",
+            "source": "LinkedIn",
+            "note": "All remote Software Engineer openings across US startups and tech firms."
         }
     ],
     "weeks": [
