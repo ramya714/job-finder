@@ -1677,42 +1677,64 @@ function isSimilarToRejectedTitle(title) {
   return false;
 }
 
+  function normCompany(c) {
+    return (c || '').toLowerCase().replace(/\s*\(.*?\)/g, '')
+      .replace(/\b(inc|llc|ltd|corp|corporation|technologies|technology|group|holdings)\b\.?/g, '')
+      .replace(/[^a-z0-9]+/g, '');
+  }
+  function titleTokens(t) { return new Set((t || '').toLowerCase().match(/[a-z0-9+]+/g) || []); }
+
 async function setBadRec(id) {
   state.badRecs.add(id);
-  saveBadRecs();
 
-  // Extract negative pattern from job title to suppress similar roles across board
+  // Also auto-prune twin / duplicate postings (same company + near-same title)
   const all = (state.data && state.data.weeks) ? state.data.weeks.flatMap(w => w.jobs) : [];
   const targetJob = all.find(j => j.id === id);
-  if (targetJob && targetJob.title) {
-    const negTokens = extractDistinctiveNegativeTokens(targetJob.title);
-    if (negTokens.length > 0) {
-      state.negativeTitles.add(negTokens.join(' '));
-      saveNegativeTitles();
+  if (targetJob) {
+    const myCo = normCompany(targetJob.company), myToks = titleTokens(targetJob.title);
+    for (const j of all) {
+      if (j.id === id || state.badRecs.has(j.id)) continue;
+      const sameExt = targetJob.externalId && j.externalId === targetJob.externalId;
+      const co = normCompany(j.company);
+      const sameCo = co === myCo || (co.length >= 4 && myCo.startsWith(co)) || (myCo.length >= 4 && co.startsWith(myCo));
+      const tk = titleTokens(j.title);
+      const union = new Set([...tk, ...myToks]);
+      const inter = [...tk].filter(x => myToks.has(x)).length;
+      if (sameExt || (sameCo && (union.size === 0 || inter / union.size >= 0.7))) {
+        state.badRecs.add(j.id);
+      }
+    }
 
-      // Auto-prune any other open jobs matching this negative title pattern
-      for (const other of all) {
-        if (other.id !== id && isSimilarToRejectedTitle(other.title)) {
-          state.badRecs.add(other.id);
+    if (targetJob.title) {
+      const negTokens = extractDistinctiveNegativeTokens(targetJob.title);
+      if (negTokens.length > 0) {
+        state.negativeTitles.add(negTokens.join(' '));
+        saveNegativeTitles();
+
+        // Auto-prune any other open jobs matching this negative title pattern
+        for (const other of all) {
+          if (other.id !== id && isSimilarToRejectedTitle(other.title)) {
+            state.badRecs.add(other.id);
+          }
         }
       }
-      saveBadRecs();
     }
   }
+  saveBadRecs();
 
+  // Fire-and-forget backend notification so UI is not blocked
   try {
-    // Record FIRST (snapshots the job for the improver), THEN remove it.
-    await fetch('/api/outcome', {
+    fetch('/api/outcome', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id, outcome: 'bad_recommendation' }),
-    });
-    await fetch('/api/remove', {
+    }).catch(() => {});
+    fetch('/api/remove', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id }),
-    });
-  } catch (e) { /* offline serve.py — localStorage still hides it */ }
+    }).catch(() => {});
+  } catch (e) { /* offline / static hosting */ }
 }
 
 function saveOutcomes() {
@@ -1809,9 +1831,9 @@ function renderTabs() {
 function matches(job) {
   // Applied jobs always hidden from the Jobs view — they live in the Applied tab.
   if (state.applied.has(job.id)) return false;
-  // Ignore Principal/Executive, Staff, ML/AI, Data Engineering, and non-target titles
+  // Ignore Principal/Executive, Staff, ML/AI, Data Engineering, Security, and non-target titles
   const tLow = (job.title || '').toLowerCase().replace(/[-–—/,]/g, ' ');
-  if (/\b(principal|distinguished|fellow|ml|machine learning|ai|rl|deep learning|nlp|computer vision|llm|genai|generative ai|data scientist|research scientist|applied scientist|reinforcement learning|big data)\b/i.test(tLow)) {
+  if (/\b(principal|distinguished|fellow|ml|machine learning|ai|devai|rl|deep learning|nlp|computer vision|llm|genai|generative ai|data scientist|research scientist|applied scientist|reinforcement learning|big data|inference|model lifecycle|frontier agents?|gpu|hpc|people platform|business systems?|iam|security|cybersecurity)\b/i.test(tLow)) {
     return false;
   }
   if (!tLow.includes('member of technical staff') && !tLow.includes('technical staff')) {
@@ -2563,13 +2585,7 @@ function actionDateKey() {
 function topOpenJobs() {
   if (!state.data) return [];
   const all = state.data.weeks.flatMap(w => w.jobs.map(j => ({...j, _weekId: w.weekId})));
-  const open = all.filter(j =>
-    !state.applied.has(j.id) &&
-    !isStale(j.id) &&
-    !isInCooldown(j.company) &&
-    !state.notEligible[j.id] &&
-    !state.badRecs.has(j.id)
-  );
+  const open = all.filter(matches);
   // Score: callback potential dominates. Fresh ATS posts (< 48h) get a huge
   // boost because that's when recruiters actually review applications.
   // H1B fit, YOE, salary are tiebreakers.
@@ -2841,7 +2857,7 @@ function renderAction() {
 function updateBadges() {
   if (!state.data) return;
   const all = state.data.weeks.flatMap(w => w.jobs);
-  const open = all.filter(j => !state.applied.has(j.id) && !isStale(j.id)).length;
+  const open = all.filter(matches).length;
   document.getElementById('tab-jobs-badge').textContent = open;
   document.getElementById('tab-applied-badge').textContent = all.filter(j => state.applied.has(j.id)).length;
   document.getElementById('tab-live-badge').textContent = (state.data.liveTrackers || []).length;
@@ -3114,16 +3130,11 @@ async function load() {
   const storedSeed = parseInt(localStorage.getItem(SEED_KEY) || '0', 10);
   const dataSeed = state.data.seedVersion || 0;
   if (dataSeed > storedSeed) {
-    // Note: state.applied is NEVER cleared on seed bumps — preserves application history
+    // Note: state.applied, state.badRecs, state.negativeTitles, and state.notEligible
+    // are NEVER cleared on seed bumps — preserves user feedback and application history.
     state.unavailable.clear();
-    state.notEligible = {};
-    state.badRecs.clear();
-    state.negativeTitles.clear();
     localStorage.setItem(SEED_KEY, String(dataSeed));
     saveUnavailable();
-    saveNotEligible();
-    saveBadRecs();
-    saveNegativeTitles();
   }
 
   // Ensure user's applied role "Reddit - Fullstack Software Engineer, Notifications Lifecycle" is tracked

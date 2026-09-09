@@ -67,11 +67,13 @@ TITLE_EXCLUSIONS = [
     'data engineer', 'big data', 'data platform', 'data infrastructure', 'database administrator', 'dba',
     'hardware', 'hvac', 'dv engineer', 'verification', 'endpoint', 'it controls', 'compliance engineer',
     'android', 'ios', 'mobile', 'devrel', 'developer relations', 'solutions engineer',
-    'cloud security', 'security engineer', 'devops engineer, infrastructure & security', 'creative',
+    'security', 'cybersecurity', 'cloud security', 'security engineer', 'security software engineer', 'detection and response', 'iam',
+    'devops engineer, infrastructure & security', 'creative',
     'machine learning', 'ml engineer', 'ml software', 'deep learning', 'nlp', 'computer vision',
     'data science', 'research scientist', 'applied scientist', 'llm', 'genai', 'generative ai',
     'algorithm engineer', 'ai engineer', 'ai infrastructure', 'ai research', 'ai platform',
-    'ai runtime', 'ai inference', 'ai native', 'ai agent', 'ai tools', 'caper ai', 'ai product',
+    'ai runtime', 'ai inference', 'inference', 'model lifecycle', 'ai native', 'ai agent', 'ai tools', 'caper ai', 'ai product',
+    'frontier agent', 'frontier agents', 'gpu', 'hpc', 'people platform', 'business systems',
     'early career', '2027', 'reinforcement learning', 'rl training'
 ]
 
@@ -80,8 +82,8 @@ def is_resume_role_matched(title):
         return False
     t = title.lower().replace('\u00a0', ' ').replace('-', ' ').replace(',', ' ')
     
-    # 0. Strict exclusion of Principal / Executive level, ML / AI / RL, and Data Engineering keywords
-    if re.search(r'\b(principal|distinguished|fellow|ml|ai|genai|llm|rl|deep learning|machine learning|reinforcement learning|big data)\b', t):
+    # 0. Strict exclusion of Principal / Executive level, ML / AI / RL, Security, and Data Engineering keywords
+    if re.search(r'\b(principal|distinguished|fellow|ml|ai|devai|genai|llm|rl|deep learning|machine learning|reinforcement learning|big data|security|cybersecurity)\b', t):
         return False
         
     # 0b. Strict exclusion of Staff-level roles (while preserving Member of Technical Staff)

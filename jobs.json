@@ -129,37 +129,6 @@
           "hasEssayQuestions": false
         },
         {
-          "id": "perplexity-6c9b3c71-85ba-47db-bce5-44fd9fa95d03",
-          "company": "Perplexity AI",
-          "title": "Member of Technical Staff (Software Engineer, Security)",
-          "location": "San Francisco",
-          "remote": "Hybrid / Onsite",
-          "industry": "AI Search & Conversational Engines",
-          "salary": "$220K \u2013 $405K \u2022 Offers Equity",
-          "summary": "Live opening at Perplexity AI focused on full stack / backend engineering.",
-          "skills": [
-            "Python",
-            "TypeScript",
-            "React",
-            "AWS",
-            "PostgreSQL",
-            "Distributed Systems"
-          ],
-          "url": "https://jobs.ashbyhq.com/perplexity/6c9b3c71-85ba-47db-bce5-44fd9fa95d03/application",
-          "source": "Ashby API (Live)",
-          "postedApprox": "Active Now",
-          "h1bFit": "Yes (H1B Friendly / Sponsoring)",
-          "yoeFit": "Good (3\u20138 yrs)",
-          "yoeNote": "Live verified opening",
-          "callbackScore": 93.0,
-          "postedAtUtc": "2026-09-09T13:31:59.688062",
-          "atsJobId": "6c9b3c71-85ba-47db-bce5-44fd9fa95d03",
-          "region": "West",
-          "regionRank": 1,
-          "customQuestions": [],
-          "hasEssayQuestions": false
-        },
-        {
           "id": "elevenlabs-6c4c57c1-ec72-42ba-af3a-eb7aebbde2e6",
           "company": "ElevenLabs",
           "title": "Forward Deployed Engineer - Software Engineer - North America",
@@ -185,70 +154,6 @@
           "callbackScore": 93.0,
           "postedAtUtc": "2026-09-09T13:31:59.939858",
           "atsJobId": "6c4c57c1-ec72-42ba-af3a-eb7aebbde2e6",
-          "region": "West",
-          "regionRank": 1,
-          "customQuestions": [
-            {
-              "id": "q1",
-              "question": "Why ElevenLabs, and why now?",
-              "orig": "I have followed ElevenLabs' rapid leadership in generative audio, real-time voice streaming, and conversational AI agents. What excites me most is the engineering challenge of delivering sub-100ms low-latency audio pipelines at enterprise scale. With my background in backend systems, Python/TypeScript microservices, and AWS distributed infrastructure, I want to join now to help scale ElevenLabs' core developer APIs and multimodal voice infrastructure.",
-              "concise": "I am eager to join ElevenLabs to solve the engineering challenge of scaling sub-100ms real-time audio streaming. My background in high-throughput Python/TypeScript microservices and AWS distributed systems enables me to immediately help scale your core developer APIs.",
-              "technical": "I have closely studied ElevenLabs' real-time WebSocket streaming protocols and voice synthesis models. With extensive experience architecting async Python pipelines, Java/Spring Boot microservices, and event-driven AWS cloud architectures (SQS, Lambda, DynamoDB, PostgreSQL), I am eager to optimize your low-latency streaming infrastructure and API availability.",
-              "metrics": "ElevenLabs' explosive enterprise adoption requires world-class platform reliability. In my previous backend roles, I scaled microservices to handle millions of daily requests while reducing P99 latency by 42% and sustaining 99.99% uptime. I want to bring this operational scale to ElevenLabs."
-            },
-            {
-              "id": "q2",
-              "question": "What's the most impactful thing you've built? (Specific contribution)",
-              "orig": "The most impactful system I built was an end-to-end distributed event processing and workflow platform handling millions of events daily. My specific contribution was leading the backend architecture using Java/Spring Boot and Python microservices on AWS (SQS, Lambda, DynamoDB, PostgreSQL) with a reactive TypeScript/React UI. I designed the asynchronous ingestion pipelines, implemented idempotency mechanisms, and optimized database query patterns to eliminate bottlenecks during peak traffic surges.",
-              "concise": "I led the architecture of a high-throughput event processing platform on AWS handling millions of daily events. Using Java/Spring Boot, Python, and PostgreSQL, I designed asynchronous message pipelines, eliminated database bottlenecks, and sustained 99.99% availability during traffic spikes.",
-              "technical": "I architected and built an asynchronous, event-driven workflow engine using Java/Spring Boot and Python microservices on AWS (SQS, Lambda, DynamoDB, Aurora PostgreSQL) paired with a reactive TypeScript/React dashboard. I designed distributed locking, idempotent message deduplication, and database connection pooling to sustain 5,000+ peak RPS with zero data loss.",
-              "metrics": "Key System Achievements:\n\u2022 Engineered distributed event ingestion pipeline processing 10M+ daily events.\n\u2022 Reduced P99 API latency by 42% (from 480ms to 85ms).\n\u2022 Maintained 99.99% system SLA with zero critical incidents.\n\u2022 Optimized AWS cloud resource utilization to lower operating costs by 30%."
-            },
-            {
-              "id": "q3",
-              "question": "How did you know it worked? What did success actually look like?",
-              "orig": "Success was measured through concrete operational and business metrics:\n1. P99 API response latency decreased by 42% (from 480ms down to 85ms under high concurrency).\n2. Achieved zero message loss with 99.99% system availability across consecutive quarters.\n3. Reduced cloud infrastructure operating costs by 30% through auto-scaling and serverless optimization.\n4. Accelerated engineering cycle time, enabling cross-functional teams to deploy new workflows in minutes rather than weeks.",
-              "concise": "We verified success through APM telemetry: P99 response latency dropped by 42% (down to 85ms), system uptime reached 99.99% across consecutive quarters, zero message loss occurred during traffic spikes, and AWS operational spend dropped by 30%.",
-              "technical": "We validated success through distributed tracing and production APM telemetry:\n\u2022 Real-time Datadog & AWS CloudWatch metrics showed P99 latencies stabilized below 90ms.\n\u2022 Distributed tracing confirmed sub-second end-to-end event completion across microservices.\n\u2022 Automated chaos tests verified zero unhandled dead-letter queue failures during simulated node outages.",
-              "metrics": "Measurable Outcomes:\n1. Latency: P99 response time reduced from 480ms to 85ms (-42%).\n2. Availability: 99.99% uptime achieved across 12 consecutive months.\n3. Cost: 30% reduction in monthly AWS infrastructure expenses.\n4. Scalability: Handled a 4x holiday traffic surge with zero degradation."
-            },
-            {
-              "id": "q4",
-              "question": "Have you used ElevenLabs' product / explored it in a project?",
-              "orig": "While I haven't deployed ElevenLabs in production yet, I have thoroughly explored your API architecture, documentation, and real-time streaming WebSocket endpoints. My core strength is architecting high-throughput, low-latency backend microservices and event pipelines in Java, Python, and AWS. I am deeply interested in audio synthesis and real-time streaming, and I am eager to apply my distributed systems background to optimize ElevenLabs' low-latency audio delivery at scale.",
-              "concise": "I have explored ElevenLabs' API documentation and real-time streaming WebSocket protocols. With my background building low-latency backend microservices in Java, Python, and AWS, I am excited to apply my distributed systems experience to scale ElevenLabs' audio pipelines.",
-              "technical": "I have studied ElevenLabs' developer endpoints, chunked audio transfer protocols, and WebSocket latency characteristics. In my backend work, I specialize in building asynchronous event streams, socket connection management, and low-latency microservices with Python, Java, and AWS.",
-              "metrics": "I bring a proven track record in high-scale infrastructure: architecting backend pipelines that achieved 99.99% uptime and 42% latency reduction. I am eager to bring this performance rigor to ElevenLabs' growing developer ecosystem."
-            }
-          ],
-          "hasEssayQuestions": true
-        },
-        {
-          "id": "elevenlabs-120da2b3-d88b-4e3c-9b89-d19ff73db9d9",
-          "company": "ElevenLabs",
-          "title": "HPC Infrastructure Engineer - GPU Clusters",
-          "location": "United States",
-          "remote": "Hybrid / Onsite",
-          "industry": "Generative Voice & Audio AI",
-          "salary": "$175,000 \u2013 $275,000 + Equity",
-          "summary": "Live opening at ElevenLabs focused on full stack / backend engineering.",
-          "skills": [
-            "Python",
-            "Java",
-            "AWS",
-            "PostgreSQL",
-            "Docker",
-            "Distributed Systems"
-          ],
-          "url": "https://jobs.ashbyhq.com/elevenlabs/120da2b3-d88b-4e3c-9b89-d19ff73db9d9/application",
-          "source": "Ashby API (Live)",
-          "postedApprox": "Active Now",
-          "h1bFit": "Yes (H1B Friendly / Sponsoring)",
-          "yoeFit": "Good (3\u20138 yrs)",
-          "yoeNote": "Live verified opening",
-          "callbackScore": 93.0,
-          "postedAtUtc": "2026-09-09T13:31:59.957003",
-          "atsJobId": "120da2b3-d88b-4e3c-9b89-d19ff73db9d9",
           "region": "West",
           "regionRank": 1,
           "customQuestions": [
@@ -521,102 +426,6 @@
               "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Software Engineer - Application Platform position at Figma, my approach combines deep hands-on expertise in AWS, Kubernetes, Distributed Systems, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
               "concise": "Applying deep expertise in AWS, Kubernetes, Distributed Systems and cloud distributed systems to solve this challenge with high reliability and measurable results for Figma.",
               "technical": "Leveraging AWS, Kubernetes, Distributed Systems, distributed system design, relational and distributed data stores, and automated testing to build fault-tolerant, scalable architectures that satisfy strict production requirements.",
-              "metrics": "Delivered measurable results across systems handling millions of requests: 99.99% SLA compliance, 42% latency reduction, and zero data regression incidents."
-            }
-          ],
-          "hasEssayQuestions": true
-        },
-        {
-          "id": "scaleai-4694861005",
-          "company": "Scale AI",
-          "title": "Frontier Agents Engineer (Forward Deployed Engineering)",
-          "location": "San Francisco, CA; New York, NY",
-          "remote": "US / Onsite",
-          "industry": "AI Data Infrastructure & Evaluation",
-          "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at Scale AI focused on scalable engineering with Python and cloud infrastructure.",
-          "skills": [
-            "Python",
-            "AWS",
-            "Docker",
-            "Kubernetes",
-            "Distributed Systems",
-            "Go"
-          ],
-          "url": "https://boards.greenhouse.io/scaleai/jobs/4694861005#app",
-          "source": "Greenhouse API (Live)",
-          "postedApprox": "Active Now",
-          "h1bFit": "Open / Check Application",
-          "yoeFit": "Good (3\u20138 yrs)",
-          "yoeNote": "Live active verified opening",
-          "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-09T13:32:02.588431",
-          "atsJobId": "4694861005",
-          "region": "East",
-          "regionRank": 2,
-          "customQuestions": [
-            {
-              "id": "q_728522",
-              "question": "Do you have experience building, deploying, managing, or scaling AI agent solutions in a production environment?",
-              "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Frontier Agents Engineer (Forward Deployed Engineering) position at Scale AI, my approach combines deep hands-on expertise in Python, AWS, Docker, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
-              "concise": "Applying deep expertise in Python, AWS, Docker and cloud distributed systems to solve this challenge with high reliability and measurable results for Scale AI.",
-              "technical": "Leveraging Python, AWS, Docker, distributed system design, relational and distributed data stores, and automated testing to build fault-tolerant, scalable architectures that satisfy strict production requirements.",
-              "metrics": "Delivered measurable results across systems handling millions of requests: 99.99% SLA compliance, 42% latency reduction, and zero data regression incidents."
-            },
-            {
-              "id": "q_260182",
-              "question": "Please describe any experience you have building a full-stack application leveraging Agent logic (personal or professional)",
-              "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Frontier Agents Engineer (Forward Deployed Engineering) position at Scale AI, my approach combines deep hands-on expertise in Python, AWS, Docker, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
-              "concise": "Applying deep expertise in Python, AWS, Docker and cloud distributed systems to solve this challenge with high reliability and measurable results for Scale AI.",
-              "technical": "Leveraging Python, AWS, Docker, distributed system design, relational and distributed data stores, and automated testing to build fault-tolerant, scalable architectures that satisfy strict production requirements.",
-              "metrics": "Delivered measurable results across systems handling millions of requests: 99.99% SLA compliance, 42% latency reduction, and zero data regression incidents."
-            }
-          ],
-          "hasEssayQuestions": true
-        },
-        {
-          "id": "scaleai-4694863005",
-          "company": "Scale AI",
-          "title": "Senior Frontier Agents Engineer (Forward Deployed Engineering)",
-          "location": "San Francisco, CA; New York, NY",
-          "remote": "US / Onsite",
-          "industry": "AI Data Infrastructure & Evaluation",
-          "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at Scale AI focused on scalable engineering with Python and cloud infrastructure.",
-          "skills": [
-            "Python",
-            "AWS",
-            "Docker",
-            "Kubernetes",
-            "Distributed Systems",
-            "Go"
-          ],
-          "url": "https://boards.greenhouse.io/scaleai/jobs/4694863005#app",
-          "source": "Greenhouse API (Live)",
-          "postedApprox": "Active Now",
-          "h1bFit": "Open / Check Application",
-          "yoeFit": "Good (3\u20138 yrs)",
-          "yoeNote": "Live active verified opening",
-          "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-09T13:32:02.690910",
-          "atsJobId": "4694863005",
-          "region": "East",
-          "regionRank": 2,
-          "customQuestions": [
-            {
-              "id": "q_728522",
-              "question": "Do you have experience building, deploying, managing, or scaling AI agent solutions in a production environment?",
-              "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Senior Frontier Agents Engineer (Forward Deployed Engineering) position at Scale AI, my approach combines deep hands-on expertise in Python, AWS, Docker, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
-              "concise": "Applying deep expertise in Python, AWS, Docker and cloud distributed systems to solve this challenge with high reliability and measurable results for Scale AI.",
-              "technical": "Leveraging Python, AWS, Docker, distributed system design, relational and distributed data stores, and automated testing to build fault-tolerant, scalable architectures that satisfy strict production requirements.",
-              "metrics": "Delivered measurable results across systems handling millions of requests: 99.99% SLA compliance, 42% latency reduction, and zero data regression incidents."
-            },
-            {
-              "id": "q_260182",
-              "question": "Please describe any experience you have building a full-stack application leveraging Agent logic (personal or professional)",
-              "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Senior Frontier Agents Engineer (Forward Deployed Engineering) position at Scale AI, my approach combines deep hands-on expertise in Python, AWS, Docker, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
-              "concise": "Applying deep expertise in Python, AWS, Docker and cloud distributed systems to solve this challenge with high reliability and measurable results for Scale AI.",
-              "technical": "Leveraging Python, AWS, Docker, distributed system design, relational and distributed data stores, and automated testing to build fault-tolerant, scalable architectures that satisfy strict production requirements.",
               "metrics": "Delivered measurable results across systems handling millions of requests: 99.99% SLA compliance, 42% latency reduction, and zero data regression incidents."
             }
           ],
@@ -1136,157 +945,6 @@
           "hasEssayQuestions": false
         },
         {
-          "id": "waymo-7609435",
-          "company": "Waymo",
-          "title": "Senior Software Engineer, Model Lifecycle",
-          "location": "Kirkland, Washington, USA",
-          "remote": "US / Onsite",
-          "industry": "Autonomous Mobility & Distributed Robotics",
-          "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at Waymo focused on scalable engineering with Python and cloud infrastructure.",
-          "skills": [
-            "Python",
-            "AWS",
-            "C++",
-            "Go"
-          ],
-          "url": "https://boards.greenhouse.io/waymo/jobs/7609435#app",
-          "source": "Greenhouse API (Live)",
-          "postedApprox": "Active Now",
-          "h1bFit": "Open / Check Application",
-          "yoeFit": "Good (3\u20138 yrs)",
-          "yoeNote": "Live active verified opening",
-          "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-09T13:32:17.330857",
-          "atsJobId": "7609435",
-          "region": "West",
-          "regionRank": 2,
-          "customQuestions": [],
-          "hasEssayQuestions": false
-        },
-        {
-          "id": "waymo-7466529",
-          "company": "Waymo",
-          "title": "Senior Software Engineer, Bulk/Interactive Inference",
-          "location": "Mountain View, CA, USA",
-          "remote": "US / Onsite",
-          "industry": "Autonomous Mobility & Distributed Robotics",
-          "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at Waymo focused on scalable engineering with C++ and cloud infrastructure.",
-          "skills": [
-            "C++",
-            "Go"
-          ],
-          "url": "https://boards.greenhouse.io/waymo/jobs/7466529#app",
-          "source": "Greenhouse API (Live)",
-          "postedApprox": "Active Now",
-          "h1bFit": "Open / Check Application",
-          "yoeFit": "Good (3\u20138 yrs)",
-          "yoeNote": "Live active verified opening",
-          "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-09T13:32:17.434129",
-          "atsJobId": "7466529",
-          "region": "West",
-          "regionRank": 2,
-          "customQuestions": [],
-          "hasEssayQuestions": false
-        },
-        {
-          "id": "block-5381210008",
-          "company": "Block / Cash App",
-          "title": "Enterprise People Platform Engineer",
-          "location": "Bay Area, CA, United States of America",
-          "remote": "US / Onsite",
-          "industry": "Fintech Payments & Banking Infrastructure",
-          "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at Block / Cash App focused on scalable engineering with Java and cloud infrastructure.",
-          "skills": [
-            "Java",
-            "Python",
-            "AWS",
-            "SQL",
-            "Go"
-          ],
-          "url": "https://boards.greenhouse.io/block/jobs/5381210008#app",
-          "source": "Greenhouse API (Live)",
-          "postedApprox": "Active Now",
-          "h1bFit": "Open / Check Application",
-          "yoeFit": "Good (3\u20138 yrs)",
-          "yoeNote": "Live active verified opening",
-          "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-09T13:32:17.897238",
-          "atsJobId": "5381210008",
-          "region": "West",
-          "regionRank": 2,
-          "customQuestions": [
-            {
-              "id": "q_594623",
-              "question": "Tell us a bit about why you're applying to work here. What excited you about this role?",
-              "orig": "Block / Cash App's innovation in Fintech Payments & Banking Infrastructure and engineering-first culture strongly align with my background. In this Enterprise People Platform Engineer role, I want to leverage my experience building high-availability distributed systems in Java, Python, AWS to solve complex scalability challenges. I value engineering rigor, clean system boundaries, and rapid iteration, and I am excited to help expand Block / Cash App's platform.",
-              "concise": "I want to join Block / Cash App as a Enterprise People Platform Engineer to scale your core platform, bringing deep experience in high-concurrency microservices, Java, Python, AWS, and cloud infrastructure.",
-              "technical": "I admire Block / Cash App's technical architecture in Fintech Payments & Banking Infrastructure. With extensive experience in Java, Python, AWS, asynchronous event pipelines, and cloud resiliency (AWS), I am eager to contribute directly to building fault-tolerant, low-latency services.",
-              "metrics": "Proven track record scaling backend systems to support millions of daily requests, cutting P99 latency by 42%, and maintaining 99.99% system availability. I want to bring this operational scale to Block / Cash App."
-            },
-            {
-              "id": "q_386179",
-              "question": "Block's purpose is economic empowerment. Briefly tell us about what that purpose means to you.",
-              "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Enterprise People Platform Engineer position at Block / Cash App, my approach combines deep hands-on expertise in Java, Python, AWS, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
-              "concise": "Applying deep expertise in Java, Python, AWS and cloud distributed systems to solve this challenge with high reliability and measurable results for Block / Cash App.",
-              "technical": "Leveraging Java, Python, AWS, distributed system design, relational and distributed data stores, and automated testing to build fault-tolerant, scalable architectures that satisfy strict production requirements.",
-              "metrics": "Delivered measurable results across systems handling millions of requests: 99.99% SLA compliance, 42% latency reduction, and zero data regression incidents."
-            }
-          ],
-          "hasEssayQuestions": true
-        },
-        {
-          "id": "block-4962872008",
-          "company": "Block / Cash App",
-          "title": "Senior Business Systems Engineer",
-          "location": "Bay Area, CA, United States of America",
-          "remote": "US / Onsite",
-          "industry": "Fintech Payments & Banking Infrastructure",
-          "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at Block / Cash App focused on scalable engineering with Java and cloud infrastructure.",
-          "skills": [
-            "Java",
-            "Python",
-            "TypeScript",
-            "AWS",
-            "SQL",
-            "Go"
-          ],
-          "url": "https://boards.greenhouse.io/block/jobs/4962872008#app",
-          "source": "Greenhouse API (Live)",
-          "postedApprox": "Active Now",
-          "h1bFit": "Open / Check Application",
-          "yoeFit": "Good (3\u20138 yrs)",
-          "yoeNote": "Live active verified opening",
-          "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-09T13:32:18.004889",
-          "atsJobId": "4962872008",
-          "region": "West",
-          "regionRank": 2,
-          "customQuestions": [
-            {
-              "id": "q_594623",
-              "question": "Tell us a bit about why you're applying to work here. What excited you about this role?",
-              "orig": "Block / Cash App's innovation in Fintech Payments & Banking Infrastructure and engineering-first culture strongly align with my background. In this Senior Business Systems Engineer role, I want to leverage my experience building high-availability distributed systems in Java, Python, TypeScript to solve complex scalability challenges. I value engineering rigor, clean system boundaries, and rapid iteration, and I am excited to help expand Block / Cash App's platform.",
-              "concise": "I want to join Block / Cash App as a Senior Business Systems Engineer to scale your core platform, bringing deep experience in high-concurrency microservices, Java, Python, TypeScript, and cloud infrastructure.",
-              "technical": "I admire Block / Cash App's technical architecture in Fintech Payments & Banking Infrastructure. With extensive experience in Java, Python, TypeScript, asynchronous event pipelines, and cloud resiliency (AWS), I am eager to contribute directly to building fault-tolerant, low-latency services.",
-              "metrics": "Proven track record scaling backend systems to support millions of daily requests, cutting P99 latency by 42%, and maintaining 99.99% system availability. I want to bring this operational scale to Block / Cash App."
-            },
-            {
-              "id": "q_386179",
-              "question": "Block's purpose is economic empowerment. Briefly tell us about what that purpose means to you.",
-              "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Senior Business Systems Engineer position at Block / Cash App, my approach combines deep hands-on expertise in Java, Python, TypeScript, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
-              "concise": "Applying deep expertise in Java, Python, TypeScript and cloud distributed systems to solve this challenge with high reliability and measurable results for Block / Cash App.",
-              "technical": "Leveraging Java, Python, TypeScript, distributed system design, relational and distributed data stores, and automated testing to build fault-tolerant, scalable architectures that satisfy strict production requirements.",
-              "metrics": "Delivered measurable results across systems handling millions of requests: 99.99% SLA compliance, 42% latency reduction, and zero data regression incidents."
-            }
-          ],
-          "hasEssayQuestions": true
-        },
-        {
           "id": "chime-8594959002",
           "company": "Chime",
           "title": "Software Engineer, Financial Platform",
@@ -1642,81 +1300,6 @@
           "hasEssayQuestions": false
         },
         {
-          "id": "ramp-d1183b00-6590-4fe4-a585-28d84e578fe3",
-          "company": "Ramp",
-          "title": "Software Engineer, Security, Stablecoin",
-          "location": "New York, NY (HQ)",
-          "remote": "Hybrid / Onsite",
-          "industry": "Corporate Finance & Spend Management",
-          "salary": "$189K \u2013 $330K \u2022 Offers Equity",
-          "summary": "Live opening at Ramp focused on full stack / backend engineering.",
-          "skills": [
-            "Python",
-            "TypeScript",
-            "React",
-            "AWS",
-            "PostgreSQL",
-            "Distributed Systems"
-          ],
-          "url": "https://jobs.ashbyhq.com/ramp/d1183b00-6590-4fe4-a585-28d84e578fe3/application",
-          "source": "Ashby API (Live)",
-          "postedApprox": "Active Now",
-          "h1bFit": "Yes (H1B Friendly / Sponsoring)",
-          "yoeFit": "Good (3\u20138 yrs)",
-          "yoeNote": "Live verified opening",
-          "callbackScore": 93.0,
-          "postedAtUtc": "2026-09-09T13:32:21.511421",
-          "atsJobId": "d1183b00-6590-4fe4-a585-28d84e578fe3",
-          "region": "West",
-          "regionRank": 1,
-          "customQuestions": [],
-          "hasEssayQuestions": false
-        },
-        {
-          "id": "vercel-6093255004",
-          "company": "Vercel",
-          "title": "Security Software Engineer, IAM",
-          "location": "Remote - United States",
-          "remote": "Remote",
-          "industry": "Cloud Frontend & Edge Deployment Platform",
-          "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at Vercel focused on scalable engineering with AWS and cloud infrastructure.",
-          "skills": [
-            "AWS",
-            "Go"
-          ],
-          "url": "https://boards.greenhouse.io/vercel/jobs/6093255004#app",
-          "source": "Greenhouse API (Live)",
-          "postedApprox": "Active Now",
-          "h1bFit": "Open / Check Application",
-          "yoeFit": "Good (3\u20138 yrs)",
-          "yoeNote": "Live active verified opening",
-          "callbackScore": 95.0,
-          "postedAtUtc": "2026-09-09T13:32:21.956362",
-          "atsJobId": "6093255004",
-          "region": "Remote",
-          "regionRank": 1,
-          "customQuestions": [
-            {
-              "id": "q_312583",
-              "question": "Your authorization to work in the country where you live. Please choose the option that describes your work authorization.",
-              "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Security Software Engineer, IAM position at Vercel, my approach combines deep hands-on expertise in AWS, Go, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
-              "concise": "Applying deep expertise in AWS, Go and cloud distributed systems to solve this challenge with high reliability and measurable results for Vercel.",
-              "technical": "Leveraging AWS, Go, distributed system design, relational and distributed data stores, and automated testing to build fault-tolerant, scalable architectures that satisfy strict production requirements.",
-              "metrics": "Delivered measurable results across systems handling millions of requests: 99.99% SLA compliance, 42% latency reduction, and zero data regression incidents."
-            },
-            {
-              "id": "q_385215",
-              "question": "Please double-check all the information provided above. Ensuring accuracy is crucial, as any errors or omissions may impact the review of your application.",
-              "orig": "The most impactful system I engineered was an end-to-end distributed event processing and workflow platform handling millions of daily events. Using Java/Spring Boot, Python microservices, and AWS (SQS, Lambda, PostgreSQL), I designed distributed message deduplication and idempotency keys to ensure zero message loss and sub-90ms response times under peak concurrency.",
-              "concise": "I led the architecture of a high-throughput event processing platform on AWS handling millions of daily events with Java, Python, and PostgreSQL, maintaining 99.99% SLA and zero message loss.",
-              "technical": "Designed an event-driven architecture utilizing distributed idempotency keys, optimistic locking in PostgreSQL, and automated dead-letter retries, sustaining 5,000+ peak RPS with zero data corruption.",
-              "metrics": "Key Achievements: 10M+ daily events processed, P99 latency reduced by 42% (from 480ms to 85ms), 99.99% uptime across 4 consecutive quarters, and 30% lower AWS compute costs."
-            }
-          ],
-          "hasEssayQuestions": true
-        },
-        {
           "id": "vercel-5430088004",
           "company": "Vercel",
           "title": "Software Engineer, Backend",
@@ -1899,43 +1482,6 @@
               "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Senior Software Engineer, Affirm Bank position at Affirm, my approach combines deep hands-on expertise in AWS, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
               "concise": "Applying deep expertise in AWS and cloud distributed systems to solve this challenge with high reliability and measurable results for Affirm.",
               "technical": "Leveraging AWS, distributed system design, relational and distributed data stores, and automated testing to build fault-tolerant, scalable architectures that satisfy strict production requirements.",
-              "metrics": "Delivered measurable results across systems handling millions of requests: 99.99% SLA compliance, 42% latency reduction, and zero data regression incidents."
-            }
-          ],
-          "hasEssayQuestions": true
-        },
-        {
-          "id": "pinterest-8015490",
-          "company": "Pinterest",
-          "title": "Security Software Engineer II, Detection and Response",
-          "location": "San Francisco, CA, US; Remote, US",
-          "remote": "Remote",
-          "industry": "Visual Discovery & Machine Learning",
-          "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at Pinterest focused on scalable engineering with Python and cloud infrastructure.",
-          "skills": [
-            "Python",
-            "AWS",
-            "Go"
-          ],
-          "url": "https://boards.greenhouse.io/pinterest/jobs/8015490#app",
-          "source": "Greenhouse API (Live)",
-          "postedApprox": "Active Now",
-          "h1bFit": "Yes (H1B Friendly / Sponsoring)",
-          "yoeFit": "Good (3\u20138 yrs)",
-          "yoeNote": "Live active verified opening",
-          "callbackScore": 95.0,
-          "postedAtUtc": "2026-09-09T13:32:23.745386",
-          "atsJobId": "8015490",
-          "region": "Remote",
-          "regionRank": 1,
-          "customQuestions": [
-            {
-              "id": "q_554733",
-              "question": "Work Experience: Current/Previous Employer",
-              "orig": "Throughout my engineering career, I have focused on solving complex technical challenges with high rigor and clear ownership. In the context of this Security Software Engineer II, Detection and Response position at Pinterest, my approach combines deep hands-on expertise in Python, AWS, Go, resilient system design, and structured problem-solving to deliver measurable outcomes that directly advance product reliability.",
-              "concise": "Applying deep expertise in Python, AWS, Go and cloud distributed systems to solve this challenge with high reliability and measurable results for Pinterest.",
-              "technical": "Leveraging Python, AWS, Go, distributed system design, relational and distributed data stores, and automated testing to build fault-tolerant, scalable architectures that satisfy strict production requirements.",
               "metrics": "Delivered measurable results across systems handling millions of requests: 99.99% SLA compliance, 42% latency reduction, and zero data regression incidents."
             }
           ],
@@ -2434,32 +1980,6 @@
           "hasEssayQuestions": true
         },
         {
-          "id": "waymo-7863159",
-          "company": "Waymo",
-          "title": "Senior Software Engineer,  DevAI ",
-          "location": "Mountain View, CA, USA; San Francisco, CA, USA",
-          "remote": "US / Onsite",
-          "industry": "Autonomous Mobility & Distributed Robotics",
-          "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at Waymo focused on scalable engineering with Go and cloud infrastructure.",
-          "skills": [
-            "Go"
-          ],
-          "url": "https://boards.greenhouse.io/waymo/jobs/7863159#app",
-          "source": "Greenhouse API (Live)",
-          "postedApprox": "Active Now",
-          "h1bFit": "Open / Check Application",
-          "yoeFit": "Good (3\u20138 yrs)",
-          "yoeNote": "Live active verified opening",
-          "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-09T11:07:38.667630",
-          "atsJobId": "7863159",
-          "region": "West",
-          "regionRank": 2,
-          "customQuestions": [],
-          "hasEssayQuestions": false
-        },
-        {
           "id": "chime-8627466002",
           "company": "Chime",
           "title": "Senior Software Engineer, Growth",
@@ -2484,35 +2004,6 @@
           "postedAtUtc": "2026-09-09T11:07:40.229034",
           "atsJobId": "8627466002",
           "region": "West",
-          "regionRank": 2,
-          "customQuestions": [],
-          "hasEssayQuestions": false
-        },
-        {
-          "id": "brex-8465003002",
-          "company": "Brex",
-          "title": "Senior Software Engineer, Backend (Product Engineering)",
-          "location": "New York, New York, United States",
-          "remote": "US / Onsite",
-          "industry": "Corporate Financial OS & Cards",
-          "salary": "$170,000 \u2013 $260,000 + Equity",
-          "summary": "Live opening at Brex focused on scalable engineering with Java and cloud infrastructure.",
-          "skills": [
-            "Java",
-            "Python",
-            "SQL",
-            "Go"
-          ],
-          "url": "https://boards.greenhouse.io/brex/jobs/8465003002#app",
-          "source": "Greenhouse API (Live)",
-          "postedApprox": "Active Now",
-          "h1bFit": "Open / Check Application",
-          "yoeFit": "Good (3\u20138 yrs)",
-          "yoeNote": "Live active verified opening",
-          "callbackScore": 90.0,
-          "postedAtUtc": "2026-09-09T11:07:44.212525",
-          "atsJobId": "8465003002",
-          "region": "East",
           "regionRank": 2,
           "customQuestions": [],
           "hasEssayQuestions": false
@@ -2595,68 +2086,6 @@
           "hasEssayQuestions": false
         },
         {
-          "id": "coinbase-7961318",
-          "company": "Coinbase",
-          "title": "Senior Software Engineer",
-          "location": "Remote - USA",
-          "remote": "Remote",
-          "industry": "Crypto & Blockchain Fintech",
-          "salary": "$175,000 \u2013 $265,000 + Equity",
-          "summary": "Live opening at Coinbase focused on scalable engineering with TypeScript and cloud infrastructure.",
-          "skills": [
-            "TypeScript",
-            "React",
-            "AWS",
-            "Go",
-            "Distributed Systems"
-          ],
-          "url": "https://boards.greenhouse.io/coinbase/jobs/7961318#app",
-          "source": "Greenhouse API (live)",
-          "postedApprox": "Active Now (Verified)",
-          "h1bFit": "Likely Yes",
-          "yoeFit": "Good (3\u20138 yrs)",
-          "yoeNote": "Live verified active opening",
-          "callbackScore": 92,
-          "postedAtUtc": "2026-09-08T19:51:36.160Z",
-          "atsJobId": "7961318",
-          "region": "Remote",
-          "regionRank": 1,
-          "tailoredSnippet": "Strong full stack & backend background with deep experience in TypeScript, React, AWS and scalable cloud microservices.",
-          "referralDm": "Hi [Name], I saw the Senior Software Engineer role at Coinbase. Given my strong experience in TypeScript, React and AWS distributed systems, I would love to connect!",
-          "customQuestions": [],
-          "hasEssayQuestions": false
-        },
-        {
-          "id": "robinhood-7901507",
-          "company": "Robinhood",
-          "title": "Senior Applications Engineer, Corporate Systems",
-          "location": "Menlo Park, CA",
-          "remote": "Hybrid / Onsite",
-          "industry": "Fintech / Trading Infrastructure",
-          "salary": "$175,000 \u2013 $265,000 + Equity",
-          "summary": "Live opening at Robinhood focused on scalable engineering with Python and cloud infrastructure.",
-          "skills": [
-            "Python",
-            "AWS",
-            "Go"
-          ],
-          "url": "https://boards.greenhouse.io/robinhood/jobs/7901507#app",
-          "source": "Greenhouse API (live)",
-          "postedApprox": "Active Now (Verified)",
-          "h1bFit": "Likely Yes",
-          "yoeFit": "Good (3\u20138 yrs)",
-          "yoeNote": "Live verified active opening",
-          "callbackScore": 92,
-          "postedAtUtc": "2026-09-08T19:51:36.160Z",
-          "atsJobId": "7901507",
-          "region": "West",
-          "regionRank": 1,
-          "tailoredSnippet": "Strong full stack & backend background with deep experience in Python, AWS, Go and scalable cloud microservices.",
-          "referralDm": "Hi [Name], I saw the Senior Applications Engineer, Corporate Systems role at Robinhood. Given my strong experience in Python, AWS and AWS distributed systems, I would love to connect!",
-          "customQuestions": [],
-          "hasEssayQuestions": false
-        },
-        {
           "id": "robinhood-7264931",
           "company": "Robinhood",
           "title": "Senior Software Engineer, Backend",
@@ -2683,35 +2112,6 @@
           "regionRank": 1,
           "tailoredSnippet": "Strong full stack & backend background with deep experience in AWS, Go, Distributed Systems and scalable cloud microservices.",
           "referralDm": "Hi [Name], I saw the Senior Software Engineer, Backend role at Robinhood. Given my strong experience in AWS, Go and AWS distributed systems, I would love to connect!",
-          "customQuestions": [],
-          "hasEssayQuestions": false
-        },
-        {
-          "id": "wehrtyou-7610947",
-          "company": "Hudson River Trading",
-          "title": "Software Engineer - GPU reliability",
-          "location": "New York, NY, United States",
-          "remote": "Hybrid / Onsite",
-          "industry": "Quantitative Finance / HFT",
-          "salary": "$175,000 \u2013 $265,000 + Equity",
-          "summary": "Live opening at Hudson River Trading focused on scalable engineering with Python and cloud infrastructure.",
-          "skills": [
-            "Python",
-            "Go"
-          ],
-          "url": "https://boards.greenhouse.io/wehrtyou/jobs/7610947#app",
-          "source": "Greenhouse API (live)",
-          "postedApprox": "Active Now (Verified)",
-          "h1bFit": "Likely Yes",
-          "yoeFit": "Good (3\u20138 yrs)",
-          "yoeNote": "Live verified active opening",
-          "callbackScore": 92,
-          "postedAtUtc": "2026-09-08T19:51:36.160Z",
-          "atsJobId": "7610947",
-          "region": "West",
-          "regionRank": 1,
-          "tailoredSnippet": "Strong full stack & backend background with deep experience in Python, Go and scalable cloud microservices.",
-          "referralDm": "Hi [Name], I saw the Software Engineer - GPU reliability role at Hudson River Trading. Given my strong experience in Python, Go and AWS distributed systems, I would love to connect!",
           "customQuestions": [],
           "hasEssayQuestions": false
         }
