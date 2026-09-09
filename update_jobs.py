@@ -62,9 +62,14 @@ TITLE_EXCLUSIONS = [
     'intern', 'internship', 'recruiter', 'counsel', 'account executive', 'legal',
     'sales', 'marketing', 'product manager', 'designer', 'copywriter', 'general counsel',
     'business partner', 'administrative', 'data scientist', 'analytics lead', 'business analyst',
-    'hardware', 'dv engineer', 'verification', 'endpoint', 'it controls', 'compliance engineer',
+    'hardware', 'hvac', 'dv engineer', 'verification', 'endpoint', 'it controls', 'compliance engineer',
     'android', 'ios', 'mobile', 'devrel', 'developer relations', 'solutions engineer',
-    'cloud security', 'security engineer', 'devops engineer, infrastructure & security', 'creative'
+    'cloud security', 'security engineer', 'devops engineer, infrastructure & security', 'creative',
+    'machine learning', 'ml engineer', 'ml software', 'deep learning', 'nlp', 'computer vision',
+    'data science', 'research scientist', 'applied scientist', 'llm', 'genai', 'generative ai',
+    'algorithm engineer', 'ai engineer', 'ai infrastructure', 'ai research', 'ai platform',
+    'ai runtime', 'ai inference', 'ai native', 'ai agent', 'ai tools', 'caper ai', 'ai product',
+    'early career', '2027', 'reinforcement learning', 'rl training'
 ]
 
 def is_resume_role_matched(title):
@@ -72,27 +77,26 @@ def is_resume_role_matched(title):
         return False
     t = title.lower().replace('\u00a0', ' ').replace('-', ' ')
     
+    # 0. Strict exclusion of ML / Machine Learning / AI / RL keywords
+    if re.search(r'\b(ml|ai|genai|llm|rl|deep learning|machine learning|reinforcement learning)\b', t):
+        return False
+        
     # 1. Immediate reject for excluded roles
     for ex in TITLE_EXCLUSIONS:
         if ex in t:
             return False
             
-    # 2. Match Forward Deployed Engineer roles
-    if ('forward deployed' in t or 'fde' in t) and any(e in t for e in ['engineer', 'swe', 'software', 'developer', 'ai']):
+    # 2. Match Forward Deployed Engineer roles (excluding ML/AI)
+    if ('forward deployed' in t or 'fde' in t) and any(e in t for e in ['engineer', 'swe', 'software', 'developer']):
         return True
         
-    # 2. Immediate reject for excluded roles
-    for ex in TITLE_EXCLUSIONS:
-        if ex in t:
-            return False
-            
     # 3. Match Full Stack, Backend, Frontend, and Core Software Engineer roles
     is_fullstack = 'full stack' in t or 'fullstack' in t
     is_backend = 'backend' in t or 'back end' in t
     is_frontend = 'frontend' in t or 'front end' in t or 'web platform' in t or 'web engineer' in t
     is_swe = ('software engineer' in t or 'software developer' in t or 
-              'member of technical staff' in t or 'ai engineer' in t or 
-              'ai infrastructure' in t or 'infrastructure engineer' in t or 
+              'member of technical staff' in t or 
+              'infrastructure engineer' in t or 
               'systems engineer' in t or 'data engineer' in t or 
               'platform engineer' in t or 'applications engineer' in t)
               
@@ -506,7 +510,7 @@ print(f"Active board total: {len(combined_jobs)} jobs ({len(matched_jobs)} new/r
 output_data = {
     "lastUpdated": datetime.date.today().isoformat(),
     "lastChecked": datetime.date.today().isoformat(),
-    "seedVersion": 6,
+    "seedVersion": 7,
     "candidateProfile": {
         "name": "Ramya Bangaru",
         "targetRole": "Senior Full Stack & Software Engineer",

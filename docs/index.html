@@ -1582,6 +1582,25 @@ const state = {
   negativeTitles: new Set(JSON.parse(localStorage.getItem('raviCppJobsNegativeTitles') || '[]')),
 };
 
+// Core engineering keywords that should NEVER be suppressed
+const BASE_SAFE_KEYWORDS = new Set([
+  'software', 'engineer', 'developer', 'full stack', 'fullstack', 'backend', 'frontend',
+  'fde', 'forward deployed', 'systems', 'platform', 'infrastructure', 'cloud', 'data engineer',
+  'mts', 'web', 'applications', 'tech', 'staff', 'senior', 'lead', 'principal', 'ii', 'iii', 'iv',
+  'engineering', 'architect', 'associate', 'core', 'services', 'tools'
+]);
+
+// Sanitize negativeTitles on load to prune any corrupted or overly broad keywords
+(function sanitizeNegativeTitles() {
+  const sanitized = new Set();
+  for (const neg of state.negativeTitles) {
+    const tokens = extractDistinctiveNegativeTokens(neg);
+    if (tokens.length > 0) sanitized.add(tokens.join(' '));
+  }
+  state.negativeTitles = sanitized;
+  saveNegativeTitles();
+})();
+
 const NOELIG_REASONS = {
   no_sponsorship: '🛂 No H1B sponsorship',
   clearance: '🎖️ Citizenship / clearance required',
@@ -1629,7 +1648,6 @@ function cleanTitleForLearning(title) {
   if (!title) return '';
   return title.toLowerCase()
     .replace(/[\u00a0\r\n\t]/g, ' ')
-    .replace(/\b(senior|lead|staff|principal|junior|entry|level|ii|iii|iv|v|1|2|3|4|5|team|group|division|dept|remote|hybrid|onsite|us|usa|na|emea|apac)\b/gi, '')
     .replace(/\s*\(.*?\)/g, '')
     .replace(/\s*\[.*?\]/g, '')
     .replace(/[-–—/•:,]/g, ' ')
@@ -1637,27 +1655,23 @@ function cleanTitleForLearning(title) {
     .trim();
 }
 
+function extractDistinctiveNegativeTokens(title) {
+  const clean = cleanTitleForLearning(title);
+  if (!clean) return [];
+  const words = clean.split(' ').filter(w => w.length > 2);
+  return words.filter(w => !BASE_SAFE_KEYWORDS.has(w) && !/^(senior|lead|staff|principal|junior|entry|level|ii|iii|iv|v|\d+|team|group|division|dept|remote|hybrid|onsite|us|usa|na|emea|apac|engineer|engineering|software|developer)$/i.test(w));
+}
+
 function isSimilarToRejectedTitle(title) {
   if (!state.negativeTitles || state.negativeTitles.size === 0) return false;
-  const tClean = cleanTitleForLearning(title);
-  if (!tClean) return false;
-  const tTokens = new Set((tClean.match(/[a-z0-9]+/g) || []).filter(w => w.length > 2));
+  const tTokens = new Set(extractDistinctiveNegativeTokens(title));
+  if (tTokens.size === 0) return false;
   
   for (const neg of state.negativeTitles) {
-    const nClean = cleanTitleForLearning(neg);
-    if (!nClean) continue;
-    // Exact or substring match
-    if (tClean.includes(nClean) || nClean.includes(tClean)) return true;
-    
-    // High token overlap comparison
-    const nTokens = new Set((nClean.match(/[a-z0-9]+/g) || []).filter(w => w.length > 2));
-    if (nTokens.size > 0 && tTokens.size > 0) {
-      let common = 0;
-      for (const tok of nTokens) {
-        if (tTokens.has(tok)) common++;
-      }
-      const overlap = common / Math.min(nTokens.size, tTokens.size);
-      if (overlap >= 0.75) return true;
+    const negTokens = extractDistinctiveNegativeTokens(neg);
+    if (negTokens.length === 0) continue;
+    for (const tok of negTokens) {
+      if (tTokens.has(tok)) return true;
     }
   }
   return false;
@@ -1671,18 +1685,19 @@ async function setBadRec(id) {
   const all = (state.data && state.data.weeks) ? state.data.weeks.flatMap(w => w.jobs) : [];
   const targetJob = all.find(j => j.id === id);
   if (targetJob && targetJob.title) {
-    const pattern = cleanTitleForLearning(targetJob.title);
-    if (pattern && pattern.length >= 3) {
-      state.negativeTitles.add(pattern);
+    const negTokens = extractDistinctiveNegativeTokens(targetJob.title);
+    if (negTokens.length > 0) {
+      state.negativeTitles.add(negTokens.join(' '));
       saveNegativeTitles();
-    }
-    // Auto-prune any other open jobs matching this negative title pattern
-    for (const other of all) {
-      if (other.id !== id && isSimilarToRejectedTitle(other.title)) {
-        state.badRecs.add(other.id);
+
+      // Auto-prune any other open jobs matching this negative title pattern
+      for (const other of all) {
+        if (other.id !== id && isSimilarToRejectedTitle(other.title)) {
+          state.badRecs.add(other.id);
+        }
       }
+      saveBadRecs();
     }
-    saveBadRecs();
   }
 
   try {
@@ -1794,6 +1809,11 @@ function renderTabs() {
 function matches(job) {
   // Applied jobs always hidden from the Jobs view — they live in the Applied tab.
   if (state.applied.has(job.id)) return false;
+  // Ignore ML / Machine Learning / AI / RL titles
+  const tLow = (job.title || '').toLowerCase();
+  if (/\b(ml|machine learning|ai|rl|deep learning|nlp|computer vision|llm|genai|generative ai|data scientist|research scientist|applied scientist|reinforcement learning)\b/i.test(tLow)) {
+    return false;
+  }
   // Wrong match / rejected recommendations immediately removed from board
   if (state.badRecs.has(job.id)) return false;
   // Learned negative title patterns from user feedback — don't show similar roles
@@ -1869,7 +1889,7 @@ function regionEmoji(j) {
 }
 
 function resetAllBoardMarks() {
-  if (confirm("Reset all applied, not-eligible, and stale marks to show all 41 open jobs?")) {
+  if (confirm("Reset all marks & learned negative filters to show all active open jobs?")) {
     state.applied.clear();
     state.unavailable.clear();
     state.notEligible = {};
@@ -3087,11 +3107,13 @@ async function load() {
     state.unavailable.clear();
     state.notEligible = {};
     state.badRecs.clear();
+    state.negativeTitles.clear();
     localStorage.setItem(SEED_KEY, String(dataSeed));
     saveApplied();
     saveUnavailable();
     saveNotEligible();
     saveBadRecs();
+    saveNegativeTitles();
   }
 
   // Try to fetch the auto-stale list (written by verify_urls.py). Missing is OK.
