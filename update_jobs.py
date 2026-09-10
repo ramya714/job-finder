@@ -1219,23 +1219,11 @@ def main():
         if not is_direct_company_url(j.get('url', '')):
             continue
         jid = j.get('id')
-        new_ids.add(jid)
-        combined_jobs.append(j)
+        if jid not in new_ids:
+            new_ids.add(jid)
+            combined_jobs.append(j)
 
-    retained_count = 0
-    for old_j in existing_jobs:
-        if old_j.get('id') not in new_ids and old_j.get('url') not in {j.get('url') for j in combined_jobs}:
-            if is_direct_company_url(old_j.get('url', '')):
-                if is_resume_role_matched(old_j.get('title', '')):
-                    if is_strictly_us_location(old_j.get('location', ''), old_j.get('title', '')):
-                        if is_job_live(old_j.get('url', ''), ats_id=old_j.get('atsJobId')):
-                            if 'customQuestions' not in old_j:
-                                old_j['customQuestions'] = []
-                                old_j['hasEssayQuestions'] = False
-                            combined_jobs.append(old_j)
-                            retained_count += 1
-
-    print(f"Active board total: {len(combined_jobs)} jobs ({len(matched_jobs)} new/refreshed, {retained_count} retained from previous sweeps).")
+    print(f"Active board total: {len(combined_jobs)} fresh sweep jobs (previous days pruned).")
 
     # Priority sorting: Seattle/WA (Rank 1), Remote (Rank 2), East (Rank 3), West (Rank 4)
     combined_jobs.sort(key=lambda j: (
