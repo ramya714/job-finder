@@ -49,7 +49,6 @@ COMPANY_BOARDS = [
     ('Confluent', 'greenhouse', 'confluent', 'Real-Time Data Streaming & Kafka (Seattle Hub)'),
     ('MongoDB', 'greenhouse', 'mongodb', 'Distributed Cloud Database Platform (Seattle Hub)'),
     ('DoorDash', 'greenhouse', 'doordash', 'Local Commerce & Logistics (Seattle Hub)'),
-    ('Uber', 'greenhouse', 'uber', 'Mobility & Distributed Marketplace (Seattle Hub)'),
     ('Lyft', 'greenhouse', 'lyft', 'Mobility & Autonomous Systems (Seattle Hub)'),
     ('Pinterest', 'greenhouse', 'pinterest', 'Visual Discovery & Machine Learning (Seattle Hub)'),
     ('Reddit', 'greenhouse', 'reddit', 'Community & Social Platform (Seattle Hub)'),
@@ -564,6 +563,23 @@ def generate_tailored_answer(comp_name, title, skills, question_text, industry):
 def is_clearance_or_citizen_restricted(text):
     t = text.lower()
     return any(k in t for k in CLEARANCE_KEYWORDS)
+
+THIRD_PARTY_DOMAINS = [
+    'themuse.com', 'jobicy.com', 'arbeitnow.com', 'himalayas.app',
+    'weworkremotely.com', 'news.ycombinator.com', 'indeed.com',
+    'ziprecruiter.com', 'simplyhired.com', 'monster.com', 'glassdoor.com',
+    'builtin.com', 'dice.com', 'careerbuilder.com', 'jooble.org',
+    'careerpuck.com'
+]
+
+def is_direct_company_url(url):
+    if not url:
+        return False
+    u = url.lower()
+    for tp in THIRD_PARTY_DOMAINS:
+        if tp in u:
+            return False
+    return True
 
 def is_job_live(url, slug=None, ats_id=None):
     if not url:
@@ -1169,11 +1185,6 @@ def main():
             except Exception:
                 pass
 
-    # Ingest public developer feeds for nationwide startups
-    feed_jobs = fetch_public_job_feeds()
-    if feed_jobs:
-        matched_jobs.extend(feed_jobs)
-
     print(f"\n--- Fresh Sweep Matched Jobs: {len(matched_jobs)} ---")
 
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -1192,7 +1203,7 @@ def main():
                         jid = j.get('id')
                         jurl = j.get('url')
                         if jid and jid not in existing_ids:
-                            if is_resume_role_matched(j.get('title', '')) and is_strictly_us_location(j.get('location', ''), j.get('title', '')):
+                            if is_direct_company_url(jurl) and is_resume_role_matched(j.get('title', '')) and is_strictly_us_location(j.get('location', ''), j.get('title', '')):
                                 existing_jobs.append(j)
                                 existing_ids.add(jid)
                                 if jurl:
@@ -1205,21 +1216,24 @@ def main():
     new_ids = set()
 
     for j in matched_jobs:
+        if not is_direct_company_url(j.get('url', '')):
+            continue
         jid = j.get('id')
         new_ids.add(jid)
         combined_jobs.append(j)
 
     retained_count = 0
     for old_j in existing_jobs:
-        if old_j.get('id') not in new_ids and old_j.get('url') not in {j.get('url') for j in matched_jobs}:
-            if is_resume_role_matched(old_j.get('title', '')):
-                if is_strictly_us_location(old_j.get('location', ''), old_j.get('title', '')):
-                    if is_job_live(old_j.get('url', ''), ats_id=old_j.get('atsJobId')):
-                        if 'customQuestions' not in old_j:
-                            old_j['customQuestions'] = []
-                            old_j['hasEssayQuestions'] = False
-                        combined_jobs.append(old_j)
-                        retained_count += 1
+        if old_j.get('id') not in new_ids and old_j.get('url') not in {j.get('url') for j in combined_jobs}:
+            if is_direct_company_url(old_j.get('url', '')):
+                if is_resume_role_matched(old_j.get('title', '')):
+                    if is_strictly_us_location(old_j.get('location', ''), old_j.get('title', '')):
+                        if is_job_live(old_j.get('url', ''), ats_id=old_j.get('atsJobId')):
+                            if 'customQuestions' not in old_j:
+                                old_j['customQuestions'] = []
+                                old_j['hasEssayQuestions'] = False
+                            combined_jobs.append(old_j)
+                            retained_count += 1
 
     print(f"Active board total: {len(combined_jobs)} jobs ({len(matched_jobs)} new/refreshed, {retained_count} retained from previous sweeps).")
 
