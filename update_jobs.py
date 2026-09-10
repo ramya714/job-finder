@@ -423,31 +423,78 @@ US_CITIES_AND_KEYWORDS = [
 ]
 
 DENY_INTERNATIONAL = [
-    'spain', 'madrid', 'barcelona', 'korea', 'seoul', 'sweden', 'stockholm', 'taiwan', 'taipei',
-    'israel', 'tel aviv', 'europe', 'emea', 'apac', 'latam', 'uk', 'united kingdom', 'london',
-    'india', 'bangalore', 'bengaluru', 'hyderabad', 'germany', 'berlin', 'munich', 'france', 'paris',
-    'dublin', 'ireland', 'australia', 'sydney', 'melbourne', 'japan', 'tokyo', 'amsterdam',
-    'netherlands', 'poland', 'warsaw', 'toronto', 'canada', 'vancouver', 'montreal', 'brazil',
-    'mexico', 'singapore', 'switzerland', 'zurich', 'china', 'beijing', 'shanghai', 'italy',
-    'portugal', 'austria', 'norway', 'finland', 'denmark', 'belgium', 'new zealand', 'philippines'
+    # Americas / LATAM
+    'mexico', 'colombia', 'canada', 'brazil', 'argentina', 'chile', 'peru', 'costa rica', 'uruguay',
+    'latam', 'latin america', 'toronto', 'vancouver', 'montreal', 'ottawa', 'calgary', 'bogota', 'medellin',
+    'guadalajara', 'monterrey', 'mexico city', 'cdmx', 'sao paulo', 'buenos aires', 'santiago',
+    # Europe / EMEA / UK
+    'europe', 'emea', 'uk', 'united kingdom', 'great britain', 'england', 'scotland', 'wales', 'london',
+    'ireland', 'dublin', 'germany', 'berlin', 'munich', 'frankfurt', 'hamburg', 'france', 'paris',
+    'netherlands', 'amsterdam', 'spain', 'madrid', 'barcelona', 'italy', 'rome', 'milan', 'portugal',
+    'lisbon', 'porto', 'poland', 'warsaw', 'krakow', 'sweden', 'stockholm', 'switzerland', 'zurich',
+    'geneva', 'austria', 'vienna', 'norway', 'oslo', 'finland', 'helsinki', 'denmark', 'copenhagen',
+    'belgium', 'brussels', 'czech', 'czechia', 'prague', 'romania', 'bucharest', 'hungary', 'budapest',
+    'estonia', 'tallinn', 'latvia', 'riga', 'lithuania', 'vilnius', 'greece', 'athens', 'bulgaria', 'sofia',
+    'croatia', 'serbia', 'ukraine', 'kyiv',
+    # Asia / APAC
+    'india', 'bangalore', 'bengaluru', 'hyderabad', 'pune', 'chennai', 'mumbai', 'delhi', 'noida', 'gurgaon',
+    'gurugram', 'singapore', 'japan', 'tokyo', 'korea', 'seoul', 'taiwan', 'taipei', 'china', 'beijing',
+    'shanghai', 'shenzhen', 'hong kong', 'apac', 'asia', 'philippines', 'manila', 'vietnam', 'indonesia',
+    'jakarta', 'malaysia', 'kuala lumpur', 'thailand', 'bangkok',
+    # Middle East / Africa / Oceania
+    'israel', 'tel aviv', 'uae', 'dubai', 'abu dhabi', 'australia', 'sydney', 'melbourne', 'brisbane',
+    'new zealand', 'auckland', 'south africa', 'cape town', 'johannesburg', 'nigeria', 'lagos', 'kenya', 'nairobi', 'egypt', 'cairo',
+    'worldwide', 'global', 'anywhere'
 ]
 
-def is_strictly_us_location(loc_str):
-    if not loc_str:
-        return True
-    l = loc_str.lower().strip()
-    for denied in DENY_INTERNATIONAL:
-        if re.search(r'' + re.escape(denied) + r'', l):
-            return False
-    if 'remote' in l:
-        return True
-    for kw in US_CITIES_AND_KEYWORDS:
-        if kw in l:
-            return True
-    for code in US_STATE_CODES:
-        if re.search(r'' + code.lower() + r'', l) or f', {code.lower()}' in l:
-            return True
-    return False
+def is_strictly_us_location(loc_str, title_str=''):
+    title_lower = (title_str or '').lower()
+    # 1. If title explicitly indicates foreign region or remote outside US -> reject
+    for d in DENY_INTERNATIONAL:
+        if re.search(r'\b' + re.escape(d) + r'\b', title_lower):
+            if not any(u in title_lower for u in ['usa', 'united states', 'seattle', 'remote us', 'remote usa']):
+                return False
+
+    loc_lower = (loc_str or '').lower().strip()
+    if not loc_lower:
+        return False
+        
+    # Split composite locations by semicolon, pipe, newline, or ' or '
+    loc_parts = re.split(r'[;\n|]|\bor\b', loc_lower)
+    
+    has_valid_us = False
+    
+    for part in loc_parts:
+        part = part.strip()
+        if not part:
+            continue
+        
+        # Check if this sub-location contains any international deny keyword
+        is_foreign = False
+        for d in DENY_INTERNATIONAL:
+            if re.search(r'\b' + re.escape(d) + r'\b', part):
+                is_foreign = True
+                break
+        
+        if is_foreign:
+            continue
+            
+        # If this part mentions US cities or keywords
+        if any(kw in part for kw in US_CITIES_AND_KEYWORDS):
+            has_valid_us = True
+            break
+            
+        # If this part has US state code
+        if any(re.search(r'\b' + sc.lower() + r'\b', part) or f', {sc.lower()}' in part for sc in US_STATE_CODES):
+            has_valid_us = True
+            break
+            
+        # If this part is plain 'remote' (and not foreign)
+        if 'remote' in part and not is_foreign:
+            has_valid_us = True
+            break
+
+    return has_valid_us
 
 def get_region_info(loc_str):
     l = (loc_str or '').lower()
@@ -599,7 +646,7 @@ def fetch_single_board(board_tuple):
 
                     loc = j.get('location', {}).get('name', '')
                     loc_low = loc.lower()
-                    if not is_strictly_us_location(loc):
+                    if not is_strictly_us_location(loc, title):
                         continue
 
                     content = j.get('content', '')
@@ -695,7 +742,7 @@ def fetch_single_board(board_tuple):
 
                     loc = str(j.get('location', ''))
                     loc_low = loc.lower()
-                    if not is_strictly_us_location(loc):
+                    if not is_strictly_us_location(loc, title):
                         continue
 
                     comp_info = j.get('compensation', {})
@@ -761,7 +808,7 @@ def fetch_single_board(board_tuple):
                             continue
                         cat = j.get('categories', {}) or {}
                         loc = cat.get('location', 'US')
-                        if not is_strictly_us_location(loc):
+                        if not is_strictly_us_location(loc, title):
                             continue
                         job_url = j.get('hostedUrl', '')
                         if not job_url:
@@ -822,7 +869,7 @@ def fetch_public_job_feeds():
                     company = comp_obj.get('name', 'Tech Employer')
                     locations = item.get('locations', []) or []
                     loc = locations[0].get('name', 'Seattle, WA') if locations else 'United States'
-                    if not is_strictly_us_location(loc):
+                    if not is_strictly_us_location(loc, title):
                         continue
                     refs = item.get('refs', {}) or {}
                     job_url = refs.get('landing_page') or ''
@@ -879,7 +926,8 @@ def fetch_public_job_feeds():
                 if not job_url or not is_job_live(job_url):
                     continue
                 loc = 'Remote, USA'
-                reg_name, reg_rank = get_region_info(loc)
+                if not is_strictly_us_location(loc, title):
+                    continue
                 jid = f"wwr-{abs(hash(job_url)) % 1000000}"
                 results.append({
                     'id': jid,
@@ -920,7 +968,7 @@ def fetch_public_job_feeds():
                     continue
                 company = item.get('companyName', 'Tech Company')
                 loc = item.get('jobGeo') or 'Remote, USA'
-                if not is_strictly_us_location(loc):
+                if not is_strictly_us_location(loc, title):
                     continue
                 job_url = item.get('url', '')
                 if not job_url or not is_job_live(job_url):
@@ -966,7 +1014,7 @@ def fetch_public_job_feeds():
                     continue
                 company = item.get('company_name', 'Tech Firm')
                 loc = item.get('location', 'Remote, USA')
-                if not is_strictly_us_location(loc):
+                if not is_strictly_us_location(loc, title):
                     continue
                 job_url = item.get('url', '')
                 if not job_url or not is_job_live(job_url):
@@ -1012,7 +1060,7 @@ def fetch_public_job_feeds():
                     continue
                 company = item.get('companyName', 'Tech Company')
                 loc = item.get('location', 'United States')
-                if not is_strictly_us_location(loc):
+                if not is_strictly_us_location(loc, title):
                     continue
                 job_url = item.get('applicationLink') or item.get('url') or ''
                 if not job_url or not is_job_live(job_url):
@@ -1071,7 +1119,7 @@ def fetch_public_job_feeds():
                             comp = parts[0]
                             title_candidate = parts[1]
                             loc_candidate = parts[2] if len(parts) >= 3 else 'Remote, USA'
-                            if is_resume_role_matched(title_candidate) and is_strictly_us_location(loc_candidate):
+                            if is_resume_role_matched(title_candidate) and is_strictly_us_location(loc_candidate, title_candidate):
                                 if not is_clearance_or_citizen_restricted(text):
                                     url_m = re.search(r'href=[\'"](https?://[^\'"]+)[\'"]', text)
                                     job_url = url_m.group(1) if url_m else f"https://news.ycombinator.com/item?id={comment.get('id')}"
@@ -1144,7 +1192,7 @@ def main():
                         jid = j.get('id')
                         jurl = j.get('url')
                         if jid and jid not in existing_ids:
-                            if is_resume_role_matched(j.get('title', '')) and is_strictly_us_location(j.get('location', '')):
+                            if is_resume_role_matched(j.get('title', '')) and is_strictly_us_location(j.get('location', ''), j.get('title', '')):
                                 existing_jobs.append(j)
                                 existing_ids.add(jid)
                                 if jurl:
@@ -1165,7 +1213,7 @@ def main():
     for old_j in existing_jobs:
         if old_j.get('id') not in new_ids and old_j.get('url') not in {j.get('url') for j in matched_jobs}:
             if is_resume_role_matched(old_j.get('title', '')):
-                if is_strictly_us_location(old_j.get('location', '')):
+                if is_strictly_us_location(old_j.get('location', ''), old_j.get('title', '')):
                     if is_job_live(old_j.get('url', ''), ats_id=old_j.get('atsJobId')):
                         if 'customQuestions' not in old_j:
                             old_j['customQuestions'] = []
