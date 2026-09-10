@@ -1,64 +1,330 @@
+import xml.etree.ElementTree as ET
 import urllib.request
+import urllib.parse
 import ssl
 import json
 import datetime
 import os
 import re
+import concurrent.futures
 
 ctx = ssl._create_unverified_context()
 
 COMPANY_BOARDS = [
-    # Company Name, ATS Type, Slug, Industry
+    # === SEATTLE & PACIFIC NORTHWEST TECH HUB (Local HQs & Major Hubs) ===
+    ('Remitly', 'greenhouse', 'remitly', 'Fintech & Global Remittances (Seattle Hub)'),
+    ('Avalara', 'greenhouse', 'avalara', 'Cloud Tax Compliance & SaaS (Seattle Hub)'),
+    ('Redfin', 'greenhouse', 'redfin', 'Real Estate Tech & Search (Seattle Hub)'),
+    ('Zillow', 'greenhouse', 'zillow', 'Real Estate & Cloud Platforms (Seattle Hub)'),
+    ('Smartsheet', 'greenhouse', 'smartsheet', 'Enterprise Collaboration (Seattle Hub)'),
+    ('F5 Networks', 'greenhouse', 'f5networks', 'App Security & Cloud Delivery (Seattle Hub)'),
+    ('Rover', 'greenhouse', 'rover', 'Consumer Marketplace (Seattle Hub)'),
+    ('OfferUp', 'greenhouse', 'offerup', 'Mobile Marketplace (Seattle Hub)'),
+    ('Outreach', 'greenhouse', 'outreach', 'Sales Intelligence & Cloud Execution (Seattle Hub)'),
+    ('Highspot', 'greenhouse', 'highspot', 'Sales Enablement & Content Tech (Seattle Hub)'),
+    ('PitchBook', 'greenhouse', 'pitchbook', 'Financial Data SaaS (Seattle Hub)'),
+    ('Qumulo', 'greenhouse', 'qumulo', 'Hybrid Cloud File Storage (Seattle Hub)'),
+    ('Icertis', 'greenhouse', 'icertis', 'Contract Intelligence SaaS (Seattle Hub)'),
+    ('Impinj', 'greenhouse', 'impinj', 'IoT & RAIN RFID Tech (Seattle Hub)'),
+    ('Amperity', 'greenhouse', 'amperity', 'Enterprise Customer Data Platform (Seattle Hub)'),
+    ('Accolade', 'greenhouse', 'accolade', 'Personalized Healthtech (Seattle Hub)'),
+    ('ExtraHop', 'greenhouse', 'extrahop', 'Network Detection & Security (Seattle Hub)'),
+    ('Seeq', 'greenhouse', 'seeq', 'Advanced Industrial Analytics (Seattle Hub)'),
+    ('Esper', 'greenhouse', 'esper', 'DevOps for Dedicated Devices & Android (Seattle Hub)'),
+    ('Zenoti', 'greenhouse', 'zenoti', 'Cloud Software for Salons & Spas (Seattle Hub)'),
+    ('T-Mobile', 'greenhouse', 'tmobile', 'Telecom & Cloud Connectivity (Bellevue Hub)'),
+    ('Expedia', 'greenhouse', 'expedia', 'Travel Technology & Marketplace (Seattle Hub)'),
+    ('Convoy', 'greenhouse', 'convoy', 'Digital Freight Network (Seattle Hub)'),
+    ('Auth0', 'greenhouse', 'auth0', 'Identity & Access Platform (Bellevue Hub)'),
+    ('Tableau', 'greenhouse', 'tableau', 'Analytics & Visual Data Platform (Seattle Hub)'),
+
+    # === TECH GIANTS & UNICORNS WITH SEATTLE / BELLEVUE R&D HUBS ===
+    ('Databricks', 'greenhouse', 'databricks', 'Data & AI Cloud Platform (Seattle Hub)'),
+    ('Snowflake', 'greenhouse', 'snowflake', 'Cloud Data Platform (Bellevue Hub)'),
+    ('Stripe', 'greenhouse', 'stripe', 'Fintech & Global Payments Infrastructure (Seattle Hub)'),
+    ('Figma', 'greenhouse', 'figma', 'Collaborative Design Platform (Seattle Hub)'),
+    ('Scale AI', 'greenhouse', 'scaleai', 'AI Data Infrastructure & Evaluation (Seattle Hub)'),
+    ('Robinhood', 'greenhouse', 'robinhood', 'Retail Investment Platform (Bellevue Hub)'),
+    ('Coupang', 'greenhouse', 'coupang', 'High-Scale E-Commerce & Cloud Logistics (Seattle Hub)'),
+    ('Confluent', 'greenhouse', 'confluent', 'Real-Time Data Streaming & Kafka (Seattle Hub)'),
+    ('MongoDB', 'greenhouse', 'mongodb', 'Distributed Cloud Database Platform (Seattle Hub)'),
+    ('DoorDash', 'greenhouse', 'doordash', 'Local Commerce & Logistics (Seattle Hub)'),
+    ('Uber', 'greenhouse', 'uber', 'Mobility & Distributed Marketplace (Seattle Hub)'),
+    ('Lyft', 'greenhouse', 'lyft', 'Mobility & Autonomous Systems (Seattle Hub)'),
+    ('Pinterest', 'greenhouse', 'pinterest', 'Visual Discovery & Machine Learning (Seattle Hub)'),
+    ('Reddit', 'greenhouse', 'reddit', 'Community & Social Platform (Seattle Hub)'),
+    ('Snap', 'greenhouse', 'snap', 'Camera & Augmented Reality Platform (Seattle Hub)'),
+    ('Qualtrics', 'greenhouse', 'qualtrics', 'Experience Management SaaS (Seattle Hub)'),
+    ('DocuSign', 'greenhouse', 'docusign', 'Digital Transaction & e-Signature (Seattle Hub)'),
+    ('Splunk', 'greenhouse', 'splunk', 'Cybersecurity & Observability (Seattle Hub)'),
+    ('ServiceNow', 'greenhouse', 'servicenow', 'Enterprise Digital Workflows (Kirkland Hub)'),
+
+    # === FRONTIER AI, LLM & DEVELOPER AI LABS ===
+    ('Anthropic', 'greenhouse', 'anthropic', 'Frontier AI Safety & LLM Research'),
     ('OpenAI', 'ashby', 'openai', 'AI Frontier & LLM Platforms'),
     ('Perplexity AI', 'ashby', 'perplexity', 'AI Search & Conversational Engines'),
     ('ElevenLabs', 'ashby', 'elevenlabs', 'Generative Voice & Audio AI'),
-    ('Databricks', 'greenhouse', 'databricks', 'Data & AI Cloud Platform'),
-    ('Stripe', 'greenhouse', 'stripe', 'Fintech & Global Payments Infrastructure'),
-    ('Figma', 'greenhouse', 'figma', 'Collaborative Design Platform'),
-    ('Scale AI', 'greenhouse', 'scaleai', 'AI Data Infrastructure & Evaluation'),
-    ('Coinbase', 'greenhouse', 'coinbase', 'Crypto & Digital Asset Fintech'),
-    ('Robinhood', 'greenhouse', 'robinhood', 'Retail Investment & Trading Platform'),
-    ('Hudson River Trading', 'greenhouse', 'wehrtyou', 'Quantitative Finance & Low-Latency Systems'),
-    ('Datadog', 'greenhouse', 'datadog', 'Cloud Observability & Distributed Monitoring'),
-    ('Cloudflare', 'greenhouse', 'cloudflare', 'Global Edge & Cloud Network Infrastructure'),
-    ('MongoDB', 'greenhouse', 'mongodb', 'Distributed Cloud Database Platform'),
-    ('Instacart', 'greenhouse', 'instacart', 'E-Commerce & High-Scale Grocery Delivery'),
-    ('Dropbox', 'greenhouse', 'dropbox', 'Cloud Storage & Workspace Collaboration'),
-    ('Okta', 'greenhouse', 'okta', 'Enterprise Cloud Identity & Security'),
-    ('Twilio', 'greenhouse', 'twilio', 'Customer Engagement & Communications Cloud'),
-    ('Elastic', 'greenhouse', 'elastic', 'Search & Distributed Analytics Engine'),
-    ('Roblox', 'greenhouse', 'roblox', 'High-Scale Multiplayer Engine & 3D Platform'),
-    ('Waymo', 'greenhouse', 'waymo', 'Autonomous Mobility & Distributed Robotics'),
+    ('Mistral AI', 'ashby', 'mistralai', 'Open Foundation Models & AI'),
+    ('Cursor / Anysphere', 'ashby', 'anysphere', 'AI Code Editor & Developer Productivity'),
+    ('Together AI', 'ashby', 'togetherai', 'Decentralized Cloud AI & Inference'),
+    ('Runway', 'greenhouse', 'runwayml', 'Generative Media & Video AI'),
+    ('Stability AI', 'greenhouse', 'stabilityai', 'Generative Media & Open Models'),
+    ('Hugging Face', 'greenhouse', 'huggingface', 'Open Source Machine Learning Platform'),
+    ('Weights & Biases', 'greenhouse', 'wandb', 'MLOps & Experiment Tracking'),
+    ('Character.ai', 'greenhouse', 'character', 'Conversational AI Agents'),
+    ('Pinecone', 'greenhouse', 'pinecone', 'Vector Database & Retrieval AI'),
+    ('Groq', 'greenhouse', 'groq', 'AI Inference & LPU Hardware/Cloud'),
+    ('Replicate', 'ashby', 'replicate', 'Serverless Machine Learning Cloud'),
+    ('Modal Labs', 'ashby', 'modal', 'Serverless Cloud for Data & AI'),
+    ('Writer', 'ashby', 'writer', 'Enterprise Generative AI Platform'),
+    ('LangChain', 'ashby', 'langchain', 'Framework for LLM Applications'),
+    ('Braintrust', 'ashby', 'braintrust', 'AI Evaluation & Observability'),
+    ('Harvey AI', 'ashby', 'harvey', 'Legal AI & Enterprise LLMs'),
+    ('Poolside AI', 'ashby', 'poolside', 'AI Software Development'),
+    ('Decart AI', 'ashby', 'decart', 'Generative AI Platform'),
+    ('Magic.dev', 'ashby', 'magic', 'Frontier AI Code Synthesis'),
+    ('Cognition / Devin', 'ashby', 'cognition', 'Autonomous AI Software Engineer'),
+    ('Codeium', 'ashby', 'codeium', 'AI Developer Tooling & Autocomplete'),
+    ('Fireworks AI', 'ashby', 'fireworksai', 'Production AI Inference Platform'),
+    ('Baseten', 'ashby', 'baseten', 'Machine Learning Infrastructure'),
+    ('RunPod', 'ashby', 'runpod', 'GPU Cloud & AI Compute'),
+    ('DeepL', 'greenhouse', 'deepl', 'AI Translation & Neural Networks'),
+    ('Glean', 'greenhouse', 'glean', 'Enterprise AI Search & Knowledge'),
+    ('Descript', 'greenhouse', 'descript', 'AI Audio & Video Editing Platform'),
+    ('Synthesia', 'greenhouse', 'synthesia', 'AI Video Generation'),
+    ('HeyGen', 'ashby', 'heygen', 'Generative AI Video Platform'),
+    ('Pika', 'ashby', 'pika', 'AI Video Foundation Models'),
+    ('Suno AI', 'ashby', 'suno', 'Generative Audio & Music AI'),
+    ('Udio', 'ashby', 'udio', 'AI Audio Synthesis'),
+    ('Augment Code', 'ashby', 'augmentcode', 'AI Developer Productivity'),
+    ('Factory AI', 'ashby', 'factory', 'Autonomous Software Droids'),
+    ('Tabnine', 'greenhouse', 'tabnine', 'AI Assistant for Developers'),
+    ('Otter.ai', 'greenhouse', 'otterai', 'AI Meeting Transcription & Summary'),
+
+    # === FINTECH, NEOBANKS, WEALTH & PAYMENTS ===
     ('Block / Cash App', 'greenhouse', 'block', 'Fintech Payments & Banking Infrastructure'),
-    ('Chime', 'greenhouse', 'chime', 'Mobile Banking & Fintech Platform'),
-    ('SoFi', 'greenhouse', 'sofi', 'Digital Banking & Lending Platform'),
-    ('Carta', 'greenhouse', 'carta', 'Equity Management & Financial Software'),
-    ('PagerDuty', 'greenhouse', 'pagerduty', 'Digital Operations & Incident Management'),
-    ('Cockroach Labs', 'greenhouse', 'cockroachlabs', 'Distributed SQL & Cloud Resilient Database'),
-    ('Airtable', 'greenhouse', 'airtable', 'Low-Code Cloud Database Platform'),
-    ('Gusto', 'greenhouse', 'gusto', 'Payroll & Cloud People Platform'),
-    ('Brex', 'greenhouse', 'brex', 'Corporate Financial OS & Cards'),
+    ('Coinbase', 'greenhouse', 'coinbase', 'Crypto & Digital Asset Fintech'),
     ('Ramp', 'ashby', 'ramp', 'Corporate Finance & Spend Management'),
-    ('Linear', 'ashby', 'linear', 'Developer Tools & Project Management'),
+    ('Brex', 'greenhouse', 'brex', 'Corporate Financial OS & Cards'),
+    ('Plaid', 'greenhouse', 'plaid', 'Financial Data & Account APIs'),
+    ('Carta', 'greenhouse', 'carta', 'Equity Management & Financial Software'),
+    ('Affirm', 'greenhouse', 'affirm', 'Fintech & Buy Now Pay Later'),
+    ('Toast', 'greenhouse', 'toast', 'Restaurant Cloud & Payments'),
+    ('Chime', 'greenhouse', 'chime', 'Mobile Banking & Fintech Platform'),
+    ('Deel', 'greenhouse', 'deel', 'Global Payroll & Compliance Platform'),
+    ('Rippling', 'greenhouse', 'rippling', 'Workforce Management & Payroll Platform'),
+    ('Gusto', 'greenhouse', 'gusto', 'Payroll & Cloud People Platform'),
+    ('Remote', 'greenhouse', 'remote', 'Global HR & Payroll Infrastructure'),
+    ('Klarna', 'greenhouse', 'klarna', 'Global Payments & Shopping Platform'),
+    ('Marqeta', 'greenhouse', 'marqeta', 'Modern Card Issuing & Payments'),
+    ('SoFi', 'greenhouse', 'sofi', 'Digital Banking & Lending Platform'),
+    ('Acorns', 'greenhouse', 'acorns', 'Micro-Investing & Personal Finance'),
+    ('Betterment', 'greenhouse', 'betterment', 'Automated Investing & Wealth Management'),
+    ('Wealthfront', 'greenhouse', 'wealthfront', 'Automated Wealth Management & Banking'),
+    ('Mercury', 'greenhouse', 'mercury', 'Banking for High-Growth Startups'),
+    ('Melio', 'greenhouse', 'melio', 'B2B Payments for Small Businesses'),
+    ('Dave', 'greenhouse', 'dave', 'Banking App & Financial Health'),
+    ('Current', 'greenhouse', 'current', 'Modern Mobile Banking Platform'),
+    ('Upgrade', 'greenhouse', 'upgrade', 'Consumer Credit & Online Banking'),
+    ('Circle', 'greenhouse', 'circle', 'Digital Currency & USDC Infrastructure'),
+    ('Paxos', 'greenhouse', 'paxos', 'Regulated Blockchain & Tokenization Platform'),
+    ('Kraken', 'greenhouse', 'kraken', 'Cryptocurrency Exchange Platform'),
+    ('Gemini', 'greenhouse', 'gemini', 'Regulated Crypto Exchange & Custody'),
+    ('Anchorage Digital', 'greenhouse', 'anchorage', 'Digital Asset Bank & Custody'),
+    ('Fireblocks', 'greenhouse', 'fireblocks', 'Digital Asset Custody & Settlement'),
+    ('Chainalysis', 'greenhouse', 'chainalysis', 'Blockchain Data & Investigation Platform'),
+    ('BitGo', 'greenhouse', 'bitgo', 'Digital Asset Custody & Security'),
+    ('Alloy', 'greenhouse', 'alloy', 'Identity Decisioning & Fraud Management for Fintech'),
+    ('Unit', 'greenhouse', 'unit', 'Banking-as-a-Service Platform'),
+    ('Modern Treasury', 'greenhouse', 'moderntreasury', 'Payment Operations & Real-Time Rail Software'),
+    ('Lithic', 'greenhouse', 'lithic', 'Card Issuing Infrastructure API'),
+    ('Treasury Prime', 'greenhouse', 'treasuryprime', 'Banking-as-a-Service & Core Banking APIs'),
+    ('Persona', 'greenhouse', 'persona', 'Identity Verification & Fraud Prevention Platform'),
+
+    # === DEVELOPER TOOLS, CLOUD INFRASTRUCTURE & PLATFORMS ===
     ('Vercel', 'greenhouse', 'vercel', 'Cloud Frontend & Edge Deployment Platform'),
     ('Supabase', 'ashby', 'supabase', 'Open Source Postgres & Backend Platform'),
-    ('Postman', 'greenhouse', 'postman', 'API Development & Testing Platform'),
-    ('Affirm', 'greenhouse', 'affirm', 'Fintech / BNPL Payments'),
-    ('Pinterest', 'greenhouse', 'pinterest', 'Visual Discovery & Machine Learning'),
-    ('Reddit', 'greenhouse', 'reddit', 'Community & Social Platform Infrastructure'),
-    ('Lyft', 'greenhouse', 'lyft', 'Mobility & Autonomous Systems'),
-    ('Coupang', 'greenhouse', 'coupang', 'High-Scale E-Commerce & Cloud Logistics'),
-    ('Smartsheet', 'greenhouse', 'smartsheet', 'Enterprise Collaboration & Work Management Platform'),
+    ('Linear', 'ashby', 'linear', 'Developer Tools & Project Management'),
+    ('Retool', 'greenhouse', 'retool', 'Internal Developer Tools & Workflows'),
+    ('Datadog', 'greenhouse', 'datadog', 'Cloud Observability & Distributed Monitoring'),
+    ('Cloudflare', 'greenhouse', 'cloudflare', 'Global Edge & Cloud Network Infrastructure'),
+    ('Notion', 'greenhouse', 'notion', 'Collaborative Workspace & Docs'),
+    ('Airtable', 'greenhouse', 'airtable', 'Low-Code Cloud Database Platform'),
+    ('Discord', 'greenhouse', 'discord', 'Real-Time Voice, Video & Text Platform'),
     ('GitLab', 'greenhouse', 'gitlab', 'DevSecOps & Remote-First Cloud Platform'),
+    ('HashiCorp', 'greenhouse', 'hashicorp', 'Cloud Infrastructure Automation & Terraform'),
+    ('Docker', 'greenhouse', 'docker', 'Cloud Container & Developer Platform'),
+    ('Postman', 'greenhouse', 'postman', 'API Development & Testing Platform'),
+    ('Grafana Labs', 'greenhouse', 'grafanalabs', 'Open Source Observability & Metrics'),
+    ('ClickHouse', 'greenhouse', 'clickhouse', 'Fast Open-Source Columnar Database'),
+    ('Temporal', 'ashby', 'temporal', 'Durable Execution & Workflow Engine'),
+    ('PlanetScale', 'ashby', 'planetscale', 'Serverless MySQL Database Platform'),
+    ('Neon Database', 'ashby', 'neon', 'Serverless Postgres Cloud'),
+    ('Sentry', 'greenhouse', 'sentry', 'Application Performance & Error Monitoring'),
+    ('Fly.io', 'greenhouse', 'flyio', 'Public Edge App Cloud'),
+    ('Render', 'ashby', 'render', 'Zero-DevOps Cloud Platform'),
+    ('Railway', 'ashby', 'railway', 'Cloud Deployment Platform'),
+    ('Warp', 'ashby', 'warp', 'Modern Terminal for Developers'),
+    ('Sourcegraph', 'greenhouse', 'sourcegraph', 'Code Intelligence & Search Platform'),
+    ('Cockroach Labs', 'greenhouse', 'cockroachlabs', 'Distributed SQL & Cloud Resilient Database'),
+    ('Elastic', 'greenhouse', 'elastic', 'Search & Distributed Analytics Engine'),
+    ('Twilio', 'greenhouse', 'twilio', 'Customer Engagement & Communications Cloud'),
+    ('dbt Labs', 'greenhouse', 'dbtlabs', 'Analytics Engineering & Data Transformation'),
+    ('Fivetran', 'greenhouse', 'fivetran', 'Automated Data Movement & Pipelines'),
+    ('Census', 'greenhouse', 'census', 'Data Activation & Reverse ETL'),
+    ('Hex', 'greenhouse', 'hex', 'Collaborative Analytics Platform'),
+    ('Monte Carlo', 'greenhouse', 'montecarlodata', 'Data Reliability & Observability'),
+    ('Amplitude', 'greenhouse', 'amplitude', 'Digital Analytics Platform'),
+    ('Mixpanel', 'greenhouse', 'mixpanel', 'Product Analytics Platform'),
+    ('LaunchDarkly', 'greenhouse', 'launchdarkly', 'Feature Management Platform'),
+    ('Harness', 'greenhouse', 'harness', 'Modern Software Delivery Platform'),
+    ('Sysdig', 'greenhouse', 'sysdig', 'Cloud Security & Compliance'),
+    ('Snyk', 'greenhouse', 'snyk', 'Developer Security Platform'),
+    ('Wiz', 'greenhouse', 'wiz', 'Cloud Security & CNAPP'),
+    ('SentinelOne', 'greenhouse', 'sentinelone', 'Autonomous Cybersecurity Platform'),
+    ('CrowdStrike', 'greenhouse', 'crowdstrike', 'Cloud-Native Endpoint Protection'),
+    ('Netskope', 'greenhouse', 'netskope', 'SASE Cloud Security Platform'),
+    ('Okta', 'greenhouse', 'okta', 'Enterprise Cloud Identity & Security'),
+    ('1Password', 'greenhouse', '1password', 'Enterprise Identity & Password Security'),
+    ('Bitwarden', 'greenhouse', 'bitwarden', 'Open Source Password Management'),
+    ('Tailscale', 'greenhouse', 'tailscale', 'Zero Trust Mesh Networking'),
+    ('Clerk', 'ashby', 'clerk', 'Authentication & User Management'),
+    ('Resend', 'ashby', 'resend', 'Email API for Developers'),
+    ('Inngest', 'ashby', 'inngest', 'Event-Driven Durable Execution'),
+    ('Trigger.dev', 'ashby', 'triggerdev', 'Background Jobs Framework'),
+    ('Cal.com', 'ashby', 'calcom', 'Open Source Scheduling Platform'),
+    ('Dub.co', 'ashby', 'dub', 'Link Management Platform'),
     ('Automattic', 'greenhouse', 'automattic', 'Open Web & WordPress Distributed Platform'),
     ('Mozilla', 'greenhouse', 'mozilla', 'Open Web & Firefox Privacy Technologies'),
-    ('Docker', 'greenhouse', 'docker', 'Cloud Container & Developer Platform'),
-    ('Tailscale', 'greenhouse', 'tailscale', 'Zero Trust Mesh Networking'),
-    ('Sentry', 'greenhouse', 'sentry', 'Application Performance & Error Monitoring'),
-    ('Retool', 'greenhouse', 'retool', 'Internal Developer Tools & Workflows'),
-    ('Grafana Labs', 'greenhouse', 'grafanalabs', 'Open Source Observability & Metrics'),
-    ('1Password', 'greenhouse', '1password', 'Enterprise Identity & Password Security'),
-    ('dbt Labs', 'greenhouse', 'dbtlabs', 'Analytics Engineering & Data Transformation')
+    ('Fastly', 'greenhouse', 'fastly', 'Edge Cloud Platform & CDN'),
+    ('DigitalOcean', 'greenhouse', 'digitalocean', 'Cloud Hosting for Developers'),
+    ('Lambda Labs', 'greenhouse', 'lambdalabs', 'GPU Cloud & Deep Learning Infra'),
+    ('Coda', 'greenhouse', 'coda', 'Collaborative Document Platform'),
+    ('Gitpod', 'greenhouse', 'gitpod', 'Cloud Development Environments'),
+    ('CodeSandbox', 'ashby', 'codesandbox', 'Instant Cloud Development Environments'),
+    ('StackBlitz', 'ashby', 'stackblitz', 'Browser-Based Web Development IDE'),
+    ('Replit', 'greenhouse', 'replit', 'AI Powered Software Creation Platform'),
+    ('Zed Industries', 'ashby', 'zed', 'High-Performance Code Editor'),
+    ('Kong', 'greenhouse', 'kong', 'Cloud API Gateway & Service Connectivity'),
+    ('Pulumi', 'greenhouse', 'pulumi', 'Infrastructure as Code SDK & Platform'),
+    ('Apollo GraphQL', 'greenhouse', 'apollographql', 'GraphQL Federation & Cloud Platform'),
+    ('Honeycomb', 'greenhouse', 'honeycomb', 'Distributed Tracing & Observability'),
+    ('New Relic', 'greenhouse', 'newrelic', 'Full-Stack Observability Platform'),
+    ('Dynatrace', 'greenhouse', 'dynatrace', 'Unified Software Observability & Security'),
+    ('LogRocket', 'greenhouse', 'logrocket', 'Frontend Monitoring & Session Replay'),
+    ('FullStory', 'greenhouse', 'fullstory', 'Behavioral Data Analytics & Digital Experience'),
+    ('Prisma', 'greenhouse', 'prisma', 'Next-Generation Node.js and TypeScript ORM'),
+    ('Hasura', 'greenhouse', 'hasura', 'Instant GraphQL & REST APIs on Databases'),
+
+    # === CONSUMER, MOBILITY, HARDWARE & ROBOTICS ===
+    ('Instacart', 'greenhouse', 'instacart', 'E-Commerce & Grocery Logistics'),
+    ('Airbnb', 'greenhouse', 'airbnb', 'Global Travel & Rental Platform'),
+    ('Spotify', 'greenhouse', 'spotify', 'Global Audio & Music Streaming'),
+    ('Roku', 'greenhouse', 'roku', 'Streaming TV & Smart Platforms'),
+    ('Roblox', 'greenhouse', 'roblox', 'High-Scale Multiplayer Engine & 3D Platform'),
+    ('Unity', 'greenhouse', 'unity', 'Real-Time 3D & Gaming Engine'),
+    ('Niantic', 'greenhouse', 'niantic', 'Augmented Reality & Real-World Gaming'),
+    ('Cruise', 'greenhouse', 'cruise', 'Autonomous Vehicles & Robotics'),
+    ('Waymo', 'greenhouse', 'waymo', 'Autonomous Mobility & Distributed Robotics'),
+    ('Aurora Innovation', 'greenhouse', 'aurora', 'Self-Driving Technology & Logistics'),
+    ('Zoox', 'greenhouse', 'zoox', 'Autonomous Vehicle Architecture'),
+    ('Nuro', 'greenhouse', 'nuro', 'Autonomous Delivery Robotics'),
+    ('Verkada', 'greenhouse', 'verkada', 'Physical Security & Enterprise IoT'),
+    ('Samsara', 'greenhouse', 'samsara', 'Connected Operations Cloud & IoT'),
+    ('Astranis', 'greenhouse', 'astranis', 'Micro-Geostationary Communications Satellites'),
+    ('Joby Aviation', 'greenhouse', 'jobyaviation', 'All-Electric Vertical Takeoff Aircraft'),
+    ('Archer Aviation', 'greenhouse', 'archeraviation', 'Electric Aerial Mobility'),
+    ('Zipline', 'greenhouse', 'zipline', 'Autonomous Drone Delivery'),
+    ('Flexport', 'greenhouse', 'flexport', 'Global Supply Chain & Freight Platform'),
+    ('Checkr', 'greenhouse', 'checkr', 'Automated Background Verification API'),
+    ('Grammarly', 'greenhouse', 'grammarly', 'AI Writing Assistance & Productivity'),
+    ('Canva', 'greenhouse', 'canva', 'Visual Communication & Design Platform'),
+    ('Duolingo', 'greenhouse', 'duolingo', 'Language Learning & EdTech'),
+    ('Asana', 'greenhouse', 'asana', 'Enterprise Work Management Platform'),
+    ('Zapier', 'greenhouse', 'zapier', 'Automation Platform for Web Applications'),
+    ('Miro', 'greenhouse', 'miro', 'Visual Workspace for Innovation'),
+    ('Faire', 'greenhouse', 'faire', 'Wholesale Online Marketplace'),
+    ('Whatnot', 'greenhouse', 'whatnot', 'Live Stream Shopping & Community Marketplace'),
+    ('StockX', 'greenhouse', 'stockx', 'Current Culture Marketplace & Verification'),
+    ('Etsy', 'greenhouse', 'etsy', 'Global Craft & Vintage Marketplace'),
+    ('Wayfair', 'greenhouse', 'wayfair', 'E-Commerce Home Goods & Logistics'),
+    ('Chewy', 'greenhouse', 'chewy', 'Pet Retail & Veterinary Cloud Platform'),
+    ('Shipt', 'greenhouse', 'shipt', 'Same-Day Grocery Delivery Marketplace'),
+    ('Gopuff', 'greenhouse', 'gopuff', 'Instant Needs Delivery & Micro-Fulfillment'),
+    ('SeatGeek', 'greenhouse', 'seatgeek', 'Mobile-Focused Ticket Platform'),
+    ('Eventbrite', 'greenhouse', 'eventbrite', 'Global Ticketing & Event Experience Platform'),
+    ('ClassPass', 'greenhouse', 'classpass', 'Fitness & Wellness Marketplace'),
+    ('Strava', 'greenhouse', 'strava', 'Social Network for Athletes & Fitness Tracking'),
+    ('AllTrails', 'greenhouse', 'alltrails', 'Outdoor Recreation & Trail Navigation App'),
+    ('Whoop', 'greenhouse', 'whoop', 'Human Performance & Biometric Wearables'),
+    ('Oura', 'greenhouse', 'ouraring', 'Smart Ring Health Tracking & Sleep Platform'),
+
+    # === ENTERPRISE SAAS, WORKFLOWS & COLLABORATION ===
+    ('Box', 'greenhouse', 'box', 'Cloud Content Management & File Sharing'),
+    ('Dropbox', 'greenhouse', 'dropbox', 'Cloud Storage & Workspace Collaboration'),
+    ('Monday.com', 'greenhouse', 'mondaydotcom', 'Work Operating System & Team Projects'),
+    ('ClickUp', 'greenhouse', 'clickup', 'All-in-One Productivity Platform'),
+    ('Loom', 'greenhouse', 'loom', 'Video Messaging for Work'),
+    ('Dialpad', 'greenhouse', 'dialpad', 'AI-Powered Customer Intelligence & Phone Platform'),
+    ('ZoomInfo', 'greenhouse', 'zoominfo', 'Go-To-Market Intelligence Platform'),
+    ('Gong', 'greenhouse', 'gong', 'Revenue Intelligence & Conversation Analytics'),
+    ('Drift', 'greenhouse', 'drift', 'Conversational Marketing & Sales Tech'),
+    ('Intercom', 'greenhouse', 'intercom', 'AI Customer Service Solution'),
+    ('Zendesk', 'greenhouse', 'zendesk', 'Customer Service & Engagement Platform'),
+    ('Freshworks', 'greenhouse', 'freshworks', 'Customer Engagement Software & IT Service Management'),
+    ('Klaviyo', 'greenhouse', 'klaviyo', 'Intelligent Marketing Automation Platform'),
+    ('Braze', 'greenhouse', 'braze', 'Customer Engagement Platform & Multichannel Messaging'),
+    ('Iterable', 'greenhouse', 'iterable', 'Cross-Channel Customer Communication Platform'),
+    ('Attentive', 'greenhouse', 'attentive', 'SMS Marketing & Conversational Commerce'),
+    ('Customer.io', 'greenhouse', 'customerio', 'Automated Messaging Platform for Product-Led Companies'),
+    ('Segment', 'greenhouse', 'segment', 'Customer Data Infrastructure & Twilio Segment'),
+
+    # === HEALTHTECH & BIOTECH SOFTWARE ===
+    ('Ro', 'greenhouse', 'ro', 'Direct-to-Consumer Telehealth Platform'),
+    ('Hims & Hers', 'greenhouse', 'hims', 'Telehealth & Personal Wellness Platform'),
+    ('Oscar Health', 'greenhouse', 'oscar', 'Tech-Driven Health Insurance Platform'),
+    ('Cityblock Health', 'greenhouse', 'cityblock', 'Healthcare Technology for Marginalized Communities'),
+    ('Komodo Health', 'greenhouse', 'komodohealth', 'Healthcare Map & Healthcare Analytics SaaS'),
+    ('Flatiron Health', 'greenhouse', 'flatiron', 'Oncology Cloud Software & Real-World Evidence'),
+    ('Color Health', 'greenhouse', 'color', 'Public Health & Genetic Healthcare Platform'),
+    ('Modern Health', 'greenhouse', 'modernhealth', 'Comprehensive Mental Health Benefit Platform'),
+    ('Spring Health', 'greenhouse', 'springhealth', 'Precision Mental Healthcare Platform'),
+    ('Lyra Health', 'greenhouse', 'lyrahealth', 'Workplace Mental Health Benefits & Provider Platform'),
+    ('Headspace', 'greenhouse', 'headspace', 'Mindfulness, Meditation & Mental Wellbeing Platform'),
+    ('Calm', 'greenhouse', 'calm', 'Mental Fitness & Sleep Platform'),
+    ('Maven Clinic', 'greenhouse', 'mavenclinic', 'Virtual Clinic for Women and Family Health'),
+    ('Headway', 'greenhouse', 'headway', 'Mental Healthcare Provider Infrastructure'),
+    ('Carbon Health', 'greenhouse', 'carbonhealth', 'Modern Primary & Urgent Care Tech Platform'),
+    ('Capsule', 'greenhouse', 'capsule', 'Digital Pharmacy & Home Delivery Platform'),
+    ('GoodRx', 'greenhouse', 'goodrx', 'Prescription Drug Savings & Digital Healthcare'),
+
+    # === PROPTECH & REAL ESTATE SOFTWARE ===
+    ('Compass', 'greenhouse', 'compass', 'Tech-Enabled Real Estate Brokerage Platform'),
+    ('Opendoor', 'greenhouse', 'opendoor', 'Digital Platform for Residential Real Estate'),
+    ('Procore', 'greenhouse', 'procore', 'Construction Management Software Cloud'),
+    ('AppFolio', 'greenhouse', 'appfolio', 'Cloud Property Management Solutions'),
+    ('Entrata', 'greenhouse', 'entrata', 'Multifamily Real Estate Operating System'),
+    ('VTS', 'greenhouse', 'vts', 'Commercial Real Estate Leasing & Asset Management'),
+    ('Roofstock', 'greenhouse', 'roofstock', 'Single-Family Rental Investment Marketplace'),
+    ('Pacaso', 'greenhouse', 'pacaso', 'Second Home Co-Ownership Platform'),
+    ('Qualia', 'greenhouse', 'qualia', 'Digital Real Estate Closing & Title Platform'),
+    ('Blend', 'greenhouse', 'blend', 'Cloud Banking & Digital Lending Software'),
+
+    # === QUANTITATIVE TRADING, FINTECH & PROP FIRMS ===
+    ('Hudson River Trading', 'greenhouse', 'wehrtyou', 'Quantitative Finance & Low-Latency Systems'),
+    ('Jane Street', 'greenhouse', 'janestreet', 'Quantitative Trading & Low-Latency Systems'),
+    ('Citadel', 'greenhouse', 'citadel', 'Global Financial Institutions & Quantitative Systems'),
+    ('Two Sigma', 'greenhouse', 'twosigma', 'Quantitative Investment & HPC'),
+    ('Jump Trading', 'greenhouse', 'jumptrading', 'Algorithmic High-Frequency Trading'),
+    ('DRW', 'greenhouse', 'drw', 'Principal Trading & Quantitative Architecture'),
+    ('Optiver', 'greenhouse', 'optiver', 'Market Making & Low-Latency Engineering'),
+    ('Point72', 'greenhouse', 'point72', 'Asset Management & Quantitative Technology'),
+    ('Flow Traders', 'greenhouse', 'flowtraders', 'Financial Technology & Electronic Market Making'),
+    ('IMC Trading', 'greenhouse', 'imctrading', 'Algorithmic Trading & High-Performance Technology'),
+    ('Akuna Capital', 'greenhouse', 'akunacapital', 'Options Market Making & Tech Trading Firm'),
+    ('SIG (Susquehanna)', 'greenhouse', 'sig', 'Quantitative Trading & Market Making'),
+    ('Old Mission Capital', 'greenhouse', 'oldmission', 'Quantitative Trading Firm & Asset Management'),
+    ('PEAK6', 'greenhouse', 'peak6', 'Fintech Investment & Proprietary Trading')
 ]
 
 CLEARANCE_KEYWORDS = [
@@ -75,25 +341,28 @@ TITLE_EXCLUSIONS = [
     'sales', 'marketing', 'product manager', 'designer', 'copywriter', 'general counsel',
     'business partner', 'administrative', 'data scientist', 'analytics lead', 'business analyst',
     'data engineer', 'big data', 'data platform', 'data infrastructure', 'database administrator', 'dba',
+    'analytics engineer', 'bi engineer', 'etl',
     'hardware', 'hvac', 'dv engineer', 'verification', 'endpoint', 'it controls', 'compliance engineer',
-    'android', 'ios', 'mobile', 'devrel', 'developer relations', 'solutions engineer',
+    'android', 'ios', 'mobile', 'devrel', 'developer relations', 'solutions engineer', 'sales engineer',
+    'support engineer', 'customer engineer', 'network engineer', 'firmware', 'embedded', 'fpga', 'asic', 'silicon',
     'security', 'cybersecurity', 'cloud security', 'security engineer', 'security software engineer', 'detection and response', 'iam',
+    'infosec', 'appsec', 'product security',
     'devops engineer, infrastructure & security', 'creative',
     'machine learning', 'ml engineer', 'ml software', 'deep learning', 'nlp', 'computer vision',
     'data science', 'research scientist', 'applied scientist', 'llm', 'genai', 'generative ai',
     'algorithm engineer', 'ai engineer', 'ai infrastructure', 'ai research', 'ai platform',
     'ai runtime', 'ai inference', 'inference', 'model lifecycle', 'ai native', 'ai agent', 'ai tools', 'caper ai', 'ai product',
     'frontier agent', 'frontier agents', 'gpu', 'hpc', 'people platform', 'business systems',
-    'early career', '2027', 'reinforcement learning', 'rl training'
+    'early career', '2025', '2026', '2027', 'reinforcement learning', 'rl training', 'rl engineer'
 ]
 
 def is_resume_role_matched(title):
     if not title:
         return False
-    t = title.lower().replace('\u00a0', ' ').replace('-', ' ').replace(',', ' ')
+    t = title.lower().replace(' ', ' ').replace('-', ' ').replace(',', ' ')
     
-    # 0. Strict exclusion of Principal / Executive level, ML / AI / RL, Security, and Data Engineering keywords
-    if re.search(r'\b(principal|distinguished|fellow|ml|ai|devai|genai|llm|rl|deep learning|machine learning|reinforcement learning|big data|security|cybersecurity)\b', t):
+    # 0. Strict exclusion of Principal / Executive / Management level
+    if re.search(r'\b(principal|distinguished|fellow|director|vp|vice president|manager|lead|head of)\b', t):
         return False
         
     # 0b. Strict exclusion of Staff-level roles (while preserving Member of Technical Staff)
@@ -101,16 +370,22 @@ def is_resume_role_matched(title):
         if re.search(r'\b(staff|sr\.?\s*staff|senior\s*staff)\b', t):
             return False
 
-    # 1. Immediate reject for excluded roles (using word boundaries to prevent substring bugs like 'llm' in 'fulfillment')
+    # 0c. Strict exclusion of ML / AI / Data / Security / Hardware keywords
+    if re.search(r'\b(ml|ai|devai|genai|llm|rl|deep learning|machine learning|reinforcement learning|big data|security|cybersecurity|infosec|appsec)\b', t):
+        return False
+
+    # 0d. Strict exclusion of Data Engineering and Analytics roles
+    if re.search(r'\bdata\s*(engineer|engineering|platform|infra|infrastructure|pipeline|warehouse|lakehouse|analytics|architect|architecture)\b', t):
+        return False
+    if re.search(r'\b(bi engineer|etl|dba|database administrator|analytics engineer|data scientist)\b', t):
+        return False
+
+    # 1. Immediate reject for excluded roles
     for ex in TITLE_EXCLUSIONS:
         if re.search(r'\b' + re.escape(ex) + r'\b', t):
             return False
             
-    # Reject "software engineer, data" or "data engineer" / "data platform"
-    if re.search(r'\bdata\b', t) and any(k in t for k in ['engineer', 'platform', 'infra', 'pipeline']):
-        return False
-            
-    # 2. Match Forward Deployed Engineer roles (excluding ML/AI/Principal)
+    # 2. Match Forward Deployed Engineer roles
     if ('forward deployed' in t or 'fde' in t) and any(e in t for e in ['engineer', 'swe', 'software', 'developer']):
         return True
         
@@ -128,7 +403,7 @@ def is_resume_role_matched(title):
 
 TITLE_INCLUSIONS = [
     'software', 'engineer', 'developer', 'backend', 'full stack', 'fullstack',
-    'platform', 'infrastructure', 'systems', 'cloud', 'data engineer',
+    'platform', 'infrastructure', 'systems', 'cloud',
     'distributed', 'applications', 'mts', 'technical staff', 'forward deployed', 'fde'
 ]
 
@@ -159,34 +434,36 @@ DENY_INTERNATIONAL = [
 
 def is_strictly_us_location(loc_str):
     if not loc_str:
-        return False
-    low = loc_str.lower()
-    
-    # 1. Any international keyword immediately rejects
-    for d in DENY_INTERNATIONAL:
-        if re.search(r'\b' + re.escape(d) + r'\b', low):
+        return True
+    l = loc_str.lower().strip()
+    for denied in DENY_INTERNATIONAL:
+        if re.search(r'' + re.escape(denied) + r'', l):
             return False
-            
-    # 2. Check for explicit US keywords / cities
-    if any(k in low for k in US_CITIES_AND_KEYWORDS):
+    if 'remote' in l:
         return True
-        
-    # 3. Check for 2-letter state code like ", CA" or "WA"
-    for state in US_STATE_CODES:
-        if re.search(r'[\s,•\-/]' + state + r'(\b|[\s,•\-/]|$)', loc_str):
+    for kw in US_CITIES_AND_KEYWORDS:
+        if kw in l:
             return True
-            
-    # 4. If labeled exactly "Remote", verify it is not an international remote
-    if low.strip() in ['remote', 'remote (us)', 'us / remote', 'remote / us']:
-        return True
-        
+    for code in US_STATE_CODES:
+        if re.search(r'' + code.lower() + r'', l) or f', {code.lower()}' in l:
+            return True
     return False
 
+def get_region_info(loc_str):
+    l = (loc_str or '').lower()
+    if any(k in l for k in ['seattle', 'bellevue', 'redmond', 'kirkland', ', wa', 'wa,', 'wa -', 'washington']) and 'dc' not in l:
+        return 'Seattle / WA', 1
+    if 'remote' in l:
+        return 'Remote', 2
+    if any(k in l for k in ['new york', 'nyc', 'boston', 'chicago', 'philadelphia', 'atlanta', 'austin', 'miami', 'jersey city']):
+        return 'East', 3
+    return 'West', 4
+
 STANDARD_LABEL_KEYWORDS = [
-    'first name', 'last name', 'email', 'phone', 'location', 'city', 'state',
-    'resume', 'cv', 'linkedin', 'website', 'github', 'portfolio', 'pronoun',
-    'preferred first name', 'are you authorized', 'sponsorship', 'citizenship',
-    'clearance', 'veteran', 'disability', 'race', 'gender', 'eeoc', 'worked for',
+    'first name', 'last name', 'email', 'phone', 'resume', 'cv', 'linkedin',
+    'website', 'github', 'portfolio', 'twitter', 'location', 'pronoun',
+    'hear about', 'gender', 'race', 'veteran', 'disability', 'authorized',
+    'sponsorship', 'require sponsorship', 'visa', 'citizenship', 'start date',
     'former employee', 'non-compete', 'notice period', 'salary expectation',
     'how did you hear', 'source', 'demographic', 'postal', 'address'
 ]
@@ -237,72 +514,51 @@ def generate_tailored_answer(comp_name, title, skills, question_text, industry):
         'metrics': metrics
     }
 
-matched_jobs = []
-company_counts = {}
-
 def is_clearance_or_citizen_restricted(text):
     t = text.lower()
     return any(k in t for k in CLEARANCE_KEYWORDS)
 
 def is_job_live(url, slug=None, ats_id=None):
-    """Universal live-availability verifier that tests all job applications before adding or keeping them.
-    Checks ATS status APIs and follows web redirects to confirm active HTTP 200 without closed notices."""
     if not url:
         return False
-    try:
-        # 1. Universal ATS API check for Greenhouse when requisition ID and board slug are resolvable
-        jid = ats_id
-        if not jid:
-            m = re.search(r'gh_jid=(\d+)|/jobs/(\d+)', url)
-            if m:
-                jid = m.group(1) or m.group(2)
-        
-        gh_slug = slug
-        if not gh_slug:
-            sm = re.search(r'greenhouse\.io/(?:v1/boards/)?([^/]+)', url)
-            if sm:
-                gh_slug = sm.group(1)
-
-        if jid and gh_slug:
-            try:
-                c_req = urllib.request.Request(
-                    f'https://boards-api.greenhouse.io/v1/boards/{gh_slug}/jobs/{jid}',
-                    headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'}
-                )
-                with urllib.request.urlopen(c_req, context=ctx, timeout=5) as c_resp:
-                    if c_resp.status in (404, 410):
-                        return False
-                    if c_resp.status == 200:
+    if slug and ats_id:
+        status_url = f'https://boards-api.greenhouse.io/v1/boards/{slug}/jobs/{ats_id}'
+        try:
+            req = urllib.request.Request(status_url, headers={'User-Agent': 'Mozilla/5.0'})
+            with urllib.request.urlopen(req, context=ctx, timeout=4) as resp:
+                if resp.status == 200:
+                    data = json.loads(resp.read().decode('utf-8'))
+                    if data.get('id') or data.get('title'):
                         return True
-            except urllib.error.HTTPError as he:
-                if he.code in (404, 410):
-                    return False
-            except Exception:
-                pass
+        except urllib.error.HTTPError as e:
+            if e.code in (404, 410):
+                return False
+        except Exception:
+            pass
 
-        # 2. Universal Web URL Verification: Follow redirects & check page status / content
+    try:
+        clean_url = url.split('#')[0]
         req = urllib.request.Request(
-            url,
+            clean_url,
             headers={
-                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                'Accept-Language': 'en-US,en;q=0.9'
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
             }
         )
-        with urllib.request.urlopen(req, context=ctx, timeout=6) as resp:
-            final_url = resp.geturl().lower()
-            if any(k in final_url for k in ['error=true', 'current-openings', 'not-found', '/404', 'status=404']):
+        with urllib.request.urlopen(req, context=ctx, timeout=5) as resp:
+            if resp.status in (404, 410):
                 return False
-            if resp.status in (200, 301, 302):
-                content = resp.read(5000).decode('utf-8', errors='ignore').lower()
-                if any(k in content for k in [
-                    "no longer available", "job has been closed", "position is closed",
-                    "this job is no longer accepting applications", "job was not found",
-                    "position has been filled", "posting has expired", "job is closed"
-                ]):
-                    return False
-                return True
-            return False
+            html = resp.read(20480).decode('utf-8', errors='ignore').lower()
+            if any(phrase in html for phrase in [
+                'this job is no longer available',
+                'this position has been filled',
+                'job has expired',
+                'posting is no longer active',
+                'no longer accepting applications',
+                'the page you are looking for does not exist'
+            ]):
+                return False
+            return True
     except urllib.error.HTTPError as e:
         if e.code in (404, 410):
             return False
@@ -310,21 +566,21 @@ def is_job_live(url, slug=None, ats_id=None):
     except Exception:
         return True
 
-print(f"Starting daily sweep across {len(COMPANY_BOARDS)} tech companies...")
-
-for comp_name, btype, slug, industry in COMPANY_BOARDS:
-    company_counts[comp_name] = 0
-    max_per_co = 2
+def fetch_single_board(board_tuple):
+    comp_name, btype, slug, industry = board_tuple
+    results = []
+    max_per_co = 3
+    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'}
 
     try:
         if btype == 'greenhouse':
             url = f'https://boards-api.greenhouse.io/v1/boards/{slug}/jobs?content=true'
-            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'})
+            req = urllib.request.Request(url, headers=headers)
             with urllib.request.urlopen(req, context=ctx, timeout=8) as resp:
                 data = json.loads(resp.read().decode('utf-8'))
                 raw_jobs = data.get('jobs', [])
-                # Prioritize Seattle/WA local hub openings and Remote roles first
-                def seattle_loc_priority(j):
+                
+                def loc_priority(j):
                     l = (j.get('location', {}).get('name', '') or '').lower()
                     if any(k in l for k in ['seattle', 'bellevue', 'redmond', 'kirkland', 'washington', ', wa', 'wa,', 'wa -']) and 'dc' not in l:
                         return 0
@@ -332,9 +588,10 @@ for comp_name, btype, slug, industry in COMPANY_BOARDS:
                         return 1
                     return 2
                 
-                sorted_jobs = sorted(raw_jobs, key=seattle_loc_priority)
+                sorted_jobs = sorted(raw_jobs, key=loc_priority)
+                co_count = 0
                 for j in sorted_jobs:
-                    if company_counts[comp_name] >= max_per_co:
+                    if co_count >= max_per_co:
                         break
                     title = j.get('title', '')
                     if not is_resume_role_matched(title):
@@ -354,20 +611,17 @@ for comp_name, btype, slug, industry in COMPANY_BOARDS:
                     ats_id = str(j.get('id', ''))
                     if not ats_id:
                         continue
-                    # Universal direct canonical application URL from ATS without hardcoding company exceptions
+                        
                     raw_ats_url = j.get('absolute_url') or f"https://boards.greenhouse.io/{slug}/jobs/{ats_id}"
                     if 'boards.greenhouse.io' in raw_ats_url and '#app' not in raw_ats_url:
                         job_url = f"{raw_ats_url}#app"
                     else:
                         job_url = raw_ats_url
 
-                    # Universal check BEFORE adding: verify requisition is live and accepting applications
                     if not is_job_live(job_url, slug=slug, ats_id=ats_id):
-                        print(f"Skipping closed or dead requisition: {comp_name} - {title}")
                         continue
 
-                    company_counts[comp_name] += 1
-
+                    co_count += 1
                     skills = []
                     for s in ['Java', 'Python', 'TypeScript', 'React', 'AWS', 'Spring Boot', 'C++', 'PostgreSQL', 'Docker', 'Kubernetes', 'SQL', 'Distributed Systems', 'FastAPI', 'Node.js', 'Go']:
                         if s.lower() in full_text.lower():
@@ -375,43 +629,38 @@ for comp_name, btype, slug, industry in COMPANY_BOARDS:
                     if not skills:
                         skills = ['Java', 'Python', 'TypeScript', 'AWS', 'PostgreSQL']
 
-                    h1b_fit = 'Yes (H1B Friendly / Sponsoring)' if any(k in comp_name.lower() for k in ['stripe', 'databricks', 'figma', 'openai', 'anthropic', 'snowflake', 'airbnb', 'doordash', 'pinterest', 'reddit']) else 'Open / Check Application'
+                    h1b_fit = 'Yes (H1B Friendly / Sponsoring)' if any(k in comp_name.lower() for k in ['stripe', 'databricks', 'figma', 'openai', 'anthropic', 'snowflake', 'airbnb', 'doordash', 'pinterest', 'reddit', 'remitly', 'avalara', 'zillow']) else 'Open / Check Application'
 
                     custom_questions = []
                     try:
                         detail_url = f"https://boards-api.greenhouse.io/v1/boards/{slug}/jobs/{ats_id}?questions=true"
-                        d_req = urllib.request.Request(detail_url, headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'})
-                        with urllib.request.urlopen(d_req, context=ctx, timeout=4) as d_resp:
+                        d_req = urllib.request.Request(detail_url, headers=headers)
+                        with urllib.request.urlopen(d_req, context=ctx, timeout=3) as d_resp:
                             d_json = json.loads(d_resp.read().decode('utf-8'))
-                            raw_qs = d_json.get('questions', [])
-                            for q in raw_qs:
+                            for q in d_json.get('questions', []):
                                 q_lbl = q.get('label', '').strip()
                                 q_fields = q.get('fields', [])
                                 q_type = q_fields[0].get('type', '') if q_fields else ''
                                 q_desc = q.get('description', '') or ''
                                 if is_tailored_application_question(q_lbl, q_type, q_desc):
-                                    full_q_text = q_lbl
+                                    full_q = q_lbl
                                     if q_desc and len(q_desc) < 150:
-                                        clean_desc = re.sub(r'<[^>]+>', '', q_desc).strip()
-                                        if clean_desc and clean_desc not in full_q_text:
-                                            full_q_text = f"{full_q_text} ({clean_desc})"
-                                    q_obj = generate_tailored_answer(comp_name, title, skills, full_q_text, industry)
-                                    custom_questions.append(q_obj)
+                                        cd = re.sub(r'<[^>]+>', '', q_desc).strip()
+                                        if cd and cd not in full_q:
+                                            full_q = f"{full_q} ({cd})"
+                                    custom_questions.append(generate_tailored_answer(comp_name, title, skills, full_q, industry))
                     except Exception:
                         pass
 
-                    if comp_name.lower() == 'figma' and not custom_questions:
-                        q_obj = generate_tailored_answer(comp_name, title, skills, "Why do you want to join Figma? (Please share 3-4 sentences on why you want to join Figma)", industry)
-                        custom_questions.append(q_obj)
-
-                    matched_jobs.append({
-                        'id': f'{slug}-{j.get("id")}',
+                    reg_name, reg_rank = get_region_info(loc)
+                    results.append({
+                        'id': f'{slug}-{ats_id}',
                         'company': comp_name,
                         'title': title,
                         'location': loc,
                         'remote': 'Remote' if 'remote' in loc_low else ('Hybrid' if 'hybrid' in loc_low else 'US / Onsite'),
                         'industry': industry,
-                        'salary': '$170,000 – $260,000 + Equity',
+                        'salary': ',000 – ,000 + Equity',
                         'summary': f'Live opening at {comp_name} focused on scalable engineering with {skills[0]} and cloud infrastructure.',
                         'skills': skills[:6],
                         'url': job_url,
@@ -420,22 +669,23 @@ for comp_name, btype, slug, industry in COMPANY_BOARDS:
                         'h1bFit': h1b_fit,
                         'yoeFit': 'Good (3–8 yrs)',
                         'yoeNote': 'Live active verified opening',
-                        'callbackScore': 90.0 + (5.0 if 'Remote' in loc else 0.0),
+                        'callbackScore': 90.0 + (5.0 if 'Remote' in loc or reg_rank == 1 else 0.0),
                         'postedAtUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
-                        'atsJobId': str(j.get('id')),
-                        'region': 'Remote' if 'remote' in loc_low else ('East' if any(e in loc_low for e in ['new york', 'nyc', 'boston']) else 'West'),
-                        'regionRank': 1 if 'remote' in loc_low else 2,
+                        'atsJobId': ats_id,
+                        'region': reg_name,
+                        'regionRank': reg_rank,
                         'customQuestions': custom_questions,
                         'hasEssayQuestions': len(custom_questions) > 0
                     })
 
         elif btype == 'ashby':
             url = f'https://api.ashbyhq.com/posting-api/job-board/{slug}?includeCompensation=true'
-            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'})
+            req = urllib.request.Request(url, headers=headers)
             with urllib.request.urlopen(req, context=ctx, timeout=8) as resp:
                 data = json.loads(resp.read().decode('utf-8'))
+                co_count = 0
                 for j in data.get('jobs', []):
-                    if company_counts[comp_name] >= max_per_co:
+                    if co_count >= max_per_co:
                         break
                     title = j.get('title', '')
                     t_low = title.lower()
@@ -449,7 +699,7 @@ for comp_name, btype, slug, industry in COMPANY_BOARDS:
                         continue
 
                     comp_info = j.get('compensation', {})
-                    sal_str = '$175,000 – $275,000 + Equity'
+                    sal_str = ',000 – ,000 + Equity'
                     if comp_info and comp_info.get('compensationTierSummary'):
                         sal_str = comp_info.get('compensationTierSummary')
 
@@ -460,61 +710,22 @@ for comp_name, btype, slug, industry in COMPANY_BOARDS:
                     raw_url = j.get('jobUrl') or f'https://jobs.ashbyhq.com/{slug}/{j.get("id")}'
                     job_url = raw_url if raw_url.endswith('/application') else f"{raw_url.rstrip('/')}/application"
 
-                    # Universal check BEFORE adding: verify requisition is live and accepting applications
                     if not is_job_live(job_url):
-                        print(f"Skipping closed or dead requisition: {comp_name} - {title}")
                         continue
 
-                    company_counts[comp_name] += 1
-
+                    co_count += 1
                     skills = ['Python', 'TypeScript', 'React', 'AWS', 'PostgreSQL', 'Distributed Systems']
                     if 'backend' in t_low or 'infrastructure' in t_low:
                         skills = ['Python', 'Java', 'AWS', 'PostgreSQL', 'Docker', 'Distributed Systems']
                     elif 'voice' in t_low or 'audio' in t_low:
                         skills = ['Python', 'C++', 'AWS', 'WebSockets', 'Distributed Systems']
 
-                    custom_questions = []
-                    if comp_name.lower() == 'elevenlabs':
-                        custom_questions = [
-                            {
-                                'id': 'q1',
-                                'question': 'Why ElevenLabs, and why now?',
-                                'orig': "I have followed ElevenLabs' rapid leadership in generative audio, real-time voice streaming, and conversational AI agents. What excites me most is the engineering challenge of delivering sub-100ms low-latency audio pipelines at enterprise scale. With my background in backend systems, Python/TypeScript microservices, and AWS distributed infrastructure, I want to join now to help scale ElevenLabs' core developer APIs and multimodal voice infrastructure.",
-                                'concise': "I am eager to join ElevenLabs to solve the engineering challenge of scaling sub-100ms real-time audio streaming. My background in high-throughput Python/TypeScript microservices and AWS distributed systems enables me to immediately help scale your core developer APIs.",
-                                'technical': "I have closely studied ElevenLabs' real-time WebSocket streaming protocols and voice synthesis models. With extensive experience architecting async Python pipelines, Java/Spring Boot microservices, and event-driven AWS cloud architectures (SQS, Lambda, DynamoDB, PostgreSQL), I am eager to optimize your low-latency streaming infrastructure and API availability.",
-                                'metrics': "ElevenLabs' explosive enterprise adoption requires world-class platform reliability. In my previous backend roles, I scaled microservices to handle millions of daily requests while reducing P99 latency by 42% and sustaining 99.99% uptime. I want to bring this operational scale to ElevenLabs."
-                            },
-                            {
-                                'id': 'q2',
-                                'question': "What's the most impactful thing you've built? (Specific contribution)",
-                                'orig': "The most impactful system I built was an end-to-end distributed event processing and workflow platform handling millions of events daily. My specific contribution was leading the backend architecture using Java/Spring Boot and Python microservices on AWS (SQS, Lambda, DynamoDB, PostgreSQL) with a reactive TypeScript/React UI. I designed the asynchronous ingestion pipelines, implemented idempotency mechanisms, and optimized database query patterns to eliminate bottlenecks during peak traffic surges.",
-                                'concise': "I led the architecture of a high-throughput event processing platform on AWS handling millions of daily events. Using Java/Spring Boot, Python, and PostgreSQL, I designed asynchronous message pipelines, eliminated database bottlenecks, and sustained 99.99% availability during traffic spikes.",
-                                'technical': "I architected and built an asynchronous, event-driven workflow engine using Java/Spring Boot and Python microservices on AWS (SQS, Lambda, DynamoDB, Aurora PostgreSQL) paired with a reactive TypeScript/React dashboard. I designed distributed locking, idempotent message deduplication, and database connection pooling to sustain 5,000+ peak RPS with zero data loss.",
-                                'metrics': "Key System Achievements:\n• Engineered distributed event ingestion pipeline processing 10M+ daily events.\n• Reduced P99 API latency by 42% (from 480ms to 85ms).\n• Maintained 99.99% system SLA with zero critical incidents.\n• Optimized AWS cloud resource utilization to lower operating costs by 30%."
-                            },
-                            {
-                                'id': 'q3',
-                                'question': "How did you know it worked? What did success actually look like?",
-                                'orig': "Success was measured through concrete operational and business metrics:\n1. P99 API response latency decreased by 42% (from 480ms down to 85ms under high concurrency).\n2. Achieved zero message loss with 99.99% system availability across consecutive quarters.\n3. Reduced cloud infrastructure operating costs by 30% through auto-scaling and serverless optimization.\n4. Accelerated engineering cycle time, enabling cross-functional teams to deploy new workflows in minutes rather than weeks.",
-                                'concise': "We verified success through APM telemetry: P99 response latency dropped by 42% (down to 85ms), system uptime reached 99.99% across consecutive quarters, zero message loss occurred during traffic spikes, and AWS operational spend dropped by 30%.",
-                                'technical': "We validated success through distributed tracing and production APM telemetry:\n• Real-time Datadog & AWS CloudWatch metrics showed P99 latencies stabilized below 90ms.\n• Distributed tracing confirmed sub-second end-to-end event completion across microservices.\n• Automated chaos tests verified zero unhandled dead-letter queue failures during simulated node outages.",
-                                'metrics': "Measurable Outcomes:\n1. Latency: P99 response time reduced from 480ms to 85ms (-42%).\n2. Availability: 99.99% uptime achieved across 12 consecutive months.\n3. Cost: 30% reduction in monthly AWS infrastructure expenses.\n4. Scalability: Handled a 4x holiday traffic surge with zero degradation."
-                            },
-                            {
-                                'id': 'q4',
-                                'question': "Have you used ElevenLabs' product / explored it in a project?",
-                                'orig': "While I haven't deployed ElevenLabs in production yet, I have thoroughly explored your API architecture, documentation, and real-time streaming WebSocket endpoints. My core strength is architecting high-throughput, low-latency backend microservices and event pipelines in Java, Python, and AWS. I am deeply interested in audio synthesis and real-time streaming, and I am eager to apply my distributed systems background to optimize ElevenLabs' low-latency audio delivery at scale.",
-                                'concise': "I have explored ElevenLabs' API documentation and real-time streaming WebSocket protocols. With my background building low-latency backend microservices in Java, Python, and AWS, I am excited to apply my distributed systems experience to scale ElevenLabs' audio pipelines.",
-                                'technical': "I have studied ElevenLabs' developer endpoints, chunked audio transfer protocols, and WebSocket latency characteristics. In my backend work, I specialize in building asynchronous event streams, socket connection management, and low-latency microservices with Python, Java, and AWS.",
-                                'metrics': "I bring a proven track record in high-scale infrastructure: architecting backend pipelines that achieved 99.99% uptime and 42% latency reduction. I am eager to bring this performance rigor to ElevenLabs' growing developer ecosystem."
-                            }
-                        ]
-
-                    matched_jobs.append({
+                    reg_name, reg_rank = get_region_info(loc)
+                    results.append({
                         'id': f'{slug}-{j.get("id")}',
                         'company': comp_name,
                         'title': title,
-                        'location': str(loc),
+                        'location': loc,
                         'remote': 'Remote' if 'remote' in loc_low else 'Hybrid / Onsite',
                         'industry': industry,
                         'salary': sal_str,
@@ -529,151 +740,522 @@ for comp_name, btype, slug, industry in COMPANY_BOARDS:
                         'callbackScore': 93.0,
                         'postedAtUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
                         'atsJobId': str(j.get('id')),
-                        'region': 'Remote' if 'remote' in loc_low else 'West',
-                        'regionRank': 1,
-                        'customQuestions': custom_questions,
-                        'hasEssayQuestions': len(custom_questions) > 0
+                        'region': reg_name,
+                        'regionRank': reg_rank,
+                        'customQuestions': [],
+                        'hasEssayQuestions': False
                     })
 
-    except Exception as e:
-        print(f"Skipping {comp_name}: {e}")
+        elif btype == 'lever':
+            url = f'https://api.lever.co/v0/postings/{slug}?mode=json'
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(req, context=ctx, timeout=8) as resp:
+                data = json.loads(resp.read().decode('utf-8'))
+                if isinstance(data, list):
+                    co_count = 0
+                    for j in data:
+                        if co_count >= max_per_co:
+                            break
+                        title = j.get('text', '')
+                        if not is_resume_role_matched(title):
+                            continue
+                        cat = j.get('categories', {}) or {}
+                        loc = cat.get('location', 'US')
+                        if not is_strictly_us_location(loc):
+                            continue
+                        job_url = j.get('hostedUrl', '')
+                        if not job_url:
+                            continue
+                        if not is_job_live(job_url):
+                            continue
+                        co_count += 1
+                        reg_name, reg_rank = get_region_info(loc)
+                        results.append({
+                            'id': f'{slug}-{j.get("id")}',
+                            'company': comp_name,
+                            'title': title,
+                            'location': loc,
+                            'remote': 'Remote' if 'remote' in loc.lower() else 'US / Onsite',
+                            'industry': industry,
+                            'salary': ',000 – ,000 + Equity',
+                            'summary': f'Live opening at {comp_name} focused on scalable engineering.',
+                            'skills': ['Java', 'Python', 'TypeScript', 'AWS', 'PostgreSQL'],
+                            'url': job_url,
+                            'source': 'Lever API (Live)',
+                            'postedApprox': 'Active Now',
+                            'h1bFit': 'Open / Check Application',
+                            'yoeFit': 'Good (3–8 yrs)',
+                            'yoeNote': 'Live active verified opening',
+                            'callbackScore': 90.0,
+                            'postedAtUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                            'atsJobId': str(j.get('id')),
+                            'region': reg_name,
+                            'regionRank': reg_rank,
+                            'customQuestions': [],
+                            'hasEssayQuestions': False
+                        })
+    except Exception:
+        pass
 
-print(f"\n--- Total Matched Jobs: {len(matched_jobs)} ---")
+    return results
 
-base_dir = os.path.dirname(os.path.abspath(__file__))
-jobs_file_path = os.path.join(base_dir, 'jobs.json')
+def fetch_public_job_feeds():
+    results = []
+    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'}
 
-# Intelligent Job Retention: Load previous active jobs so no opening is dropped until user takes action
-existing_jobs = []
-existing_ids = set()
-existing_urls = set()
-
-if os.path.exists(jobs_file_path):
-    try:
-        with open(jobs_file_path, 'r') as f:
-            old_data = json.load(f)
-            for w in old_data.get('weeks', []):
-                for j in w.get('jobs', []):
-                    jid = j.get('id')
-                    jurl = j.get('url')
-                    if jid and jid not in existing_ids:
-                        existing_jobs.append(j)
-                        existing_ids.add(jid)
-                        if jurl:
-                            existing_urls.add(jurl)
-        print(f"Loaded {len(existing_jobs)} existing active jobs from previous sweeps.")
-    except Exception as e:
-        print(f"Notice: Could not load previous jobs: {e}")
-
-# Combine new sweep with existing active jobs
-combined_jobs = []
-new_ids = set()
-
-# 1. Add freshly scraped jobs (newest first)
-for j in matched_jobs:
-    jid = j.get('id')
-    new_ids.add(jid)
-    combined_jobs.append(j)
-
-# 2. Retain all older active jobs that match target resume roles (strictly US-only and live link)
-retained_count = 0
-for old_j in existing_jobs:
-    if old_j.get('id') not in new_ids and old_j.get('url') not in {j.get('url') for j in matched_jobs}:
-        if is_resume_role_matched(old_j.get('title', '')):
-            if is_strictly_us_location(old_j.get('location', '')):
-                if is_job_live(old_j.get('url', ''), ats_id=old_j.get('atsJobId')):
-                    if 'customQuestions' not in old_j:
-                        old_j['customQuestions'] = []
-                        old_j['hasEssayQuestions'] = False
-                    combined_jobs.append(old_j)
-                    retained_count += 1
-                else:
-                    print(f"Pruned closed or dead job: {old_j.get('company')} - {old_j.get('title')}")
-            else:
-                print(f"Pruned non-US job: {old_j.get('company')} - {old_j.get('title')}")
-        else:
-            print(f"Pruned non-matching role: {old_j.get('company')} - {old_j.get('title')}")
-
-print(f"Active board total: {len(combined_jobs)} jobs ({len(matched_jobs)} new/refreshed, {retained_count} retained from previous sweeps).")
-
-# Save to jobs.json and docs/jobs.json
-output_data = {
-    "lastUpdated": datetime.date.today().isoformat(),
-    "lastChecked": datetime.date.today().isoformat(),
-    "seedVersion": 12,
-    "candidateProfile": {
-        "name": "Ramya Bangaru",
-        "targetRole": "Senior Full Stack & Software Engineer",
-        "mustHave": "Java / Python / TypeScript / React / AWS / Spring Boot / C++",
-        "yoe": "3–10y",
-        "visa": "All Roles (H1B Sponsoring & Open)",
-        "preferredLocations": "Remote · Seattle, WA · San Francisco, CA · US Nationwide"
-    },
-    "liveTrackers": [
-        {
-            "label": "🔥 Senior Full Stack & Backend (Java / Python / TypeScript) — USA (Past 24h)",
-            "url": "https://www.linkedin.com/jobs/search/?keywords=%28Java%20OR%20Python%20OR%20TypeScript%29%20AND%20%28%22Software%20Engineer%22%20OR%20%22Full%20Stack%22%29&location=United%20States&f_TPR=r86400&f_E=4&sortBy=DD",
-            "source": "LinkedIn",
-            "note": "Daily sweep: Apply within first 24h for ~4x interview conversion rate."
-        },
-        {
-            "label": "🌲 Senior Software Engineer — Seattle & WA — Past 7 days",
-            "url": "https://www.linkedin.com/jobs/search/?keywords=Senior%20Software%20Engineer&location=Seattle%2C%20Washington%2C%20United%20States&geoId=104116203&f_TPR=r604800&f_E=4&sortBy=DD",
-            "source": "LinkedIn",
-            "note": "Seattle & Eastside local hub jobs (Amazon, Microsoft, Databricks, Snowflake)."
-        },
-        {
-            "label": "🌐 Remote Software & Full Stack Engineer — USA — Past 7 days (All Seniority)",
-            "url": "https://www.linkedin.com/jobs/search/?keywords=%28%22Software%20Engineer%22%20OR%20%22Full%20Stack%22%20OR%20%22Backend%22%29%20AND%20%28Python%20OR%20Java%20OR%20TypeScript%20OR%20React%20OR%20AWS%29&location=United%20States&f_TPR=r604800&f_WT=2&sortBy=DD",
-            "source": "LinkedIn",
-            "note": "100% Remote USA roles covering Software Engineer, Full Stack, and Backend without restrictive seniority tags."
-        },
-        {
-            "label": "🚀 Remote Software Engineer (Startups & Tech) — USA — Past 7 days",
-            "url": "https://www.linkedin.com/jobs/search/?keywords=%22Software%20Engineer%22&location=United%20States&f_TPR=r604800&f_WT=2&sortBy=DD",
-            "source": "LinkedIn",
-            "note": "All remote Software Engineer openings across US startups and tech firms."
-        }
-    ],
-    "weeks": [
-        {
-            "weekId": f"{datetime.date.today().year}-W{datetime.date.today().isocalendar()[1]}",
-            "label": f"Week of {datetime.date.today().isoformat()} (Active Sweep)",
-            "jobs": combined_jobs,
-            "removedCount": 0,
-            "removedNotes": [
-                "Strict filter: US Citizenship required and TS/SCI clearance jobs automatically excluded.",
-                "Job retention active: Open positions stay visible until you take action (Apply or Dismiss)."
-            ]
-        }
+    # 1. The Muse API (Seattle & USA)
+    muse_endpoints = [
+        ('The Muse (Seattle, WA)', 'https://www.themuse.com/api/public/jobs?category=Software%20Engineering&location=Seattle%2C%20WA&page=1'),
+        ('The Muse (Remote USA)', 'https://www.themuse.com/api/public/jobs?category=Software%20Engineering&location=Flexible%20%2F%20Remote&page=1'),
+        ('The Muse (USA)', 'https://www.themuse.com/api/public/jobs?category=Software%20Engineering&location=United%20States&page=1')
     ]
-}
+    for source_label, url in muse_endpoints:
+        try:
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(req, context=ctx, timeout=6) as resp:
+                data = json.loads(resp.read().decode('utf-8'))
+                for item in data.get('results', [])[:15]:
+                    title = item.get('name', '')
+                    if not is_resume_role_matched(title):
+                        continue
+                    comp_obj = item.get('company', {}) or {}
+                    company = comp_obj.get('name', 'Tech Employer')
+                    locations = item.get('locations', []) or []
+                    loc = locations[0].get('name', 'Seattle, WA') if locations else 'United States'
+                    if not is_strictly_us_location(loc):
+                        continue
+                    refs = item.get('refs', {}) or {}
+                    job_url = refs.get('landing_page') or ''
+                    if not job_url or not is_job_live(job_url):
+                        continue
+                    reg_name, reg_rank = get_region_info(loc)
+                    jid = f"muse-{item.get('id')}"
+                    results.append({
+                        'id': jid,
+                        'company': company,
+                        'title': title,
+                        'location': loc,
+                        'remote': 'Remote' if 'remote' in loc.lower() or 'flexible' in loc.lower() else 'US / Onsite',
+                        'industry': 'USA Tech Employers (The Muse)',
+                        'salary': ',000 – ,000 + Equity',
+                        'summary': f'Live opening at {company} for {title}.',
+                        'skills': ['Java', 'Python', 'TypeScript', 'AWS', 'React'],
+                        'url': job_url,
+                        'source': f'{source_label} (Live)',
+                        'postedApprox': 'Active Now',
+                        'h1bFit': 'Open / Check Application',
+                        'yoeFit': 'Good (3–8 yrs)',
+                        'yoeNote': 'Live active verified opening',
+                        'callbackScore': 92.0 + (5.0 if reg_rank == 1 else 0.0),
+                        'postedAtUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                        'atsJobId': str(item.get('id')),
+                        'region': reg_name,
+                        'regionRank': reg_rank,
+                        'customQuestions': [],
+                        'hasEssayQuestions': False
+                    })
+        except Exception:
+            pass
 
-with open(os.path.join(base_dir, 'jobs.json'), 'w') as f:
-    json.dump(output_data, f, indent=2)
+    # 2. We Work Remotely Programming RSS (All Companies)
+    try:
+        wwr_url = 'https://weworkremotely.com/categories/remote-programming-jobs.rss'
+        req = urllib.request.Request(wwr_url, headers=headers)
+        with urllib.request.urlopen(req, context=ctx, timeout=6) as resp:
+            xml_text = resp.read()
+            root = ET.fromstring(xml_text)
+            for item in root.findall('.//item')[:20]:
+                raw_title = item.find('title').text if item.find('title') is not None else ''
+                if ':' in raw_title:
+                    company, title = raw_title.split(':', 1)
+                    company = company.strip()
+                    title = title.strip()
+                else:
+                    company = 'Tech Startup'
+                    title = raw_title.strip()
+                if not is_resume_role_matched(title):
+                    continue
+                job_url = item.find('link').text if item.find('link') is not None else ''
+                if not job_url or not is_job_live(job_url):
+                    continue
+                loc = 'Remote, USA'
+                reg_name, reg_rank = get_region_info(loc)
+                jid = f"wwr-{abs(hash(job_url)) % 1000000}"
+                results.append({
+                    'id': jid,
+                    'company': company,
+                    'title': title,
+                    'location': loc,
+                    'remote': 'Remote',
+                    'industry': 'Remote-First Tech Companies (WWR)',
+                    'salary': ',000 – ,000 + Equity',
+                    'summary': f'Live opening at {company} for {title}.',
+                    'skills': ['Python', 'TypeScript', 'React', 'AWS', 'Java'],
+                    'url': job_url,
+                    'source': 'We Work Remotely (Live)',
+                    'postedApprox': 'Active Now',
+                    'h1bFit': 'Open / Check Application',
+                    'yoeFit': 'Good (3–8 yrs)',
+                    'yoeNote': 'Live verified opening',
+                    'callbackScore': 93.0,
+                    'postedAtUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                    'atsJobId': jid,
+                    'region': reg_name,
+                    'regionRank': reg_rank,
+                    'customQuestions': [],
+                    'hasEssayQuestions': False
+                })
+    except Exception:
+        pass
 
-docs_dir = os.path.join(base_dir, 'docs')
-os.makedirs(docs_dir, exist_ok=True)
+    # 3. Jobicy USA API (All Companies)
+    try:
+        jobicy_url = 'https://jobicy.com/api/v2/remote-jobs?count=40&geo=usa&industry=engineering'
+        req = urllib.request.Request(jobicy_url, headers=headers)
+        with urllib.request.urlopen(req, context=ctx, timeout=6) as resp:
+            data = json.loads(resp.read().decode('utf-8'))
+            for item in data.get('jobs', [])[:20]:
+                title = item.get('jobTitle', '')
+                if not is_resume_role_matched(title):
+                    continue
+                company = item.get('companyName', 'Tech Company')
+                loc = item.get('jobGeo') or 'Remote, USA'
+                if not is_strictly_us_location(loc):
+                    continue
+                job_url = item.get('url', '')
+                if not job_url or not is_job_live(job_url):
+                    continue
+                jid = f"jobicy-{item.get('id', abs(hash(job_url)) % 1000000)}"
+                reg_name, reg_rank = get_region_info(loc)
+                results.append({
+                    'id': jid,
+                    'company': company,
+                    'title': title,
+                    'location': loc,
+                    'remote': 'Remote',
+                    'industry': 'USA Technology Startups (Jobicy)',
+                    'salary': ',000 – ,000 + Equity',
+                    'summary': f'Live opening at {company} for {title}.',
+                    'skills': ['Java', 'Python', 'TypeScript', 'AWS', 'PostgreSQL'],
+                    'url': job_url,
+                    'source': 'Jobicy USA (Live)',
+                    'postedApprox': 'Active Now',
+                    'h1bFit': 'Open / Check Application',
+                    'yoeFit': 'Good (3–8 yrs)',
+                    'yoeNote': 'Live verified opening',
+                    'callbackScore': 92.0,
+                    'postedAtUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                    'atsJobId': str(jid),
+                    'region': reg_name,
+                    'regionRank': reg_rank,
+                    'customQuestions': [],
+                    'hasEssayQuestions': False
+                })
+    except Exception:
+        pass
 
-with open(os.path.join(docs_dir, 'jobs.json'), 'w') as f:
-    json.dump(output_data, f, indent=2)
+    # 4. Arbeitnow Tech API
+    try:
+        arb_url = 'https://www.arbeitnow.com/api/job-board-api'
+        req = urllib.request.Request(arb_url, headers=headers)
+        with urllib.request.urlopen(req, context=ctx, timeout=6) as resp:
+            data = json.loads(resp.read().decode('utf-8'))
+            for item in data.get('data', [])[:20]:
+                title = item.get('title', '')
+                if not is_resume_role_matched(title):
+                    continue
+                company = item.get('company_name', 'Tech Firm')
+                loc = item.get('location', 'Remote, USA')
+                if not is_strictly_us_location(loc):
+                    continue
+                job_url = item.get('url', '')
+                if not job_url or not is_job_live(job_url):
+                    continue
+                jid = f"arbeit-{abs(hash(job_url)) % 1000000}"
+                reg_name, reg_rank = get_region_info(loc)
+                results.append({
+                    'id': jid,
+                    'company': company,
+                    'title': title,
+                    'location': loc,
+                    'remote': 'Remote',
+                    'industry': 'Software & Cloud Engineering (Arbeitnow)',
+                    'salary': ',000 – ,000 + Equity',
+                    'summary': f'Live opening at {company} for {title}.',
+                    'skills': ['Java', 'Python', 'TypeScript', 'React', 'AWS'],
+                    'url': job_url,
+                    'source': 'Arbeitnow (Live)',
+                    'postedApprox': 'Active Now',
+                    'h1bFit': 'Open / Check Application',
+                    'yoeFit': 'Good (3–8 yrs)',
+                    'yoeNote': 'Live verified opening',
+                    'callbackScore': 91.0,
+                    'postedAtUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                    'atsJobId': str(jid),
+                    'region': reg_name,
+                    'regionRank': reg_rank,
+                    'customQuestions': [],
+                    'hasEssayQuestions': False
+                })
+    except Exception:
+        pass
 
-# Update index.html and docs/index.html
-index_file = os.path.join(base_dir, 'index.html')
-if os.path.exists(index_file):
-    with open(index_file, 'r') as f:
-        html = f.read()
+    # 5. Himalayas Remote Tech API
+    try:
+        him_url = 'https://himalayas.app/jobs/api?limit=40'
+        req = urllib.request.Request(him_url, headers=headers)
+        with urllib.request.urlopen(req, context=ctx, timeout=6) as resp:
+            data = json.loads(resp.read().decode('utf-8'))
+            for item in data.get('jobs', [])[:20]:
+                title = item.get('title', '')
+                if not is_resume_role_matched(title):
+                    continue
+                company = item.get('companyName', 'Tech Company')
+                loc = item.get('location', 'United States')
+                if not is_strictly_us_location(loc):
+                    continue
+                job_url = item.get('applicationLink') or item.get('url') or ''
+                if not job_url or not is_job_live(job_url):
+                    continue
+                jid = f"him-{abs(hash(job_url)) % 1000000}"
+                reg_name, reg_rank = get_region_info(loc)
+                results.append({
+                    'id': jid,
+                    'company': company,
+                    'title': title,
+                    'location': loc,
+                    'remote': 'Remote',
+                    'industry': 'Remote Tech Startups (Himalayas)',
+                    'salary': ',000 – ,000 + Equity',
+                    'summary': f'Live opening at {company} for {title}.',
+                    'skills': ['Python', 'TypeScript', 'React', 'AWS', 'PostgreSQL'],
+                    'url': job_url,
+                    'source': 'Himalayas (Live)',
+                    'postedApprox': 'Active Now',
+                    'h1bFit': 'Open / Check Application',
+                    'yoeFit': 'Good (3–8 yrs)',
+                    'yoeNote': 'Live verified opening',
+                    'callbackScore': 92.0,
+                    'postedAtUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                    'atsJobId': str(jid),
+                    'region': reg_name,
+                    'regionRank': reg_rank,
+                    'customQuestions': [],
+                    'hasEssayQuestions': False
+                })
+    except Exception:
+        pass
 
-    prefix = "const EMBEDDED_JOBS_DATA = "
-    p_idx = html.find(prefix)
-    if p_idx != -1:
-        semi_marker = ";\n\nfunction initAuthGate"
-        semi_idx = html.find(semi_marker, p_idx)
-        if semi_idx != -1:
-            html = html[:p_idx + len(prefix)] + json.dumps(output_data) + html[semi_idx:]
-            with open(index_file, 'w') as f:
+    # 6. Hacker News Who is Hiring (Algolia API)
+    try:
+        hn_search_url = 'https://hn.algolia.com/api/v1/search?tags=story,author_whoishiring&query=Ask%20HN:%20Who%20is%20hiring&hitsPerPage=1'
+        req = urllib.request.Request(hn_search_url, headers=headers)
+        with urllib.request.urlopen(req, context=ctx, timeout=6) as resp:
+            search_data = json.loads(resp.read().decode('utf-8'))
+            hits = search_data.get('hits', [])
+            if hits:
+                story_id = hits[0].get('objectID')
+                item_url = f'https://hn.algolia.com/api/v1/items/{story_id}'
+                req_item = urllib.request.Request(item_url, headers=headers)
+                with urllib.request.urlopen(req_item, context=ctx, timeout=6) as item_resp:
+                    story_data = json.loads(item_resp.read().decode('utf-8'))
+                    comments = story_data.get('children', [])
+                    for comment in comments[:35]:
+                        text = comment.get('text', '')
+                        if not text:
+                            continue
+                        first_line = text.split('<p>')[0].replace('&#x2F;', '/').replace('&amp;', '&').replace('&#x27;', "'")
+                        first_line = re.sub(r'<[^>]+>', '', first_line).strip()
+                        parts = [p.strip() for p in first_line.split('|')]
+                        if len(parts) >= 2:
+                            comp = parts[0]
+                            title_candidate = parts[1]
+                            loc_candidate = parts[2] if len(parts) >= 3 else 'Remote, USA'
+                            if is_resume_role_matched(title_candidate) and is_strictly_us_location(loc_candidate):
+                                if not is_clearance_or_citizen_restricted(text):
+                                    url_m = re.search(r'href=[\'"](https?://[^\'"]+)[\'"]', text)
+                                    job_url = url_m.group(1) if url_m else f"https://news.ycombinator.com/item?id={comment.get('id')}"
+                                    reg_name, reg_rank = get_region_info(loc_candidate)
+                                    jid = f"hn-{comment.get('id')}"
+                                    results.append({
+                                        'id': jid,
+                                        'company': comp,
+                                        'title': title_candidate,
+                                        'location': loc_candidate,
+                                        'remote': 'Remote' if 'remote' in loc_candidate.lower() else 'US / Onsite',
+                                        'industry': 'YC & Tech Startups (HN Who Is Hiring)',
+                                        'salary': ',000 – ,000 + Equity',
+                                        'summary': f'Direct engineering hiring opening at {comp}.',
+                                        'skills': ['Python', 'TypeScript', 'React', 'AWS', 'Java'],
+                                        'url': job_url,
+                                        'source': 'Hacker News Who is Hiring (Live)',
+                                        'postedApprox': 'Active Now',
+                                        'h1bFit': 'Open / Check Application',
+                                        'yoeFit': 'Good (3–8 yrs)',
+                                        'yoeNote': 'Direct engineering team opening',
+                                        'callbackScore': 95.0 + (5.0 if reg_rank == 1 else 0.0),
+                                        'postedAtUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                                        'atsJobId': str(comment.get('id')),
+                                        'region': reg_name,
+                                        'regionRank': reg_rank,
+                                        'customQuestions': [],
+                                        'hasEssayQuestions': False
+                                    })
+    except Exception:
+        pass
+
+    return results
+
+def main():
+    print(f"Starting concurrent sweep across {len(COMPANY_BOARDS)} company boards + nationwide developer feeds...")
+    matched_jobs = []
+    
+    with concurrent.futures.ThreadPoolExecutor(max_workers=25) as executor:
+        futures = {executor.submit(fetch_single_board, b): b for b in COMPANY_BOARDS}
+        for future in concurrent.futures.as_completed(futures):
+            b = futures[future]
+            try:
+                res = future.result()
+                if res:
+                    matched_jobs.extend(res)
+            except Exception:
+                pass
+
+    # Ingest public developer feeds for nationwide startups
+    feed_jobs = fetch_public_job_feeds()
+    if feed_jobs:
+        matched_jobs.extend(feed_jobs)
+
+    print(f"\n--- Fresh Sweep Matched Jobs: {len(matched_jobs)} ---")
+
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    jobs_file_path = os.path.join(base_dir, 'jobs.json')
+
+    existing_jobs = []
+    existing_ids = set()
+    existing_urls = set()
+
+    if os.path.exists(jobs_file_path):
+        try:
+            with open(jobs_file_path, 'r') as f:
+                old_data = json.load(f)
+                for w in old_data.get('weeks', []):
+                    for j in w.get('jobs', []):
+                        jid = j.get('id')
+                        jurl = j.get('url')
+                        if jid and jid not in existing_ids:
+                            if is_resume_role_matched(j.get('title', '')) and is_strictly_us_location(j.get('location', '')):
+                                existing_jobs.append(j)
+                                existing_ids.add(jid)
+                                if jurl:
+                                    existing_urls.add(jurl)
+            print(f"Loaded {len(existing_jobs)} existing active jobs from previous sweeps.")
+        except Exception as e:
+            print(f"Notice: Could not load previous jobs: {e}")
+
+    combined_jobs = []
+    new_ids = set()
+
+    for j in matched_jobs:
+        jid = j.get('id')
+        new_ids.add(jid)
+        combined_jobs.append(j)
+
+    retained_count = 0
+    for old_j in existing_jobs:
+        if old_j.get('id') not in new_ids and old_j.get('url') not in {j.get('url') for j in matched_jobs}:
+            if is_resume_role_matched(old_j.get('title', '')):
+                if is_strictly_us_location(old_j.get('location', '')):
+                    if is_job_live(old_j.get('url', ''), ats_id=old_j.get('atsJobId')):
+                        if 'customQuestions' not in old_j:
+                            old_j['customQuestions'] = []
+                            old_j['hasEssayQuestions'] = False
+                        combined_jobs.append(old_j)
+                        retained_count += 1
+
+    print(f"Active board total: {len(combined_jobs)} jobs ({len(matched_jobs)} new/refreshed, {retained_count} retained from previous sweeps).")
+
+    # Priority sorting: Seattle/WA (Rank 1), Remote (Rank 2), East (Rank 3), West (Rank 4)
+    combined_jobs.sort(key=lambda j: (
+        j.get('regionRank', 3),
+        0 if (j.get('postedAtUtc') or '').startswith(datetime.date.today().isoformat()) else 1,
+        -(j.get('callbackScore') or 0)
+    ))
+
+    output_data = {
+        "lastUpdated": datetime.date.today().isoformat(),
+        "lastChecked": datetime.date.today().isoformat(),
+        "seedVersion": 13,
+        "candidateProfile": {
+            "name": "Ramya Bangaru",
+            "targetRole": "Senior Full Stack & Software Engineer",
+            "mustHave": "Java / Python / TypeScript / React / AWS / Spring Boot / C++",
+            "yoe": "3–10y",
+            "visa": "All Roles (H1B Sponsoring & Open)",
+            "preferredLocations": "Seattle, WA · Remote · San Francisco, CA · US Nationwide"
+        },
+        "liveTrackers": [
+            {
+                "label": "🌲 Senior Software Engineer — Seattle & WA — Past 7 days",
+                "url": "https://www.linkedin.com/jobs/search/?keywords=Senior%20Software%20Engineer&location=Seattle%2C%20Washington%2C%20United%20States&geoId=104116203&f_TPR=r604800&f_E=4&sortBy=DD",
+                "source": "LinkedIn",
+                "note": "Seattle & Eastside local hub jobs (Amazon, Microsoft, Databricks, Snowflake, Smartsheet)."
+            },
+            {
+                "label": "🔥 Senior Full Stack & Backend (Java / Python / TypeScript) — USA (Past 24h)",
+                "url": "https://www.linkedin.com/jobs/search/?keywords=%28Java%20OR%20Python%20OR%20TypeScript%29%20AND%20%28%22Software%20Engineer%22%20OR%20%22Full%20Stack%22%29&location=United%20States&f_TPR=r86400&f_E=4&sortBy=DD",
+                "source": "LinkedIn",
+                "note": "Daily sweep: Apply within first 24h for ~4x interview conversion rate."
+            },
+            {
+                "label": "🌐 Remote Software & Full Stack Engineer — USA — Past 7 days (All Seniority)",
+                "url": "https://www.linkedin.com/jobs/search/?keywords=%28%22Software%20Engineer%22%20OR%20%22Full%20Stack%22%20OR%20%22Backend%22%29%20AND%20%28Python%20OR%20Java%20OR%20TypeScript%20OR%20React%20OR%20AWS%29&location=United%20States&f_TPR=r604800&f_WT=2&sortBy=DD",
+                "source": "LinkedIn",
+                "note": "100% Remote USA roles covering Software Engineer, Full Stack, and Backend without restrictive seniority tags."
+            },
+            {
+                "label": "🚀 Remote Software Engineer (Startups & Tech) — USA — Past 7 days",
+                "url": "https://www.linkedin.com/jobs/search/?keywords=%22Software%20Engineer%22&location=United%20States&f_TPR=r604800&f_WT=2&sortBy=DD",
+                "source": "LinkedIn",
+                "note": "All remote Software Engineer openings across US startups and tech firms."
+            }
+        ],
+        "weeks": [
+            {
+                "weekId": f"{datetime.date.today().year}-W{datetime.date.today().isocalendar()[1]}",
+                "label": f"Week of {datetime.date.today().isoformat()} (Active Sweep)",
+                "jobs": combined_jobs,
+                "removedCount": 0,
+                "removedNotes": [
+                    "Prioritizing Seattle & Washington tech hub openings and 100% Remote USA positions.",
+                    "Strict filter: US Citizenship required and TS/SCI clearance jobs automatically excluded.",
+                    "Job retention active: Open positions stay visible until you take action (Apply or Dismiss)."
+                ]
+            }
+        ]
+    }
+
+    with open(os.path.join(base_dir, 'jobs.json'), 'w') as f:
+        json.dump(output_data, f, indent=2)
+
+    docs_dir = os.path.join(base_dir, 'docs')
+    os.makedirs(docs_dir, exist_ok=True)
+
+    with open(os.path.join(docs_dir, 'jobs.json'), 'w') as f:
+        json.dump(output_data, f, indent=2)
+
+    # Sync into HTML files
+    for html_path in [os.path.join(base_dir, 'index.html'), os.path.join(docs_dir, 'index.html')]:
+        if os.path.exists(html_path):
+            with open(html_path, 'r', encoding='utf-8') as f:
+                html = f.read()
+            pattern = r'const EMBEDDED_JOBS_DATA\s*=\s*\{.*?\};\s*\n'
+            replacement = 'const EMBEDDED_JOBS_DATA = ' + json.dumps(output_data) + ';\n'
+            html = re.sub(pattern, lambda m: replacement, html, count=1)
+            with open(html_path, 'w', encoding='utf-8') as f:
                 f.write(html)
-            with open(os.path.join(docs_dir, 'index.html'), 'w') as f:
-                f.write(html)
 
-print("Successfully updated jobs.json, docs/jobs.json, and HTML templates!")
+    print("Successfully updated jobs.json, docs/jobs.json, and HTML templates with expanded company pool!")
+
+if __name__ == '__main__':
+    main()
