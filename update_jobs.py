@@ -270,6 +270,7 @@ TITLE_EXCLUSIONS = [
     'security', 'cybersecurity', 'cloud security', 'security engineer', 'security software engineer', 'detection and response', 'iam',
     'infosec', 'appsec', 'product security',
     'systems engineer', 'systems engineering', 'system engineer', 'system engineering', 'it systems engineer',
+    'c++', 'c/c++', 'cpp',
     'devops', 'sre', 'site reliability', 'creative',
     'machine learning', 'ml engineer', 'ml software', 'deep learning', 'nlp', 'computer vision',
     'data science', 'research scientist', 'applied scientist', 'llm', 'genai', 'generative ai',
@@ -320,6 +321,10 @@ def is_resume_role_matched(title):
 
     # 0f. Strict exclusion of Systems Engineer roles
     if re.search(r'\bsystems?\s*engine(?:er|ering)\b', t):
+        return False
+
+    # 0g. Strict exclusion of C++ titles
+    if re.search(r'(?:c\+\+|c\s*/\s*c\+\+|\bcpp\b)', t):
         return False
 
     # 1. Immediate reject for excluded roles
@@ -1104,7 +1109,7 @@ def main():
         "candidateProfile": {
             "name": "Ramya Bangaru",
             "targetRole": "Senior Full Stack & Software Engineer",
-            "mustHave": "Java / Python / TypeScript / React / AWS / Spring Boot / C++",
+            "mustHave": "Java / Python / TypeScript / React / AWS / Spring Boot",
             "yoe": "3–6y (strictly <7y)",
             "visa": "All Roles (H1B Sponsoring & Open)",
             "preferredLocations": "Seattle, WA · Remote · San Francisco, CA · US Nationwide"

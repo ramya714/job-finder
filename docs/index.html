@@ -1868,6 +1868,10 @@ function matches(job) {
   if (/\bsystems?\s*engine(?:er|ering)\b/i.test(tLow)) {
     return false;
   }
+  // Disqualify C++ in title
+  if (/(?:c\+\+|c\s*\/\s*c\+\+|\bcpp\b)/i.test(job.title || '')) {
+    return false;
+  }
   // Disqualify known high-YOE or non-target roles (e.g. OpenShell 8+ YOE)
   if (/\bopenshell\b/i.test(tLow) || (job.id && job.id.includes('JR2020825'))) {
     return false;
