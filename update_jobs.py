@@ -245,7 +245,11 @@ CLEARANCE_KEYWORDS = [
     'public sector', 'us citizenship required', 'u.s. citizenship required',
     'u.s. citizen only', 'us citizen only', 'polygraph', 'dod clearance',
     'active clearance', 'clearance required', 'single scope background',
-    'defense clearance', 'government clearance', 'itar restricted'
+    'defense clearance', 'government clearance', 'itar restricted',
+    'federal', 'us federal', 'u.s. federal', 'fedramp', 'public trust',
+    'clearance', 'cleared', 'active secret', 'us citizen', 'u.s. citizen',
+    'citizenship required', 'citizenship status', 'must be a u.s. citizen',
+    'must be a us citizen', 'government contractor'
 ]
 
 TITLE_EXCLUSIONS = [
@@ -260,13 +264,14 @@ TITLE_EXCLUSIONS = [
     'support engineer', 'customer engineer', 'network engineer', 'firmware', 'embedded', 'fpga', 'asic', 'silicon',
     'security', 'cybersecurity', 'cloud security', 'security engineer', 'security software engineer', 'detection and response', 'iam',
     'infosec', 'appsec', 'product security',
-    'devops engineer, infrastructure & security', 'creative',
+    'devops', 'sre', 'site reliability', 'creative',
     'machine learning', 'ml engineer', 'ml software', 'deep learning', 'nlp', 'computer vision',
     'data science', 'research scientist', 'applied scientist', 'llm', 'genai', 'generative ai',
     'algorithm engineer', 'ai engineer', 'ai infrastructure', 'ai research', 'ai platform',
     'ai runtime', 'ai inference', 'inference', 'model lifecycle', 'ai native', 'ai agent', 'ai tools', 'caper ai', 'ai product',
     'frontier agent', 'frontier agents', 'gpu', 'hpc', 'people platform', 'business systems',
-    'early career', '2025', '2026', '2027', 'reinforcement learning', 'rl training', 'rl engineer'
+    'early career', '2025', '2026', '2027', 'reinforcement learning', 'rl training', 'rl engineer',
+    'federal', 'us federal', 'cleared', 'clearance', 'public trust', 'defense', 'government', 'us citizen', 'citizenship'
 ]
 
 def is_resume_role_matched(title):
@@ -291,6 +296,10 @@ def is_resume_role_matched(title):
     if re.search(r'\bdata\s*(engineer|engineering|platform|infra|infrastructure|pipeline|warehouse|lakehouse|analytics|architect|architecture)\b', t):
         return False
     if re.search(r'\b(bi engineer|etl|dba|database administrator|analytics engineer|data scientist)\b', t):
+        return False
+
+    # 0e. Strict exclusion of Federal, Clearance, Defense, and Government roles
+    if re.search(r'\b(federal|fedramp|cleared|clearance|secret|polygraph|public trust|defense|government|us citizen|u\.s\. citizen|citizenship)\b', t):
         return False
 
     # 1. Immediate reject for excluded roles
@@ -742,6 +751,8 @@ def fetch_single_board(board_tuple):
                         loc = cat.get('location', 'US')
                         if not is_strictly_us_location(loc, title):
                             continue
+                        if is_clearance_or_citizen_restricted(f"{title} {loc} {j.get('descriptionPlain', '')}"):
+                            continue
                         job_url = j.get('hostedUrl', '')
                         if not job_url:
                             continue
@@ -802,10 +813,27 @@ def fetch_workday_board(board_tuple):
                 loc = p.get('locationsText', 'United States')
                 if not is_strictly_us_location(loc, title):
                     continue
+                if is_clearance_or_citizen_restricted(f"{title} {loc}"):
+                    continue
                 ext_path = p.get('externalPath', '')
                 if not ext_path:
                     continue
                 job_url = base_url + ext_path
+
+                # Deep inspection: fetch job description from Workday detail endpoint
+                job_desc = ''
+                try:
+                    detail_api_url = re.sub(r'/jobs$', '', api_url) + f'/job{ext_path}'
+                    d_req = urllib.request.Request(detail_api_url, headers=headers)
+                    with urllib.request.urlopen(d_req, context=ctx, timeout=4) as d_resp:
+                        d_json = json.loads(d_resp.read().decode('utf-8'))
+                        job_desc = d_json.get('jobPostingInfo', {}).get('jobDescription', '')
+                except Exception:
+                    pass
+
+                if is_clearance_or_citizen_restricted(f"{title} {loc} {job_desc}"):
+                    continue
+
                 bullet_fields = p.get('bulletFields', [])
                 ats_id = bullet_fields[0] if bullet_fields else re.sub(r'[^a-zA-Z0-9]', '', ext_path[-16:])
                 co_count += 1

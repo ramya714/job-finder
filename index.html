@@ -1868,6 +1868,10 @@ function matches(job) {
   if (/\bdata\b/.test(tLow) && (tLow.includes('engineer') || tLow.includes('platform') || tLow.includes('infra') || tLow.includes('pipeline'))) {
     return false;
   }
+  // Disqualify clearance, federal, defense, government, citizen-restricted, or devops roles
+  if (/\b(federal|fedramp|cleared|clearance|secret|polygraph|public trust|defense|government|us citizen|citizenship|devops|sre|site reliability)\b/i.test(tLow)) {
+    return false;
+  }
   // Wrong match / rejected recommendations immediately removed from board
   if (state.badRecs.has(job.id)) return false;
   // Not eligible / cannot apply jobs removed from open feed
