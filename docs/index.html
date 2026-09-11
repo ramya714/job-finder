@@ -1893,12 +1893,12 @@ function matches(job) {
     return false;
   }
   // Disqualify roles requiring 7+ years or more experience
-  const yoeCheckText = ((job.title || '') + ' ' + (job.summary || '') + ' ' + (job.yoeNote || '') + ' ' + (job.yoeFit || '')).toLowerCase().replace(/&#43;|&plus;/g, '+');
-  if (/\b([7-9]|\d{2})\s*(?:\+|)\s*(?:years?|yrs?)\b/i.test(yoeCheckText) ||
+  const yoeCheckText = ((job.title || '') + ' ' + (job.summary || '')).toLowerCase().replace(/&#43;|&plus;/g, '+');
+  if (/\b([7-9]|\d{2})\s*(?:\+|&#43;|&plus;)\s*(?:years?|yrs?)\b/i.test(yoeCheckText) ||
       /\b([7-9]|\d{2})\s*(?:\+|)\s*or\s+more\s+(?:years?|yrs?)\b/i.test(yoeCheckText) ||
       /\b(?:at\s+least|minimum\s+of|minimum)\s+([7-9]|\d{2})\s*(?:\+|)\s*(?:years?|yrs?)\b/i.test(yoeCheckText) ||
       /\b([7-9]|\d{2})\s*(?:-|to)\s*\d+\s*(?:years?|yrs?)\b/i.test(yoeCheckText) ||
-      /\b([7-9]|\d{2})\s*(?:\+|)\s*(?:years?|yrs?)\s+of\s+(?:professional|practical|industry|relevant|engineering|software)?\s*experience\b/i.test(yoeCheckText)) {
+      /\b([7-9]|\d{2})\s*\+\s*(?:years?|yrs?)\s+of\s+(?:professional|practical|industry|relevant|engineering|software)?\s*experience\b/i.test(yoeCheckText)) {
     return false;
   }
   // Wrong match / rejected recommendations immediately removed from board
@@ -3261,25 +3261,21 @@ async function load() {
     saveApplied();
   }
 
-  // Cross-sweep deduplication: Auto-mark incoming jobs whose company + title match any applied role
+  // Cross-sweep deduplication: Auto-mark incoming jobs whose company + normalized title match an applied role
   try {
     const allJobs = state.data.weeks.flatMap(w => w.jobs);
     const appliedJobs = allJobs.filter(j => state.applied.has(j.id));
     let twinAdded = false;
     for (const app of appliedJobs) {
       const aCo = (app.company || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-      const aToks = new Set((app.title || '').toLowerCase().match(/[a-z0-9+]+/g) || []);
+      const aTitle = (app.title || '').toLowerCase().replace(/[^a-z0-9]/g, '');
       for (const j of allJobs) {
         if (state.applied.has(j.id)) continue;
         const jCo = (j.company || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-        if (aCo && jCo && aCo === jCo) {
-          const jToks = new Set((j.title || '').toLowerCase().match(/[a-z0-9+]+/g) || []);
-          const union = new Set([...aToks, ...jToks]);
-          const inter = [...jToks].filter(x => aToks.has(x)).length;
-          if (union.size && inter / union.size >= 0.6) {
-            state.applied.add(j.id);
-            twinAdded = true;
-          }
+        const jTitle = (j.title || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+        if (aCo && jCo && aCo === jCo && aTitle && jTitle && aTitle === jTitle) {
+          state.applied.add(j.id);
+          twinAdded = true;
         }
       }
     }
