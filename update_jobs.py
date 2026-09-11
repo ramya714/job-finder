@@ -268,6 +268,7 @@ TITLE_EXCLUSIONS = [
     'support engineer', 'customer engineer', 'network engineer', 'firmware', 'embedded', 'fpga', 'asic', 'silicon',
     'security', 'cybersecurity', 'cloud security', 'security engineer', 'security software engineer', 'detection and response', 'iam',
     'infosec', 'appsec', 'product security',
+    'systems engineer', 'systems engineering', 'system engineer', 'system engineering', 'it systems engineer',
     'devops', 'sre', 'site reliability', 'creative',
     'machine learning', 'ml engineer', 'ml software', 'deep learning', 'nlp', 'computer vision',
     'data science', 'research scientist', 'applied scientist', 'llm', 'genai', 'generative ai',
@@ -316,6 +317,10 @@ def is_resume_role_matched(title):
     if re.search(r'\b(federal|fedramp|cleared|clearance|secret|polygraph|public trust|defense|government|us citizen|u\.s\. citizen|citizenship)\b', t):
         return False
 
+    # 0f. Strict exclusion of Systems Engineer roles
+    if re.search(r'\bsystems?\s*engine(?:er|ering)\b', t):
+        return False
+
     # 1. Immediate reject for excluded roles
     for ex in TITLE_EXCLUSIONS:
         if re.search(r'\b' + re.escape(ex) + r'\b', t):
@@ -333,7 +338,6 @@ def is_resume_role_matched(title):
               'software development engineer' in t or bool(re.search(r'\bsde\b', t)) or
               'member of technical staff' in t or 
               'infrastructure engineer' in t or 
-              'systems engineer' in t or 
               'platform engineer' in t or 'applications engineer' in t)
               
     return is_fullstack or is_backend or is_frontend or is_swe

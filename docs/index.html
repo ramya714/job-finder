@@ -1864,6 +1864,10 @@ function matches(job) {
   if (/\b(entry\s*level|junior|jr\.?|associate\s*software\s*engineer|associate\s*engineer|campus\s*hire)\b/i.test(tLow)) {
     return false;
   }
+  // Disqualify Systems Engineer roles
+  if (/\bsystems?\s*engine(?:er|ering)\b/i.test(tLow)) {
+    return false;
+  }
   // Ignore Principal/Executive, Staff, ML/AI, Data Engineering, Security, and non-target titles
   if (/\b(principal|distinguished|fellow|ml|machine learning|ai|devai|rl|deep learning|nlp|computer vision|llm|genai|generative ai|data scientist|research scientist|applied scientist|reinforcement learning|big data|inference|model lifecycle|frontier agents?|gpu|hpc|people platform|business systems?|iam|security|cybersecurity)\b/i.test(tLow)) {
     return false;
