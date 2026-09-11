@@ -257,6 +257,7 @@ TITLE_EXCLUSIONS = [
     'intern', 'internship', 'student', 'student worker', 'co-op', 'coop', 'apprentice', 'apprenticeship',
     'contract', 'contractor', 'temporary', 'temp', 'part-time', 'part time', 'seasonal', 'new grad', 'university grad',
     'undergraduate', 'graduate intern', 'volunteer', 'adjunct',
+    'entry level', 'entry-level', 'junior', 'jr', 'jr.', 'associate engineer', 'associate software engineer', 'campus hire',
     'recruiter', 'counsel', 'account executive', 'legal',
     'sales', 'marketing', 'product manager', 'designer', 'copywriter', 'general counsel',
     'business partner', 'administrative', 'data scientist', 'analytics lead', 'business analyst',
@@ -281,14 +282,14 @@ def is_non_fulltime_role(text):
     if not text:
         return False
     t = text.lower().replace(' ', ' ').replace('-', ' ').replace(',', ' ')
-    return bool(re.search(r'\b(intern|internship|student|student worker|co-?op|coop|apprentice|apprenticeship|contract|contractor|temporary|temp|part[- ]time|seasonal|new grad|university grad|graduate intern|undergraduate|volunteer|adjunct)\b', t))
+    return bool(re.search(r'\b(intern|internship|student|student worker|co-?op|coop|apprentice|apprenticeship|contract|contractor|temporary|temp|part[- ]time|seasonal|entry\s*level|junior|jr\.?|associate\s*software\s*engineer|associate\s*engineer|new\s*grad|university\s*grad|graduate\s*intern|undergraduate|volunteer|adjunct|campus\s*hire)\b', t))
 
 def is_resume_role_matched(title):
     if not title:
         return False
     t = title.lower().replace(' ', ' ').replace('-', ' ').replace(',', ' ')
     
-    # 0a. Strict exclusion of Internships, Student Worker, Contract, Part-Time, Temporary, Apprentice roles
+    # 0a. Strict exclusion of Internships, Student Worker, Contract, Part-Time, Temporary, Apprentice, Entry Level, Junior roles
     if is_non_fulltime_role(t):
         return False
 
@@ -1118,7 +1119,11 @@ def main():
     with open(jobs_file_path, 'w', encoding='utf-8') as f:
         json.dump(output_data, f, indent=2, ensure_ascii=False)
 
-    print(f"\n Successfully saved {len(combined_jobs)} verified direct jobs to {jobs_file_path}")
+    docs_jobs_path = os.path.join(base_dir, 'docs', 'jobs.json')
+    with open(docs_jobs_path, 'w', encoding='utf-8') as f:
+        json.dump(output_data, f, indent=2, ensure_ascii=False)
+
+    print(f"\n Successfully saved {len(combined_jobs)} verified direct jobs to {jobs_file_path} and {docs_jobs_path}")
     sea_count = sum(1 for j in combined_jobs if j.get('regionRank') == 1)
     rem_count = sum(1 for j in combined_jobs if j.get('regionRank') == 2)
     print(f"Regional breakdown: Seattle/WA: {sea_count} | Remote USA: {rem_count} | Other US: {len(combined_jobs) - sea_count - rem_count}")

@@ -1860,6 +1860,10 @@ function matches(job) {
   if (/\b(intern|internship|student|student worker|co-?op|coop|apprentice|apprenticeship|contract|contractor|temporary|temp|part[- ]time|seasonal|new grad|university grad)\b/i.test(tLow)) {
     return false;
   }
+  // Disqualify entry level and junior roles (candidate is Senior Full Stack / 3-6 YOE)
+  if (/\b(entry\s*level|junior|jr\.?|associate\s*software\s*engineer|associate\s*engineer|campus\s*hire)\b/i.test(tLow)) {
+    return false;
+  }
   // Ignore Principal/Executive, Staff, ML/AI, Data Engineering, Security, and non-target titles
   if (/\b(principal|distinguished|fellow|ml|machine learning|ai|devai|rl|deep learning|nlp|computer vision|llm|genai|generative ai|data scientist|research scientist|applied scientist|reinforcement learning|big data|inference|model lifecycle|frontier agents?|gpu|hpc|people platform|business systems?|iam|security|cybersecurity)\b/i.test(tLow)) {
     return false;
@@ -3234,11 +3238,40 @@ async function load() {
     saveUnavailable();
   }
 
-  // Ensure user's applied role "Reddit - Fullstack Software Engineer, Notifications Lifecycle" is tracked
+  // Ensure user's applied roles are permanently tracked
   if (!state.applied.has('reddit-7895468')) {
     state.applied.add('reddit-7895468');
     saveApplied();
   }
+  if (!state.applied.has('rover-303b3b2f-9679-4a77-8908-456e29240486')) {
+    state.applied.add('rover-303b3b2f-9679-4a77-8908-456e29240486');
+    saveApplied();
+  }
+
+  // Cross-sweep deduplication: Auto-mark incoming jobs whose company + title match any applied role
+  try {
+    const allJobs = state.data.weeks.flatMap(w => w.jobs);
+    const appliedJobs = allJobs.filter(j => state.applied.has(j.id));
+    let twinAdded = false;
+    for (const app of appliedJobs) {
+      const aCo = (app.company || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const aToks = new Set((app.title || '').toLowerCase().match(/[a-z0-9+]+/g) || []);
+      for (const j of allJobs) {
+        if (state.applied.has(j.id)) continue;
+        const jCo = (j.company || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+        if (aCo && jCo && aCo === jCo) {
+          const jToks = new Set((j.title || '').toLowerCase().match(/[a-z0-9+]+/g) || []);
+          const union = new Set([...aToks, ...jToks]);
+          const inter = [...jToks].filter(x => aToks.has(x)).length;
+          if (union.size && inter / union.size >= 0.6) {
+            state.applied.add(j.id);
+            twinAdded = true;
+          }
+        }
+      }
+    }
+    if (twinAdded) saveApplied();
+  } catch (e) {}
 
   // Try to fetch the auto-stale list (written by verify_urls.py). Missing is OK.
   try {
