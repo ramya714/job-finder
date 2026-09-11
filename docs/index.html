@@ -1872,6 +1872,14 @@ function matches(job) {
   if (/\b(federal|fedramp|cleared|clearance|secret|polygraph|public trust|defense|government|us citizen|citizenship|devops|sre|site reliability)\b/i.test(tLow)) {
     return false;
   }
+  // Disqualify roles requiring 7+ years or more experience
+  const yoeCheckText = ((job.title || '') + ' ' + (job.summary || '') + ' ' + (job.yoeNote || '') + ' ' + (job.yoeFit || '')).toLowerCase();
+  if (/\b([7-9]|\d{2})\s*\+\s*(?:years?|yrs?)\b/i.test(yoeCheckText) ||
+      /\b([7-9]|\d{2})\s*(?:\+|)\s*or\s+more\s+(?:years?|yrs?)\b/i.test(yoeCheckText) ||
+      /\b(?:at\s+least|minimum\s+of|minimum)\s+([7-9]|\d{2})\s*(?:\+|)\s*(?:years?|yrs?)\b/i.test(yoeCheckText) ||
+      /\b([7-9]|\d{2})\s*(?:-|to)\s*\d+\s*(?:years?|yrs?)\b/i.test(yoeCheckText)) {
+    return false;
+  }
   // Wrong match / rejected recommendations immediately removed from board
   if (state.badRecs.has(job.id)) return false;
   // Not eligible / cannot apply jobs removed from open feed

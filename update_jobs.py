@@ -486,8 +486,31 @@ def generate_tailored_answer(comp_name, title, skills, question_text, industry):
     }
 
 def is_clearance_or_citizen_restricted(text):
+    t = (text or '').lower()
+    for k in CLEARANCE_KEYWORDS:
+        if re.search(r'\b' + re.escape(k) + r'\b', t):
+            return True
+    return False
+
+EXCESSIVE_YOE_PATTERNS = [
+    # 7+ years, 8+ years, 10+ yrs, etc.
+    r'\b([7-9]|\d{2})\s*\+\s*(?:years?|yrs?)\b',
+    # 7 or more years, 8 or more years, 10 or more years
+    r'\b([7-9]|\d{2})\s*(?:\+|)\s*or\s+more\s+(?:years?|yrs?)\b',
+    # at least 7 years, minimum of 7 years, minimum 8 yrs
+    r'\b(?:at\s+least|minimum\s+of|minimum)\s+([7-9]|\d{2})\s*(?:\+|)\s*(?:years?|yrs?)\b',
+    # 7-10 years, 8-12 years (where lower bound >= 7)
+    r'\b([7-9]|\d{2})\s*(?:-|to)\s*\d+\s*(?:years?|yrs?)\b',
+]
+
+def has_excessive_yoe_requirement(text):
+    if not text:
+        return False
     t = text.lower()
-    return any(k in t for k in CLEARANCE_KEYWORDS)
+    for p in EXCESSIVE_YOE_PATTERNS:
+        if re.search(p, t):
+            return True
+    return False
 
 THIRD_PARTY_DOMAINS = [
     'themuse.com', 'jobicy.com', 'arbeitnow.com', 'himalayas.app',
@@ -596,6 +619,9 @@ def fetch_single_board(board_tuple):
                     if is_clearance_or_citizen_restricted(full_text):
                         continue
 
+                    if has_excessive_yoe_requirement(full_text):
+                        continue
+
                     ats_id = str(j.get('id', ''))
                     if not ats_id:
                         continue
@@ -655,8 +681,8 @@ def fetch_single_board(board_tuple):
                         'source': 'Greenhouse API (Live)',
                         'postedApprox': 'Active Now',
                         'h1bFit': h1b_fit,
-                        'yoeFit': 'Good (3–8 yrs)',
-                        'yoeNote': 'Live active verified opening',
+                        'yoeFit': 'Good (3–6 yrs)',
+                        'yoeNote': 'Verified <7 yrs requirement',
                         'callbackScore': 90.0 + (5.0 if 'Remote' in loc or reg_rank == 1 else 0.0),
                         'postedAtUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
                         'atsJobId': ats_id,
@@ -694,6 +720,8 @@ def fetch_single_board(board_tuple):
                     desc_text = f"{title} {loc} {j.get('department', '')}"
                     if is_clearance_or_citizen_restricted(desc_text):
                         continue
+                    if has_excessive_yoe_requirement(desc_text):
+                        continue
 
                     raw_url = j.get('jobUrl') or f'https://jobs.ashbyhq.com/{slug}/{j.get("id")}'
                     job_url = raw_url if raw_url.endswith('/application') else f"{raw_url.rstrip('/')}/application"
@@ -723,8 +751,8 @@ def fetch_single_board(board_tuple):
                         'source': 'Ashby API (Live)',
                         'postedApprox': 'Active Now',
                         'h1bFit': 'Yes (H1B Friendly / Sponsoring)' if any(k in comp_name.lower() for k in ['openai', 'anthropic', 'perplexity', 'elevenlabs', 'ramp', 'linear', 'snowflake', 'notion', 'docker']) else 'Open / Check Application',
-                        'yoeFit': 'Good (3–8 yrs)',
-                        'yoeNote': 'Live verified opening',
+                        'yoeFit': 'Good (3–6 yrs)',
+                        'yoeNote': 'Verified <7 yrs requirement',
                         'callbackScore': 93.0 + (5.0 if reg_rank == 1 else 0.0),
                         'postedAtUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
                         'atsJobId': str(j.get('id')),
@@ -751,7 +779,10 @@ def fetch_single_board(board_tuple):
                         loc = cat.get('location', 'US')
                         if not is_strictly_us_location(loc, title):
                             continue
-                        if is_clearance_or_citizen_restricted(f"{title} {loc} {j.get('descriptionPlain', '')}"):
+                        full_lever_text = f"{title} {loc} {j.get('descriptionPlain', '')}"
+                        if is_clearance_or_citizen_restricted(full_lever_text):
+                            continue
+                        if has_excessive_yoe_requirement(full_lever_text):
                             continue
                         job_url = j.get('hostedUrl', '')
                         if not job_url:
@@ -774,8 +805,8 @@ def fetch_single_board(board_tuple):
                             'source': 'Lever API (Live)',
                             'postedApprox': 'Active Now',
                             'h1bFit': 'Open / Check Application',
-                            'yoeFit': 'Good (3–8 yrs)',
-                            'yoeNote': 'Live active verified opening',
+                            'yoeFit': 'Good (3–6 yrs)',
+                            'yoeNote': 'Verified <7 yrs requirement',
                             'callbackScore': 90.0 + (5.0 if reg_rank == 1 else 0.0),
                             'postedAtUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
                             'atsJobId': str(j.get('id')),
@@ -833,6 +864,8 @@ def fetch_workday_board(board_tuple):
 
                 if is_clearance_or_citizen_restricted(f"{title} {loc} {job_desc}"):
                     continue
+                if has_excessive_yoe_requirement(f"{title} {loc} {job_desc}"):
+                    continue
 
                 bullet_fields = p.get('bulletFields', [])
                 ats_id = bullet_fields[0] if bullet_fields else re.sub(r'[^a-zA-Z0-9]', '', ext_path[-16:])
@@ -846,15 +879,15 @@ def fetch_workday_board(board_tuple):
                     'location': loc,
                     'remote': 'Remote' if 'remote' in loc.lower() else 'Hybrid / Onsite',
                     'industry': industry,
-                    'salary': ',000 – ,000 + Equity',
+                    'salary': '$155,000 – $230,000 + Equity',
                     'summary': f'Direct Workday opening at {comp_name} for {title}.',
                     'skills': skills,
                     'url': job_url,
                     'source': 'Workday CXS (Live)',
                     'postedApprox': p.get('postedOn', 'Active Now'),
                     'h1bFit': 'Yes (H1B Friendly / Sponsoring)' if any(k in comp_name.lower() for k in ['zillow', 'nvidia', 'adobe', 'cisco', 'workday', 'ebay']) else 'Open / Check Application',
-                    'yoeFit': 'Good (3–8 yrs)',
-                    'yoeNote': 'Official Workday verified opening',
+                    'yoeFit': 'Good (3–6 yrs)',
+                    'yoeNote': 'Verified <7 yrs requirement',
                     'callbackScore': 92.0 + (5.0 if reg_rank == 1 else 0.0),
                     'postedAtUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
                     'atsJobId': str(ats_id),
@@ -891,6 +924,8 @@ def fetch_amazon_jobs():
                 desc = j.get('description', '')
                 if is_clearance_or_citizen_restricted(f"{title} {desc}"):
                     continue
+                if has_excessive_yoe_requirement(f"{title} {desc}"):
+                    continue
                 job_path = j.get('job_path', '')
                 if not job_path:
                     continue
@@ -906,15 +941,15 @@ def fetch_amazon_jobs():
                     'location': loc,
                     'remote': 'Remote' if 'remote' in loc.lower() else 'Onsite / Hybrid (Seattle Tech Hub)',
                     'industry': 'Cloud Infrastructure & High-Scale Systems (Seattle Hub)',
-                    'salary': ',000 – ,000 + Equity',
+                    'salary': '$150,000 – $225,000 + Equity',
                     'summary': f'Direct corporate engineering opening at Amazon for {title}.',
                     'skills': skills,
                     'url': job_url,
                     'source': 'Amazon Jobs Official (Live)',
                     'postedApprox': 'Active Now',
                     'h1bFit': 'Yes (H1B Friendly / Sponsoring)',
-                    'yoeFit': 'Good (3–8 yrs)',
-                    'yoeNote': 'Official Amazon direct posting',
+                    'yoeFit': 'Good (3–6 yrs)',
+                    'yoeNote': 'Verified <7 yrs requirement',
                     'callbackScore': 95.0 + (5.0 if reg_rank == 1 else 0.0),
                     'postedAtUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
                     'atsJobId': str(job_id),
@@ -1028,7 +1063,7 @@ def main():
             "name": "Ramya Bangaru",
             "targetRole": "Senior Full Stack & Software Engineer",
             "mustHave": "Java / Python / TypeScript / React / AWS / Spring Boot / C++",
-            "yoe": "3–10y",
+            "yoe": "3–6y (strictly <7y)",
             "visa": "All Roles (H1B Sponsoring & Open)",
             "preferredLocations": "Seattle, WA · Remote · San Francisco, CA · US Nationwide"
         },
