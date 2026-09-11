@@ -6,6 +6,7 @@ import json
 import datetime
 import os
 import re
+import html
 import concurrent.futures
 
 ctx = ssl._create_unverified_context()
@@ -274,7 +275,7 @@ TITLE_EXCLUSIONS = [
     'data science', 'research scientist', 'applied scientist', 'llm', 'genai', 'generative ai',
     'algorithm engineer', 'ai engineer', 'ai infrastructure', 'ai research', 'ai platform',
     'ai runtime', 'ai inference', 'inference', 'model lifecycle', 'ai native', 'ai agent', 'ai tools', 'caper ai', 'ai product',
-    'frontier agent', 'frontier agents', 'gpu', 'hpc', 'people platform', 'business systems',
+    'frontier agent', 'frontier agents', 'openshell', 'gpu', 'hpc', 'people platform', 'business systems',
     'early career', '2025', '2026', '2027', 'reinforcement learning', 'rl training', 'rl engineer',
     'federal', 'us federal', 'cleared', 'clearance', 'public trust', 'defense', 'government', 'us citizen', 'citizenship'
 ]
@@ -504,27 +505,36 @@ def generate_tailored_answer(comp_name, title, skills, question_text, industry):
     }
 
 def is_clearance_or_citizen_restricted(text):
-    t = (text or '').lower()
+    if not text:
+        return False
+    t = html.unescape(text).lower()
+    t = re.sub(r'<[^>]+>', ' ', t)
     for k in CLEARANCE_KEYWORDS:
         if re.search(r'\b' + re.escape(k) + r'\b', t):
             return True
     return False
 
 EXCESSIVE_YOE_PATTERNS = [
-    # 7+ years, 8+ years, 10+ yrs, etc.
-    r'\b([7-9]|\d{2})\s*\+\s*(?:years?|yrs?)\b',
+    # 7+ years, 8+ years, 10+ yrs, etc. (including HTML encoded plus)
+    r'\b([7-9]|\d{2})\s*(?:\+|&#43;|&plus;)\s*(?:years?|yrs?)\b',
     # 7 or more years, 8 or more years, 10 or more years
     r'\b([7-9]|\d{2})\s*(?:\+|)\s*or\s+more\s+(?:years?|yrs?)\b',
     # at least 7 years, minimum of 7 years, minimum 8 yrs
     r'\b(?:at\s+least|minimum\s+of|minimum)\s+([7-9]|\d{2})\s*(?:\+|)\s*(?:years?|yrs?)\b',
     # 7-10 years, 8-12 years (where lower bound >= 7)
     r'\b([7-9]|\d{2})\s*(?:-|to)\s*\d+\s*(?:years?|yrs?)\b',
+    # 7+ years of experience / 8+ years of professional experience / 8 years of experience
+    r'\b([7-9]|\d{2})\s*(?:\+|)\s*(?:years?|yrs?)\s+of\s+(?:professional|practical|industry|relevant|engineering|software)?\s*experience\b',
+    r'\b(?:requires?|requiring|with)\s+([7-9]|\d{2})\s*(?:\+|)\s*(?:years?|yrs?)\b',
+    r'\b([7-9]|\d{2})\s*(?:years?|yrs?)\s+(?:practical|professional)?\s*experience\b',
 ]
 
 def has_excessive_yoe_requirement(text):
     if not text:
         return False
-    t = text.lower()
+    t = html.unescape(text).lower()
+    t = re.sub(r'&#43;|&plus;', '+', t)
+    t = re.sub(r'<[^>]+>', ' ', t)
     for p in EXCESSIVE_YOE_PATTERNS:
         if re.search(p, t):
             return True
@@ -884,7 +894,7 @@ def fetch_workday_board(board_tuple):
                 try:
                     detail_api_url = re.sub(r'/jobs$', '', api_url) + f'/job{ext_path}'
                     d_req = urllib.request.Request(detail_api_url, headers=headers)
-                    with urllib.request.urlopen(d_req, context=ctx, timeout=4) as d_resp:
+                    with urllib.request.urlopen(d_req, context=ctx, timeout=8) as d_resp:
                         d_json = json.loads(d_resp.read().decode('utf-8'))
                         job_desc = d_json.get('jobPostingInfo', {}).get('jobDescription', '')
                 except Exception:

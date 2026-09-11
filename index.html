@@ -1868,8 +1868,12 @@ function matches(job) {
   if (/\bsystems?\s*engine(?:er|ering)\b/i.test(tLow)) {
     return false;
   }
+  // Disqualify known high-YOE or non-target roles (e.g. OpenShell 8+ YOE)
+  if (/\bopenshell\b/i.test(tLow) || (job.id && job.id.includes('JR2020825'))) {
+    return false;
+  }
   // Ignore Principal/Executive, Staff, ML/AI, Data Engineering, Security, and non-target titles
-  if (/\b(principal|distinguished|fellow|ml|machine learning|ai|devai|rl|deep learning|nlp|computer vision|llm|genai|generative ai|data scientist|research scientist|applied scientist|reinforcement learning|big data|inference|model lifecycle|frontier agents?|gpu|hpc|people platform|business systems?|iam|security|cybersecurity)\b/i.test(tLow)) {
+  if (/\b(principal|distinguished|fellow|ml|machine learning|ai|devai|rl|deep learning|nlp|computer vision|llm|genai|generative ai|data scientist|research scientist|applied scientist|reinforcement learning|big data|inference|model lifecycle|frontier agents?|openshell|gpu|hpc|people platform|business systems?|iam|security|cybersecurity)\b/i.test(tLow)) {
     return false;
   }
   if (!tLow.includes('member of technical staff') && !tLow.includes('technical staff')) {
@@ -1885,11 +1889,12 @@ function matches(job) {
     return false;
   }
   // Disqualify roles requiring 7+ years or more experience
-  const yoeCheckText = ((job.title || '') + ' ' + (job.summary || '') + ' ' + (job.yoeNote || '') + ' ' + (job.yoeFit || '')).toLowerCase();
-  if (/\b([7-9]|\d{2})\s*\+\s*(?:years?|yrs?)\b/i.test(yoeCheckText) ||
+  const yoeCheckText = ((job.title || '') + ' ' + (job.summary || '') + ' ' + (job.yoeNote || '') + ' ' + (job.yoeFit || '')).toLowerCase().replace(/&#43;|&plus;/g, '+');
+  if (/\b([7-9]|\d{2})\s*(?:\+|)\s*(?:years?|yrs?)\b/i.test(yoeCheckText) ||
       /\b([7-9]|\d{2})\s*(?:\+|)\s*or\s+more\s+(?:years?|yrs?)\b/i.test(yoeCheckText) ||
       /\b(?:at\s+least|minimum\s+of|minimum)\s+([7-9]|\d{2})\s*(?:\+|)\s*(?:years?|yrs?)\b/i.test(yoeCheckText) ||
-      /\b([7-9]|\d{2})\s*(?:-|to)\s*\d+\s*(?:years?|yrs?)\b/i.test(yoeCheckText)) {
+      /\b([7-9]|\d{2})\s*(?:-|to)\s*\d+\s*(?:years?|yrs?)\b/i.test(yoeCheckText) ||
+      /\b([7-9]|\d{2})\s*(?:\+|)\s*(?:years?|yrs?)\s+of\s+(?:professional|practical|industry|relevant|engineering|software)?\s*experience\b/i.test(yoeCheckText)) {
     return false;
   }
   // Wrong match / rejected recommendations immediately removed from board
