@@ -254,7 +254,10 @@ CLEARANCE_KEYWORDS = [
 
 TITLE_EXCLUSIONS = [
     'manager', 'director', 'vp', 'vice president', 'head of', 'lead of', 'principal', 'distinguished', 'fellow',
-    'intern', 'internship', 'recruiter', 'counsel', 'account executive', 'legal',
+    'intern', 'internship', 'student', 'student worker', 'co-op', 'coop', 'apprentice', 'apprenticeship',
+    'contract', 'contractor', 'temporary', 'temp', 'part-time', 'part time', 'seasonal', 'new grad', 'university grad',
+    'undergraduate', 'graduate intern', 'volunteer', 'adjunct',
+    'recruiter', 'counsel', 'account executive', 'legal',
     'sales', 'marketing', 'product manager', 'designer', 'copywriter', 'general counsel',
     'business partner', 'administrative', 'data scientist', 'analytics lead', 'business analyst',
     'data engineer', 'big data', 'data platform', 'data infrastructure', 'database administrator', 'dba',
@@ -274,11 +277,21 @@ TITLE_EXCLUSIONS = [
     'federal', 'us federal', 'cleared', 'clearance', 'public trust', 'defense', 'government', 'us citizen', 'citizenship'
 ]
 
+def is_non_fulltime_role(text):
+    if not text:
+        return False
+    t = text.lower().replace(' ', ' ').replace('-', ' ').replace(',', ' ')
+    return bool(re.search(r'\b(intern|internship|student|student worker|co-?op|coop|apprentice|apprenticeship|contract|contractor|temporary|temp|part[- ]time|seasonal|new grad|university grad|graduate intern|undergraduate|volunteer|adjunct)\b', t))
+
 def is_resume_role_matched(title):
     if not title:
         return False
     t = title.lower().replace(' ', ' ').replace('-', ' ').replace(',', ' ')
     
+    # 0a. Strict exclusion of Internships, Student Worker, Contract, Part-Time, Temporary, Apprentice roles
+    if is_non_fulltime_role(t):
+        return False
+
     # 0. Strict exclusion of Principal / Executive / Management level
     if re.search(r'\b(principal|distinguished|fellow|director|vp|vice president|manager|lead|head of)\b', t):
         return False
@@ -707,6 +720,10 @@ def fetch_single_board(board_tuple):
                     if not is_resume_role_matched(title):
                         continue
 
+                    emp_type = str(j.get('employmentType', '')).lower()
+                    if emp_type and is_non_fulltime_role(emp_type):
+                        continue
+
                     loc = str(j.get('location', ''))
                     loc_low = loc.lower()
                     if not is_strictly_us_location(loc, title):
@@ -776,6 +793,9 @@ def fetch_single_board(board_tuple):
                         if not is_resume_role_matched(title):
                             continue
                         cat = j.get('categories', {}) or {}
+                        commitment = str(cat.get('commitment', '')).lower()
+                        if commitment and is_non_fulltime_role(commitment):
+                            continue
                         loc = cat.get('location', 'US')
                         if not is_strictly_us_location(loc, title):
                             continue
@@ -840,6 +860,9 @@ def fetch_workday_board(board_tuple):
                     break
                 title = p.get('title', '')
                 if not is_resume_role_matched(title):
+                    continue
+                time_type = str(p.get('timeType', '')).lower()
+                if time_type and is_non_fulltime_role(time_type):
                     continue
                 loc = p.get('locationsText', 'United States')
                 if not is_strictly_us_location(loc, title):
@@ -915,6 +938,10 @@ def fetch_amazon_jobs():
                     break
                 title = j.get('title', '')
                 if not is_resume_role_matched(title):
+                    continue
+                sched_type = str(j.get('job_schedule_type', '')).lower()
+                job_type = str(j.get('job_type', '')).lower()
+                if is_non_fulltime_role(f"{sched_type} {job_type}"):
                     continue
                 city = j.get('city', '')
                 state = j.get('state', '')

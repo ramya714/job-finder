@@ -1855,8 +1855,12 @@ function renderTabs() {
 function matches(job) {
   // Applied jobs always hidden from the Jobs view — they live in the Applied tab.
   if (state.applied.has(job.id)) return false;
-  // Ignore Principal/Executive, Staff, ML/AI, Data Engineering, Security, and non-target titles
+  // Strictly Full-Time Only: Disqualify internships, student worker, contract, apprentice, and part-time roles
   const tLow = (job.title || '').toLowerCase().replace(/[-–—/,]/g, ' ');
+  if (/\b(intern|internship|student|student worker|co-?op|coop|apprentice|apprenticeship|contract|contractor|temporary|temp|part[- ]time|seasonal|new grad|university grad)\b/i.test(tLow)) {
+    return false;
+  }
+  // Ignore Principal/Executive, Staff, ML/AI, Data Engineering, Security, and non-target titles
   if (/\b(principal|distinguished|fellow|ml|machine learning|ai|devai|rl|deep learning|nlp|computer vision|llm|genai|generative ai|data scientist|research scientist|applied scientist|reinforcement learning|big data|inference|model lifecycle|frontier agents?|gpu|hpc|people platform|business systems?|iam|security|cybersecurity)\b/i.test(tLow)) {
     return false;
   }
