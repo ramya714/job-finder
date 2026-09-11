@@ -1870,8 +1870,6 @@ function matches(job) {
   }
   // Wrong match / rejected recommendations immediately removed from board
   if (state.badRecs.has(job.id)) return false;
-  // Learned negative title patterns from user feedback — don't show similar roles
-  if (isSimilarToRejectedTitle(job.title)) return false;
   // Not eligible / cannot apply jobs removed from open feed
   if (state.notEligible && state.notEligible[job.id]) return false;
   // Stale / unavailable jobs immediately removed from open feed
