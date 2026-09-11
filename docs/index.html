@@ -2051,19 +2051,23 @@ function render() {
     card.className = 'job' + (isApplied ? ' applied' : '') + (stale ? ' unavailable' : '') + (inCooldown ? ' cooldown' : '') + (isAgency(job) ? ' agency' : '');
     // Hot UI — same freshness badge + callback chip the action cards use.
     let freshBadge = '';
-    let hp = job.postedAtUtc ? parseUtc(job.postedAtUtc) : NaN;
-    if (isNaN(hp) && job.postedApprox) {
-      const mh = /(\d+)\s*hour/.exec(job.postedApprox);
-      const md = /(\d+)\s*day/.exec(job.postedApprox);
-      const hh = mh ? +mh[1] : md ? +md[1] * 24 : /just now|today/i.test(job.postedApprox) ? 1 : NaN;
-      if (!isNaN(hh)) hp = Date.now() - hh * 3600 * 1000;
-    }
-    if (!isNaN(hp)) {
-      const hours = Math.max(0, (Date.now() - hp) / 3600000);
-      if (hours < 12) freshBadge = `<span class="fresh-badge hot">🔥 FRESH · ${Math.round(hours)}h ago</span>`;
-      else if (hours < 24) freshBadge = `<span class="fresh-badge warm">⚡ Today · ${Math.round(hours)}h ago</span>`;
-      else if (hours < 48) freshBadge = `<span class="fresh-badge warm">⚡ ${Math.round(hours)}h ago</span>`;
-      else if (hours < 96) freshBadge = `<span class="fresh-badge mild">📅 ${Math.round(hours/24)}d ago</span>`;
+    if (job.isNewToday) {
+      freshBadge = `<span class="fresh-badge hot" style="background: linear-gradient(135deg, #059669, #10b981); color: #fff; font-weight: 700; border: 1px solid #34d399; box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);">✨ NEW TODAY</span>`;
+    } else {
+      let hp = job.postedAtUtc ? parseUtc(job.postedAtUtc) : NaN;
+      if (isNaN(hp) && job.postedApprox) {
+        const mh = /(\d+)\s*hour/.exec(job.postedApprox);
+        const md = /(\d+)\s*day/.exec(job.postedApprox);
+        const hh = mh ? +mh[1] : md ? +md[1] * 24 : /just now|today/i.test(job.postedApprox) ? 1 : NaN;
+        if (!isNaN(hh)) hp = Date.now() - hh * 3600 * 1000;
+      }
+      if (!isNaN(hp)) {
+        const hours = Math.max(0, (Date.now() - hp) / 3600000);
+        if (hours < 12) freshBadge = `<span class="fresh-badge hot">🔥 FRESH · ${Math.round(hours)}h ago</span>`;
+        else if (hours < 24) freshBadge = `<span class="fresh-badge warm">⚡ Today · ${Math.round(hours)}h ago</span>`;
+        else if (hours < 48) freshBadge = `<span class="fresh-badge warm">⚡ ${Math.round(hours)}h ago</span>`;
+        else if (hours < 96) freshBadge = `<span class="fresh-badge mild">📅 ${Math.round(hours/24)}d ago</span>`;
+      }
     }
     const cbChip = typeof job.callbackScore === 'number'
       ? `<span class="cb-score">callback: ${job.callbackScore.toFixed(0)}/100</span>` : '';
