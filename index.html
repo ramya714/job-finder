@@ -876,6 +876,315 @@
     gap: 8px;
     flex-wrap: wrap;
   }
+
+  /* Sweep Trigger Button & Modal */
+  .sweep-trigger-btn {
+    background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 6px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  }
+  .sweep-trigger-btn:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.5);
+    transform: translateY(-1px);
+    color: #ffffff;
+  }
+  .sweep-trigger-btn.running {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+    border-color: #f59e0b;
+    box-shadow: 0 2px 10px rgba(245, 158, 11, 0.4);
+  }
+  .sweep-trigger-btn-secondary {
+    background: rgba(59, 130, 246, 0.15);
+    color: #93c5fd;
+    border: 1px solid rgba(59, 130, 246, 0.4);
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.15s ease;
+  }
+  .sweep-trigger-btn-secondary:hover {
+    background: rgba(59, 130, 246, 0.25);
+    border-color: #60a5fa;
+    color: #ffffff;
+  }
+  .sweep-spin {
+    display: inline-block;
+    animation: sweep-spin-anim 1s linear infinite;
+  }
+  @keyframes sweep-spin-anim {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Sweep Modal */
+  #sweep-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 12, 16, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 100001;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  .sweep-modal-backdrop {
+    position: absolute;
+    inset: 0;
+  }
+  .sweep-modal-box {
+    position: relative;
+    z-index: 1;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    box-shadow: 0 24px 48px rgba(0,0,0,0.6), 0 0 20px rgba(59, 130, 246, 0.15);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 540px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    color: var(--text);
+    animation: sweepModalPop 0.2s ease-out;
+  }
+  @keyframes sweepModalPop {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  .sweep-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 12px;
+  }
+  .sweep-modal-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .sweep-modal-title h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #f1f5f9;
+  }
+  .sweep-modal-close {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-size: 22px;
+    cursor: pointer;
+    padding: 2px 8px;
+    border-radius: 6px;
+    line-height: 1;
+  }
+  .sweep-modal-close:hover { color: var(--text); background: var(--panel2); }
+  .sweep-desc {
+    font-size: 13.5px;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.5;
+  }
+  .sweep-card {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .sweep-card h4 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .sweep-subtext {
+    font-size: 12px;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.4;
+  }
+  .sweep-token-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .sweep-token-field label {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .sweep-input-row {
+    display: flex;
+    gap: 6px;
+  }
+  .sweep-input-row input {
+    flex: 1;
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: #f1f5f9;
+    font-size: 13px;
+    font-family: monospace;
+  }
+  .sweep-input-row input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+  }
+  .sweep-token-toggle {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0 10px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .sweep-token-toggle:hover { color: var(--text); border-color: #3b82f6; }
+  .sweep-token-links {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11.5px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .sweep-token-links a {
+    color: #60a5fa;
+    text-decoration: none;
+  }
+  .sweep-token-links a:hover { text-decoration: underline; }
+  .sweep-primary-btn {
+    background: linear-gradient(135deg, #2563eb, #4f46e5);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 16px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex: 1;
+    transition: all 0.15s ease;
+  }
+  .sweep-primary-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #1d4ed8, #4338ca);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+  }
+  .sweep-primary-btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+  .sweep-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    margin: -4px 0;
+  }
+  .sweep-divider::before, .sweep-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--border);
+  }
+  .sweep-divider span {
+    padding: 0 10px;
+  }
+  .sweep-link-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    color: #cbd5e1;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+  .sweep-link-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border-color: #64748b;
+  }
+  .sweep-status-box {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 12.5px;
+  }
+  .sweep-status-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+  }
+  .sweep-status-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #94a3b8;
+    flex-shrink: 0;
+  }
+  .sweep-status-indicator.running {
+    background: #fbbf24;
+    box-shadow: 0 0 8px #fbbf24;
+    animation: sweep-status-pulse 1.5s infinite;
+  }
+  .sweep-status-indicator.success {
+    background: #4ade80;
+    box-shadow: 0 0 8px #4ade80;
+  }
+  .sweep-status-indicator.error {
+    background: #f87171;
+    box-shadow: 0 0 8px #f87171;
+  }
+  @keyframes sweep-status-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+  }
+
 </style>
 </head>
 <body>
@@ -909,6 +1218,65 @@
   </div>
 </div>
 
+<!-- Sweep Trigger Modal -->
+<div id="sweep-modal" style="display:none;">
+  <div class="sweep-modal-backdrop" onclick="closeSweepModal()"></div>
+  <div class="sweep-modal-box">
+    <div class="sweep-modal-header">
+      <div class="sweep-modal-title">
+        <span style="font-size:20px;">⚡</span>
+        <h3>Trigger Daily Job Sweep</h3>
+      </div>
+      <button class="sweep-modal-close" onclick="closeSweepModal()" title="Close">&times;</button>
+    </div>
+    <div class="sweep-modal-body" style="display:flex; flex-direction:column; gap:14px;">
+      <p class="sweep-desc">
+        Trigger the automated ATS scraper workflow on GitHub Actions (<code>daily_update.yml</code>) to scan Greenhouse, Lever, Ashby, Workday, Amazon, and target career portals for fresh full-time listings.
+      </p>
+
+      <div id="sweep-status-card" class="sweep-status-box" style="display:none;">
+        <div class="sweep-status-header">
+          <span class="sweep-status-indicator" id="sweep-status-indicator"></span>
+          <span id="sweep-status-text">Workflow Status</span>
+        </div>
+        <div id="sweep-status-sub" style="font-size:12px; color:var(--muted); line-height:1.4;"></div>
+      </div>
+
+      <div class="sweep-card">
+        <h4>🚀 Option 1: Trigger Directly via GitHub API</h4>
+        <p class="sweep-subtext">Trigger directly from this page. Requires a GitHub Personal Access Token (stored safely in your browser's local storage only).</p>
+        <div class="sweep-token-field">
+          <label for="sweep-token-input">GitHub Personal Access Token</label>
+          <div class="sweep-input-row">
+            <input type="password" id="sweep-token-input" placeholder="ghp_... or github_pat_..." autocomplete="off" />
+            <button type="button" class="sweep-token-toggle" id="sweep-token-toggle" onclick="toggleSweepTokenVisibility()" title="Toggle visibility">👁️</button>
+          </div>
+          <div class="sweep-token-links">
+            <span id="sweep-token-status" style="display:none; color: #4ade80; font-size:11px; font-weight:600;">✓ Token saved in browser</span>
+            <a href="https://github.com/settings/tokens/new?scopes=repo,workflow&description=JobFinder-Daily-Sweep" target="_blank" rel="noopener">Generate GitHub Token &nearr;</a>
+          </div>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <button id="btn-dispatch-sweep" class="sweep-primary-btn" onclick="dispatchSweepAction()">
+            ⚡ Dispatch Daily Sweep
+          </button>
+          <button id="btn-clear-sweep-token" class="sweep-token-toggle" style="height:36px; padding:0 12px; display:none;" onclick="clearSweepToken()" title="Clear saved token">🗑️</button>
+        </div>
+      </div>
+
+      <div class="sweep-divider"><span>OR</span></div>
+
+      <div class="sweep-card" style="background: rgba(255,255,255,0.02);">
+        <h4>🔗 Option 2: 1-Click on GitHub (No token needed)</h4>
+        <p class="sweep-subtext">Open GitHub Actions tab directly and click <strong>"Run workflow"</strong>.</p>
+        <a href="https://github.com/ramya714/job-finder/actions/workflows/daily_update.yml" target="_blank" rel="noopener" class="sweep-link-btn">
+          Open daily_update.yml on GitHub &nearr;
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="main-app" style="display:block;">
 <header>
   <div>
@@ -925,6 +1293,9 @@
       👤 <b id="auth-user-name">ramya</b>
       <button class="auth-logout-btn" onclick="handleAuthLogout()" title="Log out">Logout</button>
     </span>
+    <button id="btn-trigger-sweep" class="sweep-trigger-btn" onclick="openSweepModal()" title="Trigger Daily ATS Job Sweep on GitHub Actions">
+      <span>⚡</span> <span>Run Daily Sweep</span>
+    </button>
   </div>
 </header>
 
@@ -986,6 +1357,7 @@
     </label>
     <button id="reset-unavailable">Reset stale</button>
     <button id="reset-all-applied" style="background: rgba(99, 102, 241, 0.15); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.4); padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;" onclick="resetAllBoardMarks()" title="Reset all local test marks to show all 41 open jobs">🔄 Reset All to Open</button>
+    <button id="btn-trigger-sweep-controls" class="sweep-trigger-btn-secondary" onclick="openSweepModal()" title="Trigger daily ATS sweep on GitHub Actions">⚡ Run Daily Sweep</button>
     <span style="color: var(--muted); font-size: 12px;">Applied jobs auto-move to the Applied tab.</span>
   </div>
   <div class="weeks">
@@ -3404,6 +3776,252 @@ document.getElementById('applied-clear').onclick = () => {
     state.applied.clear(); saveApplied(); renderApplied(); render(); updateBadges();
   }
 };
+
+
+// ==========================================
+// Daily Sweep Trigger System
+// ==========================================
+const GITHUB_SWEEP_REPO = 'ramya714/job-finder';
+const GITHUB_SWEEP_WORKFLOW = 'daily_update.yml';
+const GITHUB_PAT_KEY = 'jobfinder_gh_pat';
+let sweepPollTimer = null;
+
+function openSweepModal() {
+  const modal = document.getElementById('sweep-modal');
+  if (!modal) return;
+  modal.style.display = 'flex';
+  const savedToken = localStorage.getItem(GITHUB_PAT_KEY) || '';
+  const tokenInput = document.getElementById('sweep-token-input');
+  const tokenStatus = document.getElementById('sweep-token-status');
+  const clearBtn = document.getElementById('btn-clear-sweep-token');
+  if (tokenInput && savedToken) {
+    tokenInput.value = savedToken;
+    if (tokenStatus) tokenStatus.style.display = 'inline';
+    if (clearBtn) clearBtn.style.display = 'inline-block';
+  } else {
+    if (tokenStatus) tokenStatus.style.display = 'none';
+    if (clearBtn) clearBtn.style.display = 'none';
+  }
+}
+
+function closeSweepModal() {
+  const modal = document.getElementById('sweep-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+function toggleSweepTokenVisibility() {
+  const input = document.getElementById('sweep-token-input');
+  const btn = document.getElementById('sweep-token-toggle');
+  if (!input) return;
+  if (input.type === 'password') {
+    input.type = 'text';
+    if (btn) btn.textContent = '🔒';
+  } else {
+    input.type = 'password';
+    if (btn) btn.textContent = '👁️';
+  }
+}
+
+function clearSweepToken() {
+  localStorage.removeItem(GITHUB_PAT_KEY);
+  const tokenInput = document.getElementById('sweep-token-input');
+  const tokenStatus = document.getElementById('sweep-token-status');
+  const clearBtn = document.getElementById('btn-clear-sweep-token');
+  if (tokenInput) tokenInput.value = '';
+  if (tokenStatus) tokenStatus.style.display = 'none';
+  if (clearBtn) clearBtn.style.display = 'none';
+}
+
+function setSweepButtonState(running, text) {
+  const btnMain = document.getElementById('btn-trigger-sweep');
+  const btnControls = document.getElementById('btn-trigger-sweep-controls');
+  const icon = running ? '<span class="sweep-spin">🔄</span>' : '<span>⚡</span>';
+  const label = text || (running ? 'Sweep Running...' : 'Run Daily Sweep');
+
+  [btnMain, btnControls].forEach(btn => {
+    if (!btn) return;
+    if (running) {
+      btn.classList.add('running');
+      btn.innerHTML = `${icon} <span>${label}</span>`;
+    } else {
+      btn.classList.remove('running');
+      btn.innerHTML = `<span>⚡</span> <span>Run Daily Sweep</span>`;
+    }
+  });
+}
+
+function updateSweepStatus(stateType, title, messageHtml) {
+  const card = document.getElementById('sweep-status-card');
+  const ind = document.getElementById('sweep-status-indicator');
+  const text = document.getElementById('sweep-status-text');
+  const sub = document.getElementById('sweep-status-sub');
+  if (!card) return;
+  card.style.display = 'flex';
+  if (ind) {
+    ind.className = 'sweep-status-indicator ' + (stateType || '');
+  }
+  if (text) text.textContent = title;
+  if (sub) sub.innerHTML = messageHtml || '';
+}
+
+async function dispatchSweepAction() {
+  const tokenInput = document.getElementById('sweep-token-input');
+  const btn = document.getElementById('btn-dispatch-sweep');
+  const token = (tokenInput ? tokenInput.value.trim() : '') || localStorage.getItem(GITHUB_PAT_KEY) || '';
+
+  if (!token) {
+    alert('Please enter your GitHub Personal Access Token (or use Option 2 to run directly on GitHub Actions).');
+    if (tokenInput) tokenInput.focus();
+    return;
+  }
+
+  localStorage.setItem(GITHUB_PAT_KEY, token);
+  const tokenStatus = document.getElementById('sweep-token-status');
+  const clearBtn = document.getElementById('btn-clear-sweep-token');
+  if (tokenStatus) tokenStatus.style.display = 'inline';
+  if (clearBtn) clearBtn.style.display = 'inline-block';
+
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="sweep-spin">🔄</span> Dispatching...';
+  }
+  setSweepButtonState(true, 'Triggering...');
+  updateSweepStatus('running', 'Dispatching GitHub Action...', 'Connecting to GitHub REST API...');
+
+  const startTime = Date.now();
+
+  try {
+    const res = await fetch(`https://api.github.com/repos/${GITHUB_SWEEP_REPO}/actions/workflows/${GITHUB_SWEEP_WORKFLOW}/dispatches`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/vnd.github.v3+json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ ref: 'main' })
+    });
+
+    if (res.status === 204) {
+      updateSweepStatus('running', 'Workflow Dispatched!', 'GitHub Actions runner is initializing... Polling execution progress.');
+      setSweepButtonState(true, 'Sweep Running...');
+      if (btn) btn.innerHTML = '<span class="sweep-spin">🔄</span> Sweep in progress...';
+      startPollingWorkflow(token, startTime);
+    } else {
+      let errDetail = '';
+      try {
+        const errJson = await res.json();
+        errDetail = errJson.message || '';
+      } catch (e) {
+        errDetail = `HTTP ${res.status}`;
+      }
+      if (res.status === 401 || res.status === 403) {
+        updateSweepStatus('error', 'Authentication Error', `Token invalid or lacks workflow permissions. Required scope: <code>repo</code> or <code>workflow</code>. (${errDetail})`);
+      } else if (res.status === 404) {
+        updateSweepStatus('error', 'Workflow Not Found', `Ensure repository <code>${GITHUB_SWEEP_REPO}</code> and token have correct access. (${errDetail})`);
+      } else {
+        updateSweepStatus('error', 'Dispatch Failed', `GitHub API error: ${errDetail}`);
+      }
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '⚡ Dispatch Daily Sweep';
+      }
+      setSweepButtonState(false);
+    }
+  } catch (err) {
+    console.error('Sweep dispatch network error:', err);
+    updateSweepStatus('error', 'Connection Error', `Failed to contact GitHub API: ${err.message}`);
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '⚡ Dispatch Daily Sweep';
+    }
+    setSweepButtonState(false);
+  }
+}
+
+function startPollingWorkflow(token, triggerTime) {
+  if (sweepPollTimer) clearInterval(sweepPollTimer);
+  let pollAttempts = 0;
+  const maxAttempts = 60; // Up to ~5 minutes
+
+  sweepPollTimer = setInterval(async () => {
+    pollAttempts++;
+    const elapsedSec = Math.round((Date.now() - triggerTime) / 1000);
+
+    try {
+      const res = await fetch(`https://api.github.com/repos/${GITHUB_SWEEP_REPO}/actions/workflows/${GITHUB_SWEEP_WORKFLOW}/runs?per_page=3`, {
+        headers: {
+          'Accept': 'application/vnd.github.v3+json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!res.ok) {
+        updateSweepStatus('running', 'Running Sweep...', `Sweep in progress (${elapsedSec}s elapsed)... <a href="https://github.com/${GITHUB_SWEEP_REPO}/actions" target="_blank" style="color:#60a5fa;">View GitHub Actions &nearr;</a>`);
+        return;
+      }
+
+      const data = await res.json();
+      const runs = data.workflow_runs || [];
+      const run = runs.find(r => new Date(r.created_at).getTime() >= triggerTime - 60000) || runs[0];
+
+      if (run) {
+        const runLink = `<a href="${run.html_url}" target="_blank" style="color:#60a5fa; font-weight:600;">View Run #${run.run_number} &nearr;</a>`;
+
+        if (run.status === 'queued') {
+          updateSweepStatus('running', 'Queued in GitHub Actions', `Workflow is queued waiting for an action runner... (${elapsedSec}s) &bull; ${runLink}`);
+          setSweepButtonState(true, `Queued (${elapsedSec}s)`);
+        } else if (run.status === 'in_progress') {
+          updateSweepStatus('running', 'Scraping Job Portals...', `Scraping Greenhouse, Lever, Ashby, Workday, Amazon... (${elapsedSec}s) &bull; ${runLink}`);
+          setSweepButtonState(true, `Scraping (${elapsedSec}s)`);
+        } else if (run.status === 'completed') {
+          clearInterval(sweepPollTimer);
+          sweepPollTimer = null;
+
+          if (run.conclusion === 'success') {
+            updateSweepStatus('success', '✅ Sweep Completed Successfully!', `New jobs scanned and committed! Refreshing board now... &bull; ${runLink}`);
+            setSweepButtonState(false);
+            const btn = document.getElementById('btn-dispatch-sweep');
+            if (btn) {
+              btn.disabled = false;
+              btn.innerHTML = '⚡ Dispatch Daily Sweep';
+            }
+            setTimeout(async () => {
+              await load();
+              render();
+              renderApplied();
+              updateBadges();
+            }, 2500);
+          } else {
+            updateSweepStatus('error', `Workflow ${run.conclusion || 'Failed'}`, `Workflow ended with status: ${run.conclusion}. ${runLink}`);
+            setSweepButtonState(false);
+            const btn = document.getElementById('btn-dispatch-sweep');
+            if (btn) {
+              btn.disabled = false;
+              btn.innerHTML = '⚡ Dispatch Daily Sweep';
+            }
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Sweep poll error:', e);
+    }
+
+    if (pollAttempts >= maxAttempts) {
+      clearInterval(sweepPollTimer);
+      sweepPollTimer = null;
+      updateSweepStatus('running', 'Sweep Running in Background', `Workflow is still executing. <a href="https://github.com/${GITHUB_SWEEP_REPO}/actions" target="_blank" style="color:#60a5fa;">Check GitHub Actions for final result &nearr;</a>`);
+      setSweepButtonState(false);
+      const btn = document.getElementById('btn-dispatch-sweep');
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '⚡ Dispatch Daily Sweep';
+      }
+    }
+  }, 5000);
+}
+
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeSweepModal();
+});
 
 load();
 </script>
