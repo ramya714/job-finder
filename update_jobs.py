@@ -297,13 +297,15 @@ def is_resume_role_matched(title):
         return False
 
     # 0. Strict exclusion of Principal / Executive / Management level
-    if re.search(r'\b(principal|distinguished|fellow|director|vp|vice president|manager|lead|head of)\b', t):
+    if re.search(r'\b(principal|distinguished|fellow|director|vp|vice president|manager|lead|leader|leadership|architect|head of)\b', t):
         return False
         
     # 0b. Strict exclusion of Staff-level roles (while preserving Member of Technical Staff)
     if 'member of technical staff' not in t and 'technical staff' not in t:
         if re.search(r'\b(staff|sr\.?\s*staff|senior\s*staff)\b', t):
             return False
+    if re.search(r'\b(sr\.?\s*mts|senior\s*mts)\b', t):
+        return False
 
     # 0c. Strict exclusion of ML / AI / Data / Security / Hardware keywords
     if re.search(r'\b(ml|ai|devai|genai|llm|rl|deep learning|machine learning|reinforcement learning|big data|security|cybersecurity|infosec|appsec)\b', t):
@@ -320,7 +322,9 @@ def is_resume_role_matched(title):
         return False
 
     # 0f. Strict exclusion of Systems Engineer roles
-    if re.search(r'\bsystems?\s*engine(?:er|ering)\b', t):
+    if re.search(r'\bsystems?\s*engine(?:er|ering)\b', t) or re.search(r'\b(?:engineer|staff)\s*[-–,]\s*systems?\b', t):
+        return False
+    if re.search(r'\blinux\s*kernel\b', t):
         return False
 
     # 0g. Strict exclusion of C++ titles
@@ -520,7 +524,8 @@ def is_clearance_or_citizen_restricted(text):
     return False
 
 EXCESSIVE_YOE_PATTERNS = [
-    # 7+ years, 8+ years, 10+ yrs, etc. (including HTML encoded plus)
+    # 7+ years, 8+ years, 10+ yrs, 8+ experience (including HTML encoded plus)
+    r'\b([7-9]|\d{2})\s*(?:\+|&#43;|&plus;)\s*(?:years?|yrs?)?\s*experience\b',
     r'\b([7-9]|\d{2})\s*(?:\+|&#43;|&plus;)\s*(?:years?|yrs?)\b',
     # 7 or more years, 8 or more years, 10 or more years
     r'\b([7-9]|\d{2})\s*(?:\+|)\s*or\s+more\s+(?:years?|yrs?)\b',
@@ -754,7 +759,7 @@ def fetch_single_board(board_tuple):
                     if comp_info and comp_info.get('compensationTierSummary'):
                         sal_str = comp_info.get('compensationTierSummary')
 
-                    desc_text = f"{title} {loc} {j.get('department', '')}"
+                    desc_text = f"{title} {loc} {j.get('department', '')} {j.get('descriptionPlain', '')} {j.get('descriptionHtml', '')}"
                     if is_clearance_or_citizen_restricted(desc_text):
                         continue
                     if has_excessive_yoe_requirement(desc_text):
@@ -881,6 +886,8 @@ def fetch_workday_board(board_tuple):
                 title = p.get('title', '')
                 if not is_resume_role_matched(title):
                     continue
+                if comp_name.lower() == 'zillow' and ('senior' in title.lower() or 'sr' in title.lower()):
+                    continue # Zillow Senior roles require 8+ YOE
                 time_type = str(p.get('timeType', '')).lower()
                 if time_type and is_non_fulltime_role(time_type):
                     continue
@@ -897,7 +904,12 @@ def fetch_workday_board(board_tuple):
                 # Deep inspection: fetch job description from Workday detail endpoint
                 job_desc = ''
                 try:
-                    detail_api_url = re.sub(r'/jobs$', '', api_url) + f'/job{ext_path}'
+                    if ext_path.startswith('/job'):
+                        detail_api_url = re.sub(r'/jobs$', '', api_url) + ext_path
+                    elif ext_path.startswith('/'):
+                        detail_api_url = re.sub(r'/jobs$', '', api_url) + f'/job{ext_path}'
+                    else:
+                        detail_api_url = re.sub(r'/jobs$', '', api_url) + f'/job/{ext_path}'
                     d_req = urllib.request.Request(detail_api_url, headers=headers)
                     with urllib.request.urlopen(d_req, context=ctx, timeout=8) as d_resp:
                         d_json = json.loads(d_resp.read().decode('utf-8'))
