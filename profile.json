@@ -145,7 +145,12 @@
     "poland"
   ],
   "favorite_companies": [],
-  "excluded_companies": [],
+  "excluded_companies": [
+    "Amazon",
+    "Anthropic",
+    "OpenAI",
+    "Microsoft"
+  ],
   "extra_companies": [],
   "max_jobs_per_company": 3
 }

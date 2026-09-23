@@ -32,8 +32,6 @@ VERSION = "1.0.0"
 # Built-in directory of 150+ top tech, AI, fintech, and high-growth companies
 COMPANIES = [
     # Top AI & Machine Learning Labs
-    ("Anthropic", "greenhouse", "anthropic"),
-    ("OpenAI", "ashby", "openai"),
     ("Perplexity AI", "ashby", "perplexity"),
     ("Scale AI", "greenhouse", "scaleai"),
     ("Mistral AI", "ashby", "mistralai"),

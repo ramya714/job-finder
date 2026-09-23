@@ -43,7 +43,6 @@ COMPANY_BOARDS = [
     ('AllTrails', 'lever', 'alltrails', 'Software & Cloud Infrastructure'),
     ('Alloy', 'greenhouse', 'alloy', 'Software & Cloud Infrastructure'),
     ('Amplitude', 'greenhouse', 'amplitude', 'Software & Cloud Infrastructure'),
-    ('Anthropic', 'greenhouse', 'anthropic', 'Software & Cloud Infrastructure'),
     ('Apollo GraphQL', 'ashby', 'apollo-graphql', 'Software & Cloud Infrastructure'),
     ('Asana', 'greenhouse', 'asana', 'Software & Cloud Infrastructure'),
     ('Astranis', 'greenhouse', 'astranis', 'Software & Cloud Infrastructure'),
@@ -158,7 +157,6 @@ COMPANY_BOARDS = [
     ('Nuro', 'greenhouse', 'nuro', 'Software & Cloud Infrastructure'),
     ('Okta', 'greenhouse', 'okta', 'Software & Cloud Infrastructure'),
     ('Old Mission Capital', 'greenhouse', 'oldmissioncapital', 'Software & Cloud Infrastructure'),
-    ('OpenAI', 'ashby', 'openai', 'Software & Cloud Infrastructure'),
     ('Optiver', 'greenhouse', 'optiver', 'Software & Cloud Infrastructure'),
     ('Oscar Health', 'greenhouse', 'oscar', 'Software & Cloud Infrastructure'),
     ('Otter.ai', 'greenhouse', 'otterai', 'Software & Cloud Infrastructure'),
@@ -286,6 +284,16 @@ def is_non_fulltime_role(text):
         return False
     t = text.lower().replace(' ', ' ').replace('-', ' ').replace(',', ' ')
     return bool(re.search(r'\b(intern|internship|student|student worker|co-?op|coop|apprentice|apprenticeship|contract|contractor|temporary|temp|part[- ]time|seasonal|entry\s*level|junior|jr\.?|associate\s*software\s*engineer|associate\s*engineer|new\s*grad|university\s*grad|graduate\s*intern|undergraduate|volunteer|adjunct|campus\s*hire)\b', t))
+
+EXCLUDED_COMPANIES = {
+    'amazon', 'anthropic', 'openai', 'open ai', 'microsoft'
+}
+
+def is_company_excluded(company_name):
+    if not company_name:
+        return False
+    c = company_name.lower().strip()
+    return any(ex in c for ex in EXCLUDED_COMPANIES)
 
 def is_resume_role_matched(title):
     if not title:
@@ -617,6 +625,8 @@ def is_job_live(url, slug=None, ats_id=None):
 
 def fetch_single_board(board_tuple):
     comp_name, btype, slug, industry = board_tuple
+    if is_company_excluded(comp_name):
+        return []
     results = []
     max_per_co = 3
     headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'}
@@ -867,6 +877,8 @@ def fetch_single_board(board_tuple):
 
 def fetch_workday_board(board_tuple):
     comp_name, api_url, base_url, industry = board_tuple
+    if is_company_excluded(comp_name):
+        return []
     results = []
     headers = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
@@ -956,70 +968,7 @@ def fetch_workday_board(board_tuple):
     return results
 
 def fetch_amazon_jobs():
-    results = []
-    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'}
-    url = 'https://www.amazon.jobs/en/search.json?category%5B%5D=software-development&country=USA&result_limit=50'
-    try:
-        req = urllib.request.Request(url, headers=headers)
-        with urllib.request.urlopen(req, context=ctx, timeout=8) as resp:
-            data = json.loads(resp.read().decode('utf-8'))
-            jobs = data.get('jobs', [])
-            co_count = 0
-            for j in jobs:
-                if co_count >= 8:
-                    break
-                title = j.get('title', '')
-                if not is_resume_role_matched(title):
-                    continue
-                sched_type = str(j.get('job_schedule_type', '')).lower()
-                job_type = str(j.get('job_type', '')).lower()
-                if is_non_fulltime_role(f"{sched_type} {job_type}"):
-                    continue
-                city = j.get('city', '')
-                state = j.get('state', '')
-                loc = f"{city}, {state}" if city and state else (city or state or 'Seattle, WA')
-                if not is_strictly_us_location(loc, title):
-                    continue
-                desc = j.get('description', '')
-                if is_clearance_or_citizen_restricted(f"{title} {desc}"):
-                    continue
-                if has_excessive_yoe_requirement(f"{title} {desc}"):
-                    continue
-                job_path = j.get('job_path', '')
-                if not job_path:
-                    continue
-                job_url = f"https://www.amazon.jobs{job_path}"
-                job_id = j.get('id_icims') or str(abs(hash(job_path)) % 10000000)
-                co_count += 1
-                reg_name, reg_rank = get_region_info(loc)
-                skills = ['Java', 'Python', 'AWS', 'Distributed Systems', 'Docker', 'Kubernetes']
-                results.append({
-                    'id': f'amazon-{job_id}',
-                    'company': 'Amazon',
-                    'title': title,
-                    'location': loc,
-                    'remote': 'Remote' if 'remote' in loc.lower() else 'Onsite / Hybrid (Seattle Tech Hub)',
-                    'industry': 'Cloud Infrastructure & High-Scale Systems (Seattle Hub)',
-                    'salary': '$150,000 – $225,000 + Equity',
-                    'summary': f'Direct corporate engineering opening at Amazon for {title}.',
-                    'skills': skills,
-                    'url': job_url,
-                    'source': 'Amazon Jobs Official (Live)',
-                    'postedApprox': 'Active Now',
-                    'h1bFit': 'Yes (H1B Friendly / Sponsoring)',
-                    'yoeFit': 'Good (3–6 yrs)',
-                    'yoeNote': 'Verified <7 yrs requirement',
-                    'callbackScore': 95.0 + (5.0 if reg_rank == 1 else 0.0),
-                    'postedAtUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
-                    'atsJobId': str(job_id),
-                    'region': reg_name,
-                    'regionRank': reg_rank,
-                    'customQuestions': [],
-                    'hasEssayQuestions': False
-                })
-    except Exception:
-        pass
-    return results
+    return []
 
 def main():
     print(f"Starting concurrent sweep across {len(COMPANY_BOARDS)} ATS boards + {len(WORKDAY_BOARDS)} Workday portals + Amazon Jobs API...")
@@ -1029,7 +978,6 @@ def main():
     with concurrent.futures.ThreadPoolExecutor(max_workers=30) as executor:
         gh_futures = {executor.submit(fetch_single_board, b): b for b in COMPANY_BOARDS}
         wd_futures = {executor.submit(fetch_workday_board, b): b for b in WORKDAY_BOARDS}
-        amz_future = executor.submit(fetch_amazon_jobs)
 
         for future in concurrent.futures.as_completed(gh_futures):
             try:
@@ -1047,12 +995,6 @@ def main():
             except Exception:
                 pass
 
-        try:
-            amz_res = amz_future.result()
-            if amz_res:
-                matched_jobs.extend(amz_res)
-        except Exception:
-            pass
 
     print(f"\n--- Fresh Sweep Matched Jobs: {len(matched_jobs)} ---")
 
@@ -1080,6 +1022,8 @@ def main():
 
     for j in matched_jobs:
         if not is_direct_company_url(j.get('url', '')):
+            continue
+        if is_company_excluded(j.get('company', '')):
             continue
         jid = j.get('id')
         if not jid or jid in seen_in_this_run:
@@ -1117,14 +1061,15 @@ def main():
     output_data = {
         "lastUpdated": today_iso,
         "lastChecked": today_iso,
-        "seedVersion": 14,
+        "seedVersion": 17,
         "candidateProfile": {
             "name": "Ramya Bangaru",
             "targetRole": "Senior Full Stack & Software Engineer",
             "mustHave": "Java / Python / TypeScript / React / AWS / Spring Boot",
             "yoe": "3–6y (strictly <7y)",
             "visa": "All Roles (H1B Sponsoring & Open)",
-            "preferredLocations": "Seattle, WA · Remote · San Francisco, CA · US Nationwide"
+            "preferredLocations": "Seattle, WA · Remote · San Francisco, CA · US Nationwide",
+            "excludedCompanies": ["Amazon", "Anthropic", "OpenAI", "Microsoft"]
         },
         "liveTrackers": [
             {

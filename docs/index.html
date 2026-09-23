@@ -1231,7 +1231,7 @@
     </div>
     <div class="sweep-modal-body" style="display:flex; flex-direction:column; gap:14px;">
       <p class="sweep-desc">
-        Trigger the automated ATS scraper workflow on GitHub Actions (<code>daily_update.yml</code>) to scan Greenhouse, Lever, Ashby, Workday, Amazon, and target career portals for fresh full-time listings.
+        Trigger the automated ATS scraper workflow on GitHub Actions (<code>daily_update.yml</code>) to scan Greenhouse, Lever, Ashby, Workday, and target career portals for fresh full-time listings.
       </p>
 
       <div id="sweep-status-card" class="sweep-status-box" style="display:none;">
@@ -2257,6 +2257,11 @@ function matches(job) {
     return false;
   }
   if (/\blinux\s*kernel\b/i.test(tLow) || /\b(?:engineer|staff)\s*[-–,]\s*systems?\b/i.test(tLow)) {
+    return false;
+  }
+  // Disqualify blacklisted companies (Amazon, Anthropic, OpenAI, Microsoft)
+  const compLow = (job.company || '').toLowerCase().trim();
+  if (/\b(amazon|anthropic|openai|microsoft)\b/i.test(compLow) || compLow.includes('open ai')) {
     return false;
   }
   // Ignore Principal/Executive, Staff, ML/AI, Data Engineering, Security, and non-target titles
