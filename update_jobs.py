@@ -283,7 +283,7 @@ def is_non_fulltime_role(text):
     if not text:
         return False
     t = text.lower().replace(' ', ' ').replace('-', ' ').replace(',', ' ')
-    return bool(re.search(r'\b(intern|internship|student|student worker|co-?op|coop|apprentice|apprenticeship|contract|contractor|temporary|temp|part[- ]time|seasonal|entry\s*level|junior|jr\.?|associate\s*software\s*engineer|associate\s*engineer|new\s*grad|university\s*grad|graduate\s*intern|undergraduate|volunteer|adjunct|campus\s*hire)\b', t))
+    return bool(re.search(r'\b(intern|internship|student|student worker|co-?op|coop|apprentice|apprenticeship|temporary|temp|part[- ]time|seasonal|entry\s*level|junior|jr\.?|associate\s*software\s*engineer|associate\s*engineer|new\s*grad|university\s*grad|graduate\s*intern|undergraduate|volunteer|adjunct|campus\s*hire)\b', t))
 
 EXCLUDED_COMPANIES = {
     'amazon', 'anthropic', 'openai', 'open ai', 'microsoft'
@@ -455,6 +455,36 @@ def is_strictly_us_location(loc_str, title_str=''):
             break
 
     return has_valid_us
+
+def is_seattle_or_remote_us(loc_str, title_str=''):
+    """
+    Strict filter: only keep Seattle & WA tech corridor or Remote USA roles.
+    All other locations (SF, NYC, Austin, etc.) are excluded unless remote.
+    """
+    if not is_strictly_us_location(loc_str, title_str):
+        return False
+
+    loc_low = (loc_str or '').lower()
+    title_low = (title_str or '').lower()
+    full_loc = f"{loc_low} {title_low}"
+
+    # Seattle & WA tech corridor (Seattle, Bellevue, Redmond, Kirkland, WA state)
+    is_seattle = (
+        any(k in full_loc for k in ['seattle', 'bellevue', 'redmond', 'kirkland', 'washington']) or
+        bool(re.search(r'\bwa\b', full_loc))
+    ) and 'dc' not in full_loc and 'washington d.c' not in full_loc and 'washington dc' not in full_loc
+
+    if is_seattle:
+        return True
+
+    # Remote USA check
+    is_remote = (
+        'remote' in full_loc or
+        'anywhere' in full_loc or
+        full_loc.strip() in ['united states', 'usa', 'us', 'us nationwide', 'work from home']
+    )
+
+    return is_remote
 
 def get_region_info(loc_str):
     l = (loc_str or '').lower()
@@ -658,7 +688,7 @@ def fetch_single_board(board_tuple):
 
                     loc = j.get('location', {}).get('name', '')
                     loc_low = loc.lower()
-                    if not is_strictly_us_location(loc, title):
+                    if not is_seattle_or_remote_us(loc, title):
                         continue
 
                     content = j.get('content', '')
@@ -761,7 +791,7 @@ def fetch_single_board(board_tuple):
 
                     loc = str(j.get('location', ''))
                     loc_low = loc.lower()
-                    if not is_strictly_us_location(loc, title):
+                    if not is_seattle_or_remote_us(loc, title):
                         continue
 
                     comp_info = j.get('compensation', {})
@@ -832,7 +862,7 @@ def fetch_single_board(board_tuple):
                         if commitment and is_non_fulltime_role(commitment):
                             continue
                         loc = cat.get('location', 'US')
-                        if not is_strictly_us_location(loc, title):
+                        if not is_seattle_or_remote_us(loc, title):
                             continue
                         full_lever_text = f"{title} {loc} {j.get('descriptionPlain', '')}"
                         if is_clearance_or_citizen_restricted(full_lever_text):
@@ -904,7 +934,7 @@ def fetch_workday_board(board_tuple):
                 if time_type and is_non_fulltime_role(time_type):
                     continue
                 loc = p.get('locationsText', 'United States')
-                if not is_strictly_us_location(loc, title):
+                if not is_seattle_or_remote_us(loc, title):
                     continue
                 if is_clearance_or_citizen_restricted(f"{title} {loc}"):
                     continue
@@ -1025,6 +1055,8 @@ def main():
             continue
         if is_company_excluded(j.get('company', '')):
             continue
+        if not is_seattle_or_remote_us(j.get('location', ''), j.get('title', '')):
+            continue
         jid = j.get('id')
         if not jid or jid in seen_in_this_run:
             continue
@@ -1061,14 +1093,15 @@ def main():
     output_data = {
         "lastUpdated": today_iso,
         "lastChecked": today_iso,
-        "seedVersion": 17,
+        "seedVersion": 18,
         "candidateProfile": {
             "name": "Ramya Bangaru",
             "targetRole": "Senior Full Stack & Software Engineer",
             "mustHave": "Java / Python / TypeScript / React / AWS / Spring Boot",
             "yoe": "3–6y (strictly <7y)",
             "visa": "All Roles (H1B Sponsoring & Open)",
-            "preferredLocations": "Seattle, WA · Remote · San Francisco, CA · US Nationwide",
+            "preferredLocations": "Seattle, WA · Remote USA",
+            "employmentTypes": "Full-Time & Contract",
             "excludedCompanies": ["Amazon", "Anthropic", "OpenAI", "Microsoft"]
         },
         "liveTrackers": [

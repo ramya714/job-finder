@@ -1325,11 +1325,9 @@
     <input id="search" placeholder="Search company, title, skill…" />
     <label>Location
       <select id="filter-remote">
-        <option value="">Any Location</option>
+        <option value="">All (Remote & Seattle)</option>
         <option value="seattle">🌲 Seattle & WA Hub</option>
         <option value="remote">🏠 Remote USA</option>
-        <option value="hybrid">🏢 Hybrid</option>
-        <option value="onsite">📍 Onsite</option>
       </select>
     </label>
     <label>H1B fit
@@ -2227,9 +2225,9 @@ function renderTabs() {
 function matches(job) {
   // Applied jobs always hidden from the Jobs view — they live in the Applied tab.
   if (state.applied.has(job.id)) return false;
-  // Strictly Full-Time Only: Disqualify internships, student worker, contract, apprentice, and part-time roles
+  // Disqualify internships, student worker, apprentice, and seasonal roles (Contract & Full-Time are permitted)
   const tLow = (job.title || '').toLowerCase().replace(/[-–—/,]/g, ' ');
-  if (/\b(intern|internship|student|student worker|co-?op|coop|apprentice|apprenticeship|contract|contractor|temporary|temp|part[- ]time|seasonal|new grad|university grad)\b/i.test(tLow)) {
+  if (/\b(intern|internship|student|student worker|co-?op|coop|apprentice|apprenticeship|temporary|temp|part[- ]time|seasonal|new grad|university grad)\b/i.test(tLow)) {
     return false;
   }
   // Disqualify entry level and junior roles (candidate is Senior Full Stack / 3-6 YOE)
@@ -2262,6 +2260,25 @@ function matches(job) {
   // Disqualify blacklisted companies (Amazon, Anthropic, OpenAI, Microsoft)
   const compLow = (job.company || '').toLowerCase().trim();
   if (/\b(amazon|anthropic|openai|microsoft)\b/i.test(compLow) || compLow.includes('open ai')) {
+    return false;
+  }
+  // Strict Location Filter: only Seattle & WA Tech Corridor or Remote USA
+  const regLow = (job.region || '').toLowerCase();
+  const locLow = (job.location || '').toLowerCase();
+  const remLow = (job.remote || '').toLowerCase();
+  const isSeattle = job.regionRank === 1 ||
+                    regLow.includes('seattle') ||
+                    locLow.includes('seattle') ||
+                    locLow.includes('bellevue') ||
+                    locLow.includes('redmond') ||
+                    locLow.includes('kirkland') ||
+                    locLow.includes('washington') ||
+                    /\bwa\b/.test(locLow);
+  const isRemote = job.regionRank === 2 ||
+                   remLow.includes('remote') ||
+                   locLow.includes('remote') ||
+                   ['united states', 'usa', 'us', 'us nationwide'].includes(locLow.trim());
+  if (!isSeattle && !isRemote) {
     return false;
   }
   // Ignore Principal/Executive, Staff, ML/AI, Data Engineering, Security, and non-target titles
@@ -2320,17 +2337,9 @@ function matches(job) {
   if (settings.remote) {
     const rLow = settings.remote.toLowerCase();
     if (rLow === 'seattle') {
-      const isSea = (job.region || '').toLowerCase().includes('seattle') ||
-                    (job.location || '').toLowerCase().includes('seattle') ||
-                    (job.location || '').toLowerCase().includes('bellevue') ||
-                    (job.location || '').toLowerCase().includes('redmond') ||
-                    (job.location || '').toLowerCase().includes('kirkland') ||
-                    (job.location || '').toLowerCase().includes('wa');
-      if (!isSea) return false;
+      if (!isSeattle) return false;
     } else if (rLow === 'remote') {
-      if (!(job.remote || '').toLowerCase().includes('remote') && !(job.location || '').toLowerCase().includes('remote')) return false;
-    } else if (!(job.remote || '').toLowerCase().includes(rLow)) {
-      return false;
+      if (!isRemote) return false;
     }
   }
   if (settings.h1b) {

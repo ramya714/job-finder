@@ -291,10 +291,7 @@ DEFAULT_PROFILE = {
     ],
     "require_visa_sponsorship": True,
     "locations_allow": [
-        "remote", "us", "united states", "usa",
-        "san francisco", "sf", "bay area", "new york", "nyc", "seattle",
-        "austin", "boston", "chicago", "los angeles", "sunnyvale",
-        "mountain view", "palo alto", "san jose", "redmond", "cambridge"
+        "remote", "seattle", "bellevue", "redmond", "kirkland", "washington", "wa"
     ],
     "locations_deny": [
         "canada", "uk", "london", "india", "bangalore", "bengaluru",
